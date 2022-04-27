@@ -56,7 +56,7 @@
 		margin-left: 18vw;
 		margin-right: 18vw;
 		font-size: 30px;
-		padding-top: 35px;
+		padding-top: 60px;
 		caret-color: transparent;
 		font-size: 17px;
 	}
@@ -106,16 +106,35 @@
 
 	<h1 class="center">Phoenix Engine</h1>
 	<img class="center" style="width: 40%;" src="../../logo.png"/>
-	<p class="center">Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only supports Windows, but more platforms will hopefully added in the future. In addition, DirectX12, Vulkan, etc. support may be added as well.</p>
+	<p class="center" style="font-size: 26px;">Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only supports Windows, but more platforms will hopefully added in the future. In addition, DirectX12, Vulkan, etc. support may be added as well.</p>
+	<br />
+	<br />
+	<p class="center" style="font-size: 26px;">Phoenix is currently in pre-alpha.</p>
+
+	<br />
+	<br />
+
 
 	<h3>Installation:</h3>
 
-	<p>Download Phoenix engine from <a class="link" href="https://github.com/12Thanjo/Foundry">Github</a>.</p>
+	<p>Download Phoenix engine from <a class="link" href="https://github.com/12Thanjo/Phoenix">Github</a>.</p>
+	<code>git clone https://github.com/12Thanjo/Phoenix</code>
 
+	<h3>Building:</h3>	
+	<p>Phoenix has premake scripts. The default is uses Visual Studio 2022, but this can be changed. In <code>GENERATE_PROJECTS.bat</code>, you can change the default <code>vs2022</code> with any of the options found <a class="link" href="https://premake.github.io/docs/Using-Premake">here</a>.</p>
+	<p>Run <code>GENERATE_PROJECTS.bat</code> and your own build workflow. In the default example, the script will create the Visual Studio 2022 solution.</p>
+
+	<br />
+	<br />
 	<h3>Example Usage: </h3>
 	<div class='code'><span style='color: #f92472;'>#include</span> <span style='color: #e7db74;'>&lt;Phoenix.h&gt;</span><br /><br /><span style='color: #67d8ef; font-style: italic;'>class</span> <span style='color: #f8f8f2;'>Game</span> : <span style='color: #f92472;'>public</span> <span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #f8f8f2;'>Application</span>{<br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>private</span>:<br /><br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>public</span>:<br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef;'>Game</span><span style='color: #f8f8f2;'>(</span>){}<div style='display: inline-block; width:27px;'></div><br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef;'>~Game</span><span style='color: #f8f8f2;'>(</span>){}<br />};<br /><br /><br /><span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #f8f8f2;'>Application</span><span style='color: #f92472;'>*</span> <span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #67d8ef;'>initialize</span><span style='color: #f8f8f2;'>(</span>){<br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>return</span> <span style='color: #f92472;'>new</span> <span style='color: #67d8ef;'>Game</span><span style='color: #f8f8f2;'>(</span>);<br />}</div>
 
-	<h3>Namespaces:</h3>
+
+	<br />
+	<br />
+
+
+	<h2>Documentation:</h2>
 	<a class="link" href="./CMD.html">CMD</a>
 
 
