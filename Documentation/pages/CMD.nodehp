@@ -1,0 +1,109 @@
+<nodehp>
+	// init
+	include('./pages/includes/header.nodehp', {
+		title: "Phoenix::CMD",
+	});
+	var color = data.DOM.color;
+
+	var set_color = function(str){
+		return "style='color:" + str + "'";
+	}
+</nodehp>
+
+
+	<h1 class="center">CMD</h1>
+
+	<p style="font-size: 19px;">CMD allows for formatted logging to the console, with colors and time-stamps. Thanks to use of macros, CMD only logs in debug mode and not in release mode (saving performance). Logs from internal Phoenix are denoted as such.</p>
+
+	
+
+	<h3>Example:</h3>
+	<nodehp>
+		code(`// set log level to warning or higher
+ph_log_level(PH_LOG_WARNING);
+
+int num = 12;
+
+// this will print
+ph_warning("number: " << num);
+
+// this will not print
+ph_info("number: " << num);
+
+
+
+// set log level to trace or higher
+ph_log_level(PH_LOG_TRACE);
+
+// this will print
+ph_info("number: " << num);
+
+
+
+
+// Creating a test class to showcase an example implementation of custom printing
+class TestClass{
+	private:
+		int num;
+
+	public:
+		TestClass(int p_num) : num(p_num){};
+		~TestClass(){};
+		void print(){
+			std::cout << "[TestClass num: " << num << "]";
+		}
+
+};
+
+
+// overloads operator to allow for printing of TestClass instances
+static std::ostream& operator << (std::ostream& os, TestClass& test){
+	test.print();
+	return os;
+}
+
+
+// create an instance of TestClass with a number value of 12
+TestClass test(12);
+
+
+// print thie instance of TestClass
+ph_info("Test Print: " << test);`);
+
+
+		
+		br(1);
+	</nodehp>
+
+	<p style="font-size: 19px;">The <code>cout</code> type shown down the page is used where <code>std::cout</code> like syntax can be used to form messages.</p>
+
+	<nodehp>
+
+		indentation = 70;
+
+
+		echoTag("h3", "Functions:");
+
+		create_func("ph_log_level", [param("int", "level")], macro() + "Set the logging level. Options are: <br />" + 
+			list(180, ["PH_LOG_TRACE", "PH_LOG_INFO", "PH_LOG_WARNING", "PH_LOG_ERROR", "PH_LOG_FATAL"]));
+
+		create_func("ph_assert", [param("bool", "test"), param("cout", "message")], macro() + "Send an error message if a condition isn't true");
+
+
+
+		br(1);
+
+
+
+		echoTag("h3", "Logging:");
+
+		create_func("ph_trace",   [param("cout", "message")], macro() + "log to the console at a trace level");
+		create_func("ph_info",    [param("cout", "message")], macro() + "log to the console at a info level");
+		create_func("ph_warning", [param("cout", "message")], macro() + "log to the console at a warning level");
+		create_func("ph_error",   [param("cout", "message")], macro() + "log to the console at a error level");
+		create_func("ph_fatal",   [param("cout", "message")], macro() + "log to the console at a fatal level");
+	</nodehp>
+
+<nodehp>
+	include('./pages/includes/footer.nodehp');
+</nodehp>

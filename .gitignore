@@ -1,0 +1,12 @@
+.vs/
+bin/
+bin-int/
+
+*.ini
+*.user
+*.sublime-project
+*.sublime-workspace
+*.vcxproj
+*.vcxproj.filters
+*.sln
+logo.psd

@@ -1,0 +1,47 @@
+<nodehp>
+	// init
+	include('./pages/includes/header.nodehp', {
+		title: "Documentation",
+	});
+	var color = data.DOM.color;
+
+	var set_color = function(str){
+		return "style='color:" + str + "'";
+	}
+</nodehp>
+
+
+	<h1 class="center">Phoenix Engine</h1>
+	<img class="center" style="width: 40%;" src="../../logo.png"/>
+	<p class="center">Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only supports Windows, but more platforms will hopefully added in the future. In addition, DirectX12, Vulkan, etc. support may be added as well.</p>
+
+	<h3>Installation:</h3>
+
+	<p>Download Phoenix engine from <a class="link" href="https://github.com/12Thanjo/Foundry">Github</a>.</p>
+
+	<h3>Example Usage: </h3>
+	<nodehp>
+		code(`#include <Phoenix.h>
+
+class Game : public Phoenix::Application{
+	private:
+
+	public:
+		Game(){}	
+		~Game(){}
+};
+
+
+Phoenix::Application* Phoenix::initialize(){
+	return new Game();
+}`)
+
+	</nodehp>
+
+	<h3>Namespaces:</h3>
+	<a class="link" href="./CMD.html">CMD</a>
+
+
+<nodehp>
+	include('./pages/includes/footer.nodehp');
+</nodehp>
