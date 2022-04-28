@@ -15,6 +15,8 @@
 
 		return 0;
 	}
+#else
+	#error Platforms other than Windows are not supported
 #endif
 
 

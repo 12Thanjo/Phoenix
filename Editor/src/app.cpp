@@ -12,6 +12,7 @@ class Editor : public Phoenix::Application{
 		~Editor(){
 			
 		}
+
 };
 
 

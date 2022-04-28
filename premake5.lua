@@ -13,8 +13,10 @@ outputdir = "%{cfg.buildcfg}/%{cfg.system}"
 
 IncludeDirs = {}
 IncludeDirs["GLFW"] = "Phoenix/lib/GLFW/include"
+IncludeDirs["Glad"] = "Phoenix/lib/Glad/include"
 
 include "Phoenix/lib/GLFW"
+include "Phoenix/lib/Glad"
 
 project "Phoenix"
 	location "Phoenix"
@@ -38,10 +40,12 @@ project "Phoenix"
 	includedirs{
 		"Phoenix/src",
 		"%{IncludeDirs.GLFW}",
+		"%{IncludeDirs.Glad}",
 	}
 
 	links{
 		"GLFW",
+		"Glad",
 		"opengl32.lib"
 	}
 
@@ -49,7 +53,8 @@ project "Phoenix"
 		systemversion "latest"
 
 		defines {
-			"PH_PLATFORM_WINDOWS"
+			"PH_PLATFORM_WINDOWS",
+			"GLFW_INCLUDE_NONE"
 		}
 
 

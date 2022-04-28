@@ -1,0 +1,18 @@
+<nodehp>
+	// init
+	include('./pages/includes/header.nodehp', {
+		title: "Phoenix::Application",
+	});
+	var color = data.DOM.color;
+
+	var set_color = function(str){
+		return "style='color:" + str + "'";
+	}
+</nodehp>
+
+	<h1 class="center">Application</h1>
+
+
+<nodehp>
+	include('./pages/includes/footer.nodehp');
+</nodehp>

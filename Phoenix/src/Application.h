@@ -2,6 +2,7 @@
 
 
 #include "Window.h"
+#include "layers/LayerStack.h"
 #include "events/event.h"
 
 
@@ -15,6 +16,7 @@ namespace Phoenix{
 			std::unique_ptr<Window> window;
 			bool running = true;
 			static Application* instance;
+			LayerStack layers;
 
 		public:
 			Application();
@@ -23,6 +25,14 @@ namespace Phoenix{
 
 			void run();
 			void onEvent(Event& e);
+
+
+			void pushLayer(Layer* layer);
+			void pushOverlay(Layer* overlay);
+
+			void popLayer(Layer* layer);
+			void popOverlay(Layer* overlay);
+
 
 
 			inline Application& get() const { return *instance; }

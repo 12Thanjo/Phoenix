@@ -4,6 +4,8 @@
 
 #include "events/events.h"
 
+#include <glad/glad.h>
+
 namespace Phoenix{
 	static bool GLFW_initialized = false;
 
@@ -52,13 +54,26 @@ namespace Phoenix{
 			ph_internal_info("Created Windows Window (" << data.title << ") " << props.width << "x" << props.height);
 		}
 
-		// setVSync(false);
 
 		glfwMakeContextCurrent(window);
+		if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
+			ph_internal_fatal("Glad Initialization Failed");
+		}
+
+		// setVSync(false);
 
 		// create window events //////////////////////////////////////////////////////////////////////////////////////////
 		glfwSetWindowUserPointer(window, &data);
 
+		// close window
+		glfwSetWindowCloseCallback(window, [](GLFWwindow* window){
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			WindowCloseEvent e;
+			data.event_callback(e);
+		});
+
+		// resize window
 		glfwSetWindowSizeCallback(window, [](GLFWwindow* window, int width, int height){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
@@ -66,11 +81,78 @@ namespace Phoenix{
 			data.height = height;
 
 
-			ph_internal_info("Resized window: " << width << "x" << height);
 
 			WindowResizeEvent e(width, height);
 			data.event_callback(e);
 		});
+
+
+		// key down
+		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+
+			if(action == GLFW_PRESS){
+				KeyDownEvent e(key);
+				data.event_callback(e);
+			}else if(action == GLFW_RELEASE){
+				KeyUpEvent e(key);
+				data.event_callback(e);
+			}else if(action == GLFW_REPEAT){
+				ph_internal_warning("Key repeat not implemented");
+			}else{
+				ph_internal_error("Recieved unknown key input action from GLFW (" << action << ")");
+			}
+
+		});
+
+
+		// key typed
+		glfwSetCharCallback(window, [](GLFWwindow* window, unsigned int character){
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			KeyTypeEvent e(character);
+			data.event_callback(e);
+		});
+
+
+		// mouse buttons
+		glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods){
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+
+			if(action == GLFW_PRESS  ){
+				MouseDownEvent e(button);
+				data.event_callback(e);
+			}else if(action == GLFW_RELEASE){
+				MouseUpEvent e(button);
+				data.event_callback(e);
+			}else{
+				ph_internal_error("Recieved unknown button input action from GLFW (" << action << ")");
+			}
+		});
+
+
+
+		// mouse move
+		glfwSetCursorPosCallback(window, [](GLFWwindow* window, double x, double y){
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			MouseMoveEvent e((float)x, (float)y);
+			data.event_callback(e);
+		});
+
+
+
+		// mouse scroll
+		glfwSetScrollCallback(window, [](GLFWwindow* window, double x, double y){
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+			MouseScrollEvent e((float)x, (float)y);
+			data.event_callback(e);
+		});
+
+
 
 		// custom cursor
 		{
@@ -130,8 +212,6 @@ namespace Phoenix{
 	}
 
 	void WindowsWindow::run(){
-		glClearColor(0, 0.06f, 0.13f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}

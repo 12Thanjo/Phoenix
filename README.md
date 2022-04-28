@@ -1,5 +1,5 @@
+# Phoenix Engine
 ![Phoenix Logo](logo.png)
-# Phoenix
 Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only supports Windows, but more platforms will hopefully added in the future. In addition, DirectX12, Vulkan, etc. support may be added as well.
 
 

@@ -58,6 +58,7 @@ Phoenix::Application* Phoenix::initialize(){
 
 
 	<h2>Documentation:</h2>
+	<a class="link" href="./Application.html">Application</a>
 	<a class="link" href="./CMD.html">CMD</a>
 
 
