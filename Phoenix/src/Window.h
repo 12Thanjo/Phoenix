@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../ph_pch.h"
-
 #include "events/event.h"
 
 namespace Phoenix{
@@ -22,7 +21,6 @@ namespace Phoenix{
 		private:
 			
 		public:
-
 			using EventCallback = std::function<void(Event&)>;
 
 			virtual void init(const WindowProperties& props) = 0;
@@ -34,6 +32,14 @@ namespace Phoenix{
 			virtual void run() = 0;
 
 			virtual void set_callback(const EventCallback& callback) = 0;
+
+			virtual void* getNativeWindow() const = 0;
+
+			inline unsigned int getWidth() const { return data.width; }
+			inline unsigned int getHeight() const { return data.height; }
+			
+		protected:
+			WindowProperties data;
 	};
 }
 

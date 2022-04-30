@@ -48,25 +48,25 @@ namespace Phoenix{
 	};
 
 
-	class KeyTypeEvent : public Event{
-		private:
-			unsigned int keycode;
+	// class KeyTypeEvent : public Event{
+	// 	private:
+	// 		unsigned int keycode;
 
-		public:
-			KeyTypeEvent(unsigned int p_keycode)
-				: keycode(p_keycode) {
-			}
+	// 	public:
+	// 		KeyTypeEvent(unsigned int p_keycode)
+	// 			: keycode(p_keycode) {
+	// 		}
 
-			inline int getType() const override { return PH_KEY_TYPE_EVENT; }
+	// 		inline int getType() const override { return PH_KEY_TYPE_EVENT; }
 
-			inline unsigned int getKeycode() const { return keycode; }
+	// 		inline unsigned int getKeycode() const { return keycode; }
 
-			std::string print() override {
-				std::stringstream ss;
-				ss << "{ KeyTypeEvent (" << keycode << ") }";
-				return ss.str();
-			}
-	};
+	// 		std::string print() override {
+	// 			std::stringstream ss;
+	// 			ss << "{ KeyTypeEvent (" << keycode << ") }";
+	// 			return ss.str();
+	// 		}
+	// };
 
 		
 }

@@ -1,10 +1,12 @@
 #include "ph_pch.h"
 
 #include "WindowsWindow.h"
-
 #include "events/events.h"
+#include "InputManager.h"
 
-#include <glad/glad.h>
+#include "../OpenGL/OpenGLContext.h"
+
+
 
 namespace Phoenix{
 	static bool GLFW_initialized = false;
@@ -32,6 +34,9 @@ namespace Phoenix{
 		data.width = props.width;
 		data.height = props.height;
 
+
+
+
 		if(!GLFW_initialized){
 			if(!glfwInit()){
 				ph_internal_fatal("GLFW Initialization Failed");
@@ -54,11 +59,10 @@ namespace Phoenix{
 			ph_internal_info("Created Windows Window (" << data.title << ") " << props.width << "x" << props.height);
 		}
 
+		context = new OpenGLContext(window);
+		context->init();
 
-		glfwMakeContextCurrent(window);
-		if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-			ph_internal_fatal("Glad Initialization Failed");
-		}
+		
 
 		// setVSync(false);
 
@@ -87,16 +91,19 @@ namespace Phoenix{
 		});
 
 
-		// key down
+		// keyboard
 		glfwSetKeyCallback(window, [](GLFWwindow* window, int key, int scancode, int action, int mods){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 
+			unsigned int ph_key = InputManager::glfwKeycodeToPhoenix(key);
+
+
 			if(action == GLFW_PRESS){
-				KeyDownEvent e(key);
+				KeyDownEvent e(ph_key);
 				data.event_callback(e);
 			}else if(action == GLFW_RELEASE){
-				KeyUpEvent e(key);
+				KeyUpEvent e(ph_key);
 				data.event_callback(e);
 			}else if(action == GLFW_REPEAT){
 				ph_internal_warning("Key repeat not implemented");
@@ -107,13 +114,15 @@ namespace Phoenix{
 		});
 
 
-		// key typed
-		glfwSetCharCallback(window, [](GLFWwindow* window, unsigned int character){
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+		// // key typed
+		// glfwSetCharCallback(window, [](GLFWwindow* window, unsigned int character){
+		// 	WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			KeyTypeEvent e(character);
-			data.event_callback(e);
-		});
+		// 	// unsigned int ph_key = InputManager::glfwKeycodeToPhoenix(character);
+
+		// 	KeyTypeEvent e(character);
+		// 	data.event_callback(e);
+		// });
 
 
 		// mouse buttons
@@ -121,7 +130,7 @@ namespace Phoenix{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
 
-			if(action == GLFW_PRESS  ){
+			if(action == GLFW_PRESS ){
 				MouseDownEvent e(button);
 				data.event_callback(e);
 			}else if(action == GLFW_RELEASE){
@@ -213,7 +222,7 @@ namespace Phoenix{
 
 	void WindowsWindow::run(){
 		glfwPollEvents();
-		glfwSwapBuffers(window);
+		context->swapBuffers();
 	}
 }
 

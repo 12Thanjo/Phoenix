@@ -6,7 +6,7 @@ class Editor : public Phoenix::Application{
 
 	public:
 		Editor(){
-
+			
 		}	
 
 		~Editor(){

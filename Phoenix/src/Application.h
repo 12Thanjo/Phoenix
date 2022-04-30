@@ -5,18 +5,26 @@
 #include "layers/LayerStack.h"
 #include "events/event.h"
 
+#include "layers/layers/ImGuiLayer.h"
 
-#define PhoenixInitialize(Type) Type* app = new Type(); \
-	app->run(); \
-	delete app;
+#include "platform/OpenGL/OpenGLShader.h"
+#include "renderer/buffer.h"
+
+
 
 namespace Phoenix{
 	class Application{
 		private:
 			std::unique_ptr<Window> window;
+			ImGuiLayer* ImGui_layer;
 			bool running = true;
 			static Application* instance;
 			LayerStack layers;
+
+			unsigned int vertex_array;
+			std::unique_ptr<OpenGLShader> shader;
+			std::unique_ptr<VertexBuffer> vertex_buffer;
+			std::unique_ptr<IndexBuffer> index_buffer;
 
 		public:
 			Application();
@@ -35,7 +43,8 @@ namespace Phoenix{
 
 
 
-			inline Application& get() const { return *instance; }
+			inline static Application& get() { return *instance; }
+			inline Window& getWindow() { return *window; }
 	};
 
 

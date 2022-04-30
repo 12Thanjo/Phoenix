@@ -4,6 +4,7 @@
 
 #include "src/CMD.h"
 #include "src/Application.h"
+#include "src/InputManager.h"
 
 
 

@@ -7,6 +7,7 @@
 #ifdef PH_PLATFORM_WINDOWS
 	int main(int argc, char** argv){
 		Phoenix::CMD::init();
+		Phoenix::InputManager::init();
 
 		auto app = Phoenix::initialize();
 		app->run();

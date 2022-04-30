@@ -8,8 +8,14 @@ namespace Phoenix{
 			Layer(const std::string& debug_name = "Layer");
 			virtual ~Layer();
 
+
+			virtual void onAttatch(){};
+			virtual void onDetatch(){};
+
 			virtual void onEvent(Event& event){};
-			virtual void onUpdate(){};
+			virtual void run(){};
+
+			virtual void onImGuiRender(){};
 
 
 			inline const std::string& getName() const { return name; }
