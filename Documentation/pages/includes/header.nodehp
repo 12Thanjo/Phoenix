@@ -79,6 +79,10 @@
 		color: #67E8F9;
 	}
 
+	.page_link{
+		font-size: 24px;
+	}
+
 	footer{
 		display: block;
 		margin-left: auto;

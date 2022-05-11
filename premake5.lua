@@ -1,11 +1,15 @@
 -- premake5.lua
 workspace "Phoenix"
 	architecture "x64"
-	startproject "Editor"
+	startproject "Phoenix Editor"
 
 	configurations {
 		"Debug",
 		"Release"
+	}
+
+	flags{
+		"MultiProcessorCompile"
 	}
 
 
@@ -16,6 +20,8 @@ IncludeDirs["GLFW"] = "Phoenix/lib/GLFW/include"
 IncludeDirs["Glad"] = "Phoenix/lib/Glad/include"
 IncludeDirs["glm"] = "Phoenix/lib/glm"
 IncludeDirs["ImGui"] = "Phoenix/lib/ImGui"
+IncludeDirs["stb_image"] = "Phoenix/lib/stb_image"
+IncludeDirs["EnTT"] = "Phoenix/lib/EnTT"
 
 include "Phoenix/lib/GLFW"
 include "Phoenix/lib/Glad"
@@ -35,17 +41,23 @@ project "Phoenix"
 	pchheader "ph_pch.h"
 	pchsource "Phoenix/ph_pch.cpp"
 
+
 	files{
 		"%{prj.name}/*.h",
 		"%{prj.name}/*.cpp",
 
+		-- core
+		"%{prj.name}/core/**.h",
+		"%{prj.name}/core/**.cpp",
+
+		-- src
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/platform/**.h",
-		"%{prj.name}/platform/**.cpp",
 
-		"%{prj.name}/lib/glm/glm/**.hpp",
-		"%{prj.name}/lib/glm/glm/**.inl",
+	}
+
+	defines{
+		"GLFW_INCLUDE_NONE"
 	}
 
 	includedirs{
@@ -55,13 +67,17 @@ project "Phoenix"
 		"%{IncludeDirs.GLFW}",
 		"%{IncludeDirs.Glad}",
 		"%{IncludeDirs.glm}",
-		"%{IncludeDirs.ImGui}",
+		-- "%{IncludeDirs.ImGui}",
+		"%{IncludeDirs.stb_image}",
+		"%{IncludeDirs.EnTT}",
+
+		"Phoenix/lib/Glad/inlcude/glad"
 	}
 
 	links{
 		"GLFW",
 		"Glad",
-		"ImGui",
+		-- "ImGui",
 		"opengl32.lib"
 	}
 
@@ -88,8 +104,10 @@ project "Phoenix"
 	   buildoptions "/MT"
 
 
-project "Editor"
-	location "Editor"
+--------------------------------------------------------------------------------------------
+
+project "Phoenix Editor"
+	location "Phoenix Editor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
@@ -106,12 +124,20 @@ project "Editor"
 	}
 
 	includedirs{
-		"Phoenix"
+		"Phoenix",
+		"Phoenix/src",
+		-- "%{IncludeDirs.EnTT}",
+		"%{IncludeDirs.ImGui}",
+		"%{IncludeDirs.Glad}",
+		"%{IncludeDirs.GLFW}",
 	}
 
 
 	links{
-		"Phoenix"
+		"Phoenix",
+		"ImGui",
+		"GLFW",
+		"Glad",
 	}
 
 
@@ -135,3 +161,4 @@ project "Editor"
 
 	filter { "system:windows", "configurations:Release" }
 	   buildoptions "/MT"
+

@@ -10,7 +10,7 @@
 #define PH_MOUSE_MOVE_EVENT 6
 #define PH_MOUSE_SCROLL_EVENT 7
 
-
+using EventType = int;
 
 namespace Phoenix{
 	
@@ -20,7 +20,7 @@ namespace Phoenix{
 		public:
 			bool handled = false;
 
-			virtual inline int getType() const { return -1; };
+			virtual inline EventType getType() const { return -1; };
 
 			virtual std::string print(){
 				return "{ Event }";

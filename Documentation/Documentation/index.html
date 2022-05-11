@@ -77,6 +77,10 @@
 		color: #67E8F9;
 	}
 
+	.page_link{
+		font-size: 24px;
+	}
+
 	footer{
 		display: block;
 		margin-left: auto;
@@ -106,7 +110,7 @@
 
 	<h1 class="center">Phoenix Engine</h1>
 	<img class="center" style="width: 40%;" src="../../logo.png"/>
-	<p class="center" style="font-size: 26px;">Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only supports Windows, but more platforms will hopefully added in the future. In addition, DirectX12, Vulkan, etc. support may be added as well.</p>
+	<p class="center" style="font-size: 26px;">Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only officially supports Windows, but other platforms should work as well.</p>
 	<br />
 	<br />
 	<p class="center" style="font-size: 26px;">Phoenix is currently in pre-alpha.</p>
@@ -127,7 +131,7 @@
 	<br />
 	<br />
 	<h3>Example Usage: </h3>
-	<div class='code'><span style='color: #f92472;'>#include</span> <span style='color: #e7db74;'>&lt;Phoenix.h&gt;</span><br /><br /><span style='color: #67d8ef; font-style: italic;'>class</span> <span style='color: #f8f8f2;'>Game</span> : <span style='color: #f92472;'>public</span> <span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #f8f8f2;'>Application</span>{<br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>private</span>:<br /><br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>public</span>:<br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef;'>Game</span><span style='color: #f8f8f2;'>(</span>){}<div style='display: inline-block; width:27px;'></div><br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef;'>~Game</span><span style='color: #f8f8f2;'>(</span>){}<br />};<br /><br /><br /><span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #f8f8f2;'>Application</span><span style='color: #f92472;'>*</span> <span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #67d8ef;'>initialize</span><span style='color: #f8f8f2;'>(</span>){<br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>return</span> <span style='color: #f92472;'>new</span> <span style='color: #67d8ef;'>Game</span><span style='color: #f8f8f2;'>(</span>);<br />}</div>
+	<div class='code'><span style='color: #f92472;'>#include</span> <span style='color: #e7db74;'>&lt;Phoenix.h&gt;</span><br /><span style='color: #f92472;'>#include</span> <span style='color: #e7db74;'>&lt;core/init.h&gt;</span><br /><br /><span style='color: #67d8ef; font-style: italic;'>class</span> <span style='color: #f8f8f2;'>Game</span> : <span style='color: #f92472;'>public</span> <span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #f8f8f2;'>Engine</span>{<br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>public</span>:<br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef; font-style: italic;'>void</span> <span style='color: #67d8ef;'>create</span><span style='color: #f8f8f2;'>(</span>) <span style='color: #f92472;'>override</span>{<br /><br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div>}<br /><br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef; font-style: italic;'>void</span> <span style='color: #67d8ef;'>render</span><span style='color: #f8f8f2;'>(</span>) <span style='color: #f92472;'>override</span>{<br /><br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div>}<br />};<br /><br /><br /><span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #f8f8f2;'>Engine</span><span style='color: #f92472;'>*</span> <span style='color: #f8f8f2;'>Phoenix</span>::<span style='color: #67d8ef;'>initialize</span><span style='color: #f8f8f2;'>(</span>){<br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>return</span> <span style='color: #f92472;'>new</span> <span style='color: #67d8ef;'>Game</span><span style='color: #f8f8f2;'>(</span>);<br />}</div>
 
 
 	<br />
@@ -135,8 +139,8 @@
 
 
 	<h2>Documentation:</h2>
-	<a class="link" href="./Application.html">Application</a>
-	<a class="link" href="./CMD.html">CMD</a>
+	<a class="link page_link" href="./Engine.html">Engine</a><br />
+	<a class="link page_link" href="./logging.html">Logging</a>
 
 
 	</div>

@@ -1,0 +1,56 @@
+<nodehp>
+	// init
+	include('./pages/includes/header.nodehp', {
+		title: "Phoenix::Engine",
+	});
+	var color = data.DOM.color;
+
+	var set_color = function(str){
+		return "style='color:" + str + "'";
+	}
+</nodehp>
+
+	<h1 class="center">Engine</h1>
+	<p style="font-size: 19px;">The Engine class is the main class that you will interact with. Engine provides a number of optionally extendable functions.</p>
+
+
+<nodehp>
+	code(`class Game : public Phoenix::Engine{
+	public: 
+		Game() : Phoenix::Engine( {"Game Name", 500, 300} ) {};
+
+		// I'm optional
+		void create() override{
+			// I run when the engine is created
+		}
+
+		// I'm optional
+		void update() override{
+			// I run during every frame.
+		}
+};`);
+
+
+	indentation = 70;
+
+	echoTag("h3", "Engine Properties:");
+	echoTagStyle("p", "style='font-size: 19px;'", "The engine can create with default parameters, but custom parameters are available. As seen below:");
+	code(`// I create a game with the name "Game Name", a width of 500, and height of 300
+Game() : Phoenix::Engine( {"Game Name", 500, 300} ) {};`)
+
+
+	
+	echoTag("h3", "Extendable Functions:");
+
+	create_func("create", [], "Function run on the creation of the engine");
+
+	create_func("update", [], "Function run during every update frame");
+
+</nodehp>
+
+
+
+
+<nodehp>
+	include('./pages/includes/footer.nodehp');
+</nodehp>

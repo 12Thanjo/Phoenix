@@ -1,6 +1,6 @@
 # Phoenix Engine
 ![Phoenix Logo](logo.png)
-Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only supports Windows, but more platforms will hopefully added in the future. In addition, DirectX12, Vulkan, etc. support may be added as well.
+Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only officially supports Windows, but other platforms should work as well.
 
 
 
@@ -26,17 +26,21 @@ Run `GENERATE_PROJECTS.bat` and your own build workflow. In the default example,
 
 ```c++
 #include <Phoenix.h>
+#include <core/init.h>
 
-class Game : public Phoenix::Application{
-	private:
-
+class Game : public Phoenix::Engine{
 	public:
-		Game(){}	
-		~Game(){}
+		void create() override{
+
+		}
+
+		void render() override{
+
+		}
 };
 
 
-Phoenix::Application* Phoenix::initialize(){
+Phoenix::Engine* Phoenix::initialize(){
 	return new Game();
 }
 ```

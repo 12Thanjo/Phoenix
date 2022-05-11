@@ -15,7 +15,7 @@ namespace Phoenix{
 
 			inline int getType() const override { return PH_MOUSE_DOWN_EVENT; }
 
-			inline unsigned int getKeycode() const { return button; }
+			inline unsigned int getButton() const { return button; }
 
 			std::string print() override {
 				std::stringstream ss;
@@ -36,7 +36,7 @@ namespace Phoenix{
 
 			inline int getType() const override { return PH_MOUSE_UP_EVENT; }
 
-			inline unsigned int getKeycode() const { return button; }
+			inline unsigned int getButton() const { return button; }
 
 			std::string print() override {
 				std::stringstream ss;

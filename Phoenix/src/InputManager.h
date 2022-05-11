@@ -1,8 +1,8 @@
 #pragma once
 
+// keyboard codes
 #define PH_KEY_UNKOWN   		0
 
-#define PH_KEY_0        		10
 #define PH_KEY_1        		1
 #define PH_KEY_2        		2
 #define PH_KEY_3        		3
@@ -12,6 +12,7 @@
 #define PH_KEY_7        		7
 #define PH_KEY_8        		8
 #define PH_KEY_9        		9
+#define PH_KEY_0        		10
 
 #define PH_KEY_A        		11
 #define PH_KEY_B        		12
@@ -129,17 +130,24 @@
 #define PH_KEY_RIGHT_SUPER      119
 #define PH_KEY_MENU				120
 
+// Mouse codes
+#define PH_MOUSE_LEFT	 1
+#define PH_MOUSE_RIGHT	 2
+#define PH_MOUSE_MIDDLE	 3
+#define PH_MOUSE_FORWARD 4
+#define PH_MOUSE_BAcK	 5
 
+////////////////////////////////////////////////////
 
-#include "Application.h"
+#include "events/events.h"
 
+namespace Phoenix::InputManager{
+	void init();
+	void onEvent(Event& e);
+	
+	unsigned int glfwKeycodeToPhoenix(int keycode);
 
-namespace Phoenix{
-	namespace InputManager{
-		void init();
-		void onEvent(Event& e);
-		
-		unsigned int glfwKeycodeToPhoenix(int keycode);
-	}
+	bool key_down(int keycode);
+	bool mouse_button_down(int button);
 }
 
