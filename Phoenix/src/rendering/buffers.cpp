@@ -1,38 +1,25 @@
 #include "ph_pch.h"
 #include "buffers.h"
 
+
 #include <glad/glad.h>
 
 namespace Phoenix{
 
-	VertexBuffer::VertexBuffer(float* verticies, uint32_t size)
-		: stride(0){
-
-		glCreateBuffers(1, &renderer_id);
-		glBindBuffer(GL_ARRAY_BUFFER, renderer_id);
+	VertexBuffer::VertexBuffer(float* verticies, unsigned int size){
+		glCreateBuffers(1, &_id);
+		glBindBuffer(GL_ARRAY_BUFFER, _id);
 		glBufferData(GL_ARRAY_BUFFER, size, verticies, GL_STATIC_DRAW);
-	};
-
-
-	VertexBuffer::VertexBuffer(uint32_t size)
-		: stride(0){
-
-		glCreateBuffers(1, &renderer_id);
-		glBindBuffer(GL_ARRAY_BUFFER, renderer_id);
-		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
-
 
 
 	VertexBuffer::~VertexBuffer(){
-		glDeleteBuffers(1, &renderer_id);
+		glDeleteBuffers(1, &_id);
 	}
 
 
-
-
 	void VertexBuffer::bind(){
-		glBindBuffer(GL_ARRAY_BUFFER, renderer_id);
+		glBindBuffer(GL_ARRAY_BUFFER, _id);
 	}
 
 	void VertexBuffer::unbind(){
@@ -40,31 +27,23 @@ namespace Phoenix{
 	}
 
 
+	////////////////////////////////////////////////////////////////////////////
 
-	void VertexBuffer::set_data(const void* data, uint32_t size){
-		glBindBuffer(GL_ARRAY_BUFFER, renderer_id);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+	
+	IndexBuffer::IndexBuffer(unsigned int* indicies, unsigned int size){
+		glGenBuffers(1, &_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indicies, GL_STATIC_DRAW);
 	}
 
-
-	/////////////////////////////////////////////////////////////////
-
-
-	IndexBuffer::IndexBuffer(Ref<uint32_t> indicies, uint32_t count){
-		glCreateBuffers(1, &renderer_id);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indicies.get(), GL_STATIC_DRAW);
-	}
 
 	IndexBuffer::~IndexBuffer(){
-		glDeleteBuffers(1, &renderer_id);
+		glDeleteBuffers(1, &_id);
 	}
-
-
 
 
 	void IndexBuffer::bind(){
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _id);
 	}
 
 	void IndexBuffer::unbind(){
@@ -72,25 +51,24 @@ namespace Phoenix{
 	}
 
 
-	/////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////
 
 
 	VertexArray::VertexArray(){
-		// glCreateVertexArrays(1, &renderer_id);
-		glGenVertexArrays(1, &renderer_id);
-		glBindVertexArray(renderer_id);
+		glGenVertexArrays(1, &_id);
+		glBindVertexArray(_id);
 	}
+
 
 	VertexArray::~VertexArray(){
-		glDeleteVertexArrays(1, &renderer_id);
+		glDeleteVertexArrays(1, &_id);
+
 	}
-
-
-
 
 
 	void VertexArray::bind(){
-		glBindVertexArray(renderer_id);
+		glBindVertexArray(_id);
 	}
 
 	void VertexArray::unbind(){
@@ -98,21 +76,18 @@ namespace Phoenix{
 	}
 
 
+	void VertexArray::addVertexBuffer(VertexBuffer& vertex_buffer){
+		glBindVertexArray(_id);
+		vertex_buffer.bind();
+
+		PH_ASSERT(vertex_buffer.getLayout().size() != 0, "Vertex buffer is empty");
 
 
+		std::vector<VertexBufferElement> layout = vertex_buffer.getLayout();
 
-	void VertexArray::add_vertex_buffer(const Ref<VertexBuffer>& vertex_buffer){
-		glBindVertexArray(renderer_id);
-		vertex_buffer->bind();
-
-		PH_ASSERT(vertex_buffer->get_layout().size() != 0, "Vertex buffer is empty");
-
-
-		std::vector<VertexBufferElement> layout = vertex_buffer->get_layout();
-
-		uint32_t index = 0;
-		uint32_t offset = 0;
-		uint32_t stride = vertex_buffer->get_stride();
+		unsigned int index = 0;
+		unsigned int offset = 0;
+		unsigned int stride = vertex_buffer.getStride();
 
 		for(auto& element : layout){
 			glEnableVertexAttribArray(index);
@@ -130,17 +105,6 @@ namespace Phoenix{
 
 			index += 1;
 		}
-
-		// vertex_buffers.push_back(vertex_buffer);
-
 	}
 
-	void VertexArray::set_index_buffer(const Ref<IndexBuffer>& _index_buffer){
-		glBindVertexArray(renderer_id);
-		_index_buffer->bind();
-
-		// index_buffer = _index_buffer;
-	}
-
-	
 }

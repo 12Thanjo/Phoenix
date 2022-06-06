@@ -3,23 +3,11 @@
 
 
 
-namespace Phoenix::InputManager{
-	bool keys_down[120];
-	bool mouse_buttons_down[5];
-
-	void init(){
-		for(int i = 0; i < sizeof(keys_down); i++){
-			keys_down[i] = false;
-		}
-
-		for(int i = 0; i < sizeof(mouse_buttons_down); i += 1){
-			mouse_buttons_down[i] = false;
-		}
+#include "Window.h"
+#include "events/events.h"
 
 
-		PH_INFO("InputManager Initialized");
-	};
-
+namespace Phoenix{
 
 	unsigned int glfw_keycodes[] = {
 		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -42,7 +30,8 @@ namespace Phoenix::InputManager{
 		112,113,114,115,116,117,118,119
 	};
 
-	unsigned int glfwKeycodeToPhoenix(int keycode){
+
+	unsigned int static glfwKeycodeToPhoenix(int keycode){
 		if(keycode == -1){
 			return 0;
 		}else{
@@ -51,21 +40,97 @@ namespace Phoenix::InputManager{
 	};
 
 
-	void onEvent(Event& e){
-		int type = e.getType();
+	
 
-			 if(type == PH_KEY_DOWN_EVENT){   keys_down[static_cast<KeyDownEvent&>(e).getKeycode()] = true;  }
-		else if(type == PH_KEY_UP_EVENT){     keys_down[static_cast<KeyUpEvent&>(e).getKeycode()] = false; }
-		else if(type == PH_MOUSE_DOWN_EVENT){ mouse_buttons_down[static_cast<MouseDownEvent&>(e).getButton()]  = true;  }
-		else if(type == PH_MOUSE_UP_EVENT){   mouse_buttons_down[static_cast<MouseDownEvent&>(e).getButton()]  = false; }
-		
-	};
+	InputManager::InputManager(Window* window){
+		for(int i = 0; i < sizeof(_keys_down); i++){
+			_keys_down[i] = false;
+		}
 
-	bool key_down(int keycode){
-		return keys_down[keycode];
+		for(int i = 0; i < sizeof(_mouse_buttons_down); i += 1){
+			_mouse_buttons_down[i] = false;
+		}
+
+
+		// close
+		glfwSetWindowCloseCallback(window->getWindowContext(), [](GLFWwindow* window_context){
+			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
+
+			WindowCloseEvent e{};
+
+			// PH_LOG("Close");
+
+			data.eventCallback(e, data.id);
+		});
+
+		// resize
+		glfwSetWindowSizeCallback(window->getWindowContext(), [](GLFWwindow* window_context, int width, int height){
+			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
+
+			data.width = width;
+			data.height = height;
+
+			WindowResizeEvent e(width, height);
+
+			// PH_LOG("resize");
+			data.eventCallback(e, data.id);
+		});
+
+		// keyboard
+		glfwSetKeyCallback(window->getWindowContext(), [](GLFWwindow* window_context, int key, int scancode, int action, int mods){
+			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
+
+			unsigned int ph_key = glfwKeycodeToPhoenix(key);
+
+			if(action == GLFW_PRESS){
+				KeyDownEvent e(ph_key);
+				data.input_manager->_keys_down[ph_key] = true;
+				data.eventCallback(e, data.id);
+			}else if(action == GLFW_RELEASE){
+				KeyUpEvent e(ph_key);
+				data.input_manager->_keys_down[ph_key] = false;
+				data.eventCallback(e, data.id);
+			}
+
+		});
+
+
+		// mouse button
+		glfwSetMouseButtonCallback(window->getWindowContext(), [](GLFWwindow* window_context, int button, int action, int mods){
+			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
+
+
+			if(action == GLFW_PRESS){
+				MouseDownEvent e(button);
+				data.input_manager->_mouse_buttons_down[button] = true;
+				data.eventCallback(e, data.id);
+			}else if(action == GLFW_RELEASE){
+				MouseUpEvent e(button);
+				data.input_manager->_mouse_buttons_down[button] = false;
+				data.eventCallback(e, data.id);
+			}
+		});
+
+
+		// mouse move
+		glfwSetCursorPosCallback(window->getWindowContext(), [](GLFWwindow* window_context, double x, double y){
+			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
+
+			MouseMoveEvent e((float)x, (float)y);
+			data.eventCallback(e, data.id);
+		});
+
+
+		// mouse scroll
+		glfwSetScrollCallback(window->getWindowContext(), [](GLFWwindow* window_context, double x, double y){
+			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
+
+			MouseScrollEvent e((float)x, (float)y);
+			data.eventCallback(e, data.id);
+		});
+
 	}
 
-	bool mouse_button_down(int button){
-		return mouse_buttons_down[button];
-	}
+
+	
 }

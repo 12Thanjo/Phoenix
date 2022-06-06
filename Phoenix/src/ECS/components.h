@@ -1,10 +1,19 @@
 #pragma once
 
-#include "ScriptableEntity.h"
+#include "src/render objects/cameras.h"
+#include "core/UUID.h"
+
+
 
 namespace Phoenix::Component{
 
+	struct UUID{
+		Phoenix::UUID id;
 
+		UUID() : id() {};
+		UUID(const Phoenix::UUID& _id) : id(_id) {};
+	};
+	
 	struct Name{
 		std::string name;
 
@@ -30,36 +39,23 @@ namespace Phoenix::Component{
 
 
 
+	struct Camera{
+		Phoenix::Camera camera;
+		bool primary = false;
+
+		Camera(float fov, float aspect_ratio, float near, float far)
+			: camera(fov, aspect_ratio, near, far) {}
+	};
+
+
 	struct SpriteRenderer{
 		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
 
 		SpriteRenderer() = default;
 		SpriteRenderer(const glm::vec4& _color)
 			: color(_color) {}
-
 	};
 
 
 
-
-	struct NativeScript{
-		ScriptableEntity* instance = nullptr;
-
-		ScriptableEntity*(*instantiate_script)();
-		void (*destroy_script)(NativeScript*);
-
-		template<typename T>
-		void bind(){
-			instantiate_script = [](){
-				return static_cast<ScriptableEntity*>(new T());
-			};
-
-			destroy_script = [](NativeScript* native_script_component){
-				delete native_script_component->instance;
-				native_script_component->instance = nullptr;
-			};
-		}
-	};
-	
-	
 }

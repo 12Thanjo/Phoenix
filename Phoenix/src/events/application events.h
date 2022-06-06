@@ -13,7 +13,7 @@ namespace Phoenix{
 			WindowCloseEvent(){}
 
 
-			inline int getType() const override { return PH_WINDOW_CLOSE_EVENT; }
+			inline EventType getType() const override { return PH_WINDOW_CLOSE_EVENT; }
 
 
 			std::string print() override {
@@ -31,7 +31,7 @@ namespace Phoenix{
 				: width(p_width), height(p_height) {
 			}
 
-			inline int getType() const override { return PH_WINDOW_RESIZE_EVENT; }
+			inline EventType getType() const override { return PH_WINDOW_RESIZE_EVENT; }
 
 			inline unsigned int getWidth() const { return width; }
 			inline unsigned int getHeight() const { return height; }

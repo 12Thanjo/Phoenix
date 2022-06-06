@@ -2,8 +2,8 @@ project "ImGui"
 	kind "StaticLib"
 	language "C++"
 	
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("bin/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin/intermediates/" .. outputdir .. "/%{prj.name}")
 
 
 	files{
@@ -30,3 +30,14 @@ project "ImGui"
 
 	filter { "system:windows", "configurations:Release"}
 		buildoptions "/MT"
+
+
+
+	filter "configurations:Debug"
+		runtime "Debug"
+		symbols "on"
+
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "on"

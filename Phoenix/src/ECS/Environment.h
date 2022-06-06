@@ -1,40 +1,52 @@
 #pragma once
 
 #include <lib/EnTT/entt.hpp>
+#include "Serializer.h"
 
-// #include "components.h"
-// #include "Entity.h"
-
-#include "src/rendering/renderers/Renderer.h"
 
 namespace Phoenix{
-	struct EnvironmentPerformanceMetrics{
-		uint32_t entities = 0;
-	};
 
 	class Entity;
-
-	class Environment{
-		private:
-			entt::registry registry;
+	class Renderer2D;
+	class Camera;
 	
+	
+	class Environment{
 		public:
-			EnvironmentPerformanceMetrics performanceMetrics;
-
-
 			Environment();
 			~Environment();
-
-			Entity create_entity(const std::string& name = "Entity");
-			void destroy_entity(Entity entity);
-
-			void update(Ref<Renderer> renderer);
+			
+			Entity createEntity(const std::string& name = "Entity");
+			void destroyEntity(Entity entity);
 
 
-			entt::registry& _get_registry() { return registry; };
+			void update();
+			void render(Renderer2D* renderer_2d, Camera& camera);
+
+
+
+			template<typename T>
+			void each(std::function<void(Entity, T&)> func){
+				_registry.view<T>().each([&](entt::entity entity_id, auto& component){
+					func(Entity{entity_id, this}, component);
+				});
+			}
+
+			void forEach(std::function<void(Entity)> func);
+
+
+			void serialize(const std::string& filepath);
+			void deserialize(const std::string& filepath);
+
+		private:
+			entt::registry _registry;
+			Serializer* _serializer;
+
+		private:
+			inline bool _valid_entity(entt::entity entt_entity){ return _registry.valid(entt_entity); }
+
 
 		friend class Entity;
-			
 	};
 
 }

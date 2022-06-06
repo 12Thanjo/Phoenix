@@ -1,18 +1,15 @@
 #include <Phoenix.h>
 #include "ImGui.h"
 
+#include "ImGui helpers.h"
 
-#include "imgui.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_glfw.h"
-
+// panels
 #include "panels/SceneHierarchyPanel.h"
 
 namespace Phoenix{
 	
 	RendererImGui::RendererImGui(Engine* engine)
-		: editor(engine) {
-
+		: _editor(engine) {
 		IMGUI_CHECKVERSION();
 
 		ImGui::CreateContext();
@@ -35,49 +32,31 @@ namespace Phoenix{
 		}
 
 		set_dark_theme();
+	}
 
 
-		// GLFWwindow* window = static_cast<GLFWwindow*>(app.getWindow().getNativeWindow());
-
-		ImGui_ImplGlfw_InitForOpenGL(editor->getNativeWindow(), true);
+	void RendererImGui::init(winID id){
+		ImGui_ImplGlfw_InitForOpenGL(_editor->getWindow(id)->getWindowContext(), true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 
 
-		Entity square = editor->createEntity("Square");
-
-		square.addComponent<Component::Transform>(glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f)));
-		square.addComponent<Component::SpriteRenderer>(glm::vec4{AMBER_700});
-
-		class Test : public ScriptableEntity{
-			private:
-		
-			public:
-				void create(){
-					// PH_LOG("Native Script Create");
-				}
-
-				void update(){
-					// PH_LOG("Native Script Update");
-				}
-		};
-
-		square.addComponent<Component::NativeScript>().bind<Test>();
-
-		panels.push_back(static_cast<Panel*>(new SceneHierarchyPanel()));
+		_panels.push_back(static_cast<Panel*>(new SceneHierarchyPanel()));
 
 
 		PH_INFO("ImGui Initialized");
 	}
 
+
 	RendererImGui::~RendererImGui(){
+		for(auto panel : _panels){
+			delete panel;
+		}
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
-
-		for(auto panel : panels){
-			delete panel;
-		}
 	}
+
 
 
 
@@ -89,8 +68,8 @@ namespace Phoenix{
 
 	void RendererImGui::end(){
 		ImGuiIO& io = ImGui::GetIO();
-		// io.DisplaySize = ImVec2((float)app.getWindow().getWidth(), (float)app.getWindow().getHeight());
-		io.DisplaySize = ImVec2(editor->getWidth(), editor->getHeight());
+		io.DisplaySize = ImVec2((float)_editor->windowWidth(0), (float)_editor->windowHeight(0));
+		// io.DisplaySize = ImVec2(1280, 720);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -104,7 +83,17 @@ namespace Phoenix{
 	}
 
 
-	void RendererImGui::render(Engine* editor){
+	///////////////////////////////////////////////////////////////////////////////
+
+
+	// void imgui_begin(std::string id, std::string name){
+	// 	std::string imgui_id = name + "###" + id;
+	// 	ImGui::Begin(imgui_id.c_str());
+	// }
+
+	///////////////////////////////////////////////////////////////////////////////
+
+	void RendererImGui::render(FrameBuffer* render_buffer){
 		static bool dockspaceOpen = true;
 		if(dockspaceOpen){
 			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -143,7 +132,7 @@ namespace Phoenix{
 			// Submit the DockSpace
 			ImGuiIO& io = ImGui::GetIO();
 			ImGuiStyle& style = ImGui::GetStyle();
-			style.WindowMinSize.x = 330.0f;
+			style.WindowMinSize.x = 200.0f;
 			if(io.ConfigFlags & ImGuiConfigFlags_DockingEnable){
 			    ImGuiID dockspace_id = ImGui::GetID("DockSpace");
 			    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
@@ -152,7 +141,7 @@ namespace Phoenix{
 
 			if(ImGui::BeginMenuBar()){
 			    if(ImGui::BeginMenu("File")){
-			        if(ImGui::MenuItem("Exit")){ editor->close(); }
+			        if(ImGui::MenuItem("Exit")){ _editor->exit(); }
 			        ImGui::MenuItem("Item 1");
 			        ImGui::MenuItem("Item 2");
 
@@ -161,110 +150,86 @@ namespace Phoenix{
 
 
 			    ImGui::EndMenuBar();
-
 			}
-
-
-			// performance metrics
-			ImGui::Begin("Performance Metrics");
-				ImGui::Text("General:");
-				ImGui::Indent();
-					ImGui::Text("FPS:         %.1f", 1 / (editor->performanceMetrics.renderLoop / 1000000));
-					ImGui::Text("Render:      %.3f ms", editor->performanceMetrics.renderLoop / 1000);
-					ImGui::Text("Draw:        %.3f ms", editor->performanceMetrics.draw / 1000);
-					ImGui::Text("ECS Systems: %.3f ms", editor->performanceMetrics.ECS / 1000);
-					ImGui::Text("Update:      %.3f ms", editor->performanceMetrics.update / 1000);
-				ImGui::Unindent();
-
-				ImGui::Separator();
-
-				ImGui::Text("Rendering:");
-				ImGui::Indent();
-					ImGui::Text("Draw Calls:  %d", editor->performanceMetrics.drawCalls);
-					ImGui::Text("Verticies:   %d", editor->performanceMetrics.verticies);
-					ImGui::Text("Indicies:    %d", editor->performanceMetrics.indicies);
-				ImGui::Unindent();
-
-				ImGui::Separator();
-
-				ImGui::Text("2D Rendering:");
-				ImGui::Indent();
-					ImGui::Text("Draw Calls:  %d", editor->performanceMetrics.drawCalls2D);
-					ImGui::Text("Quads:       %d", editor->performanceMetrics.quads);
-					ImGui::Text("Verticies:   %d",  editor->performanceMetrics.verticies2D);
-					ImGui::Text("Indicies:    %d",  editor->performanceMetrics.indicies2D);
-				ImGui::Unindent();
-				
-				ImGui::Separator();
-
-				ImGui::Text("ECS Environment:");
-				ImGui::Indent();
-					ImGui::Text("Entites:     %d", editor->performanceMetrics.entities);
-				ImGui::Unindent();
-			ImGui::End();
-
-
-			for(auto panel : panels){
-				panel->render(editor);
-			}
-
 
 
 
 			// viewport
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-				ImGui::Begin("Viewport");
+				imgui_begin("viewport", "Viewport");
+					// check if viewport resized
 					ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
-					if(content_region_avail.x != viewport_size.x || content_region_avail.y != viewport_size.y){
-						viewport_size = {content_region_avail.x, content_region_avail.y};
-						editor->resize(content_region_avail.x, content_region_avail.y);
+					if(content_region_avail.x != _viewport_size.x || content_region_avail.y != _viewport_size.y){
+						_viewport_size = {content_region_avail.x, content_region_avail.y};
+						render_buffer->resize(content_region_avail.x, content_region_avail.y);
+						
+						_editor->getEnvironment()->each<Component::Camera>([&](Entity entity, Component::Camera component){
+							Camera& camera = component.camera;
+							camera.setProjection(camera.getFOV(), content_region_avail.x/content_region_avail.y, camera.getNear(), camera.getFar());
+						});
 					}
 
-					uint32_t texture_id = editor->getFrameBufferColorAttachment();
+					// draw from frame buffer
+					uint32_t texture_id = render_buffer->getColorAttachment(0);
 					ImGui::Image((void*)texture_id, ImVec2{content_region_avail.x, content_region_avail.y}, ImVec2{0,1}, ImVec2{1,0});
 				ImGui::End();
 			ImGui::PopStyleVar();
 
 
 
+			// performance metrics
+			imgui_begin("1", "Performance");
+				ImGui::Text("General:");
+			ImGui::End();
+
+
+			// panels
+			for(auto panel : _panels){
+				panel->render(_editor);
+			}
+
 
 			ImGui::End();
 		}
+
+
+
 	}
+
+
 
 
 
 	void RendererImGui::set_dark_theme(){
 		auto& colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_WindowBg]           = ImVec4{ 0.094f, 0.094f, 0.105f, 1.0f };
+		colors[ImGuiCol_WindowBg]           = ImVec4{ PH_GRAY_900 };
 
 		// Headers
-		colors[ImGuiCol_Header]        		= ImVec4{ CYAN_800 };
-		colors[ImGuiCol_HeaderHovered] 		= ImVec4{ CYAN_700 };
-		colors[ImGuiCol_HeaderActive]  		= ImVec4{ CYAN_900 };
+		colors[ImGuiCol_Header]        		= ImVec4{ PH_CYAN_800 };
+		colors[ImGuiCol_HeaderHovered] 		= ImVec4{ PH_CYAN_700 };
+		colors[ImGuiCol_HeaderActive]  		= ImVec4{ PH_CYAN_900 };
 
 		// Buttons
-		colors[ImGuiCol_Button]             = ImVec4{ CYAN_800 };
-		colors[ImGuiCol_ButtonHovered]      = ImVec4{ CYAN_700 };
-		colors[ImGuiCol_ButtonActive]       = ImVec4{ CYAN_900 };
+		colors[ImGuiCol_Button]             = ImVec4{ PH_CYAN_800 };
+		colors[ImGuiCol_ButtonHovered]      = ImVec4{ PH_CYAN_700 };
+		colors[ImGuiCol_ButtonActive]       = ImVec4{ PH_CYAN_900 };
 
 		// Frame Bg
-		colors[ImGuiCol_FrameBg]            = ImVec4{ BLUE_GRAY_800 };
-		colors[ImGuiCol_FrameBgHovered]     = ImVec4{ BLUE_GRAY_700 };
-		colors[ImGuiCol_FrameBgActive]      = ImVec4{ BLUE_GRAY_600 };
+		colors[ImGuiCol_FrameBg]            = ImVec4{ PH_GRAY_800 };
+		colors[ImGuiCol_FrameBgHovered]     = ImVec4{ PH_GRAY_700 };
+		colors[ImGuiCol_FrameBgActive]      = ImVec4{ PH_GRAY_600 };
 
 		// Tabs
-		colors[ImGuiCol_Tab] 				= ImVec4{ CYAN_900 };
-		colors[ImGuiCol_TabHovered] 		= ImVec4{ CYAN_600 };
-		colors[ImGuiCol_TabActive] 			= ImVec4{ CYAN_700 };
-		colors[ImGuiCol_TabUnfocused]       = ImVec4{ CYAN_900 };
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ CYAN_900 };
+		colors[ImGuiCol_Tab] 				= ImVec4{ PH_CYAN_900 };
+		colors[ImGuiCol_TabHovered] 		= ImVec4{ PH_CYAN_600 };
+		colors[ImGuiCol_TabActive] 			= ImVec4{ PH_CYAN_700 };
+		colors[ImGuiCol_TabUnfocused]       = ImVec4{ PH_CYAN_900 };
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ PH_CYAN_900 };
 
 		// Title Bg
-		colors[ImGuiCol_TitleBg]            = ImVec4{ GRAY_800 };
-		colors[ImGuiCol_TitleBgActive]      = ImVec4{ GRAY_700 };
-		colors[ImGuiCol_TitleBgCollapsed]   = ImVec4{ GRAY_600 };
+		colors[ImGuiCol_TitleBg]            = ImVec4{ PH_GRAY_800 };
+		colors[ImGuiCol_TitleBgActive]      = ImVec4{ PH_GRAY_700 };
+		colors[ImGuiCol_TitleBgCollapsed]   = ImVec4{ PH_GRAY_600 };
 	}
 
 }
-

@@ -1,14 +1,13 @@
 
 #pragma once
 
-
-#define PH_LOG_LOG 0
-#define PH_LOG_INFO 1
-#define PH_LOG_WARNING 2
-#define PH_LOG_ERROR 3
-#define PH_LOG_FATAL 4
-
 #ifdef PH_DEBUG
+	#define PH_LOG_LOG 0
+	#define PH_LOG_INFO 1
+	#define PH_LOG_WARNING 2
+	#define PH_LOG_ERROR 3
+	#define PH_LOG_FATAL 4
+
 	#define PH_LOG_LEVEL(x) Phoenix::_logging::level = x;
 
 	#define PH_LOG(x) if(Phoenix::_logging::level <= 0){ std::cout << Phoenix::_logging::style.dim << Phoenix::_logging::get_time() << " <Phoenix> " << x << Phoenix::_logging::style.reset << "\n"; }
@@ -84,7 +83,7 @@ namespace Phoenix::_logging{
 
 	void static init(){
 		system("cls");
-		PH_INFO("Logging Initialized");
+		PH_INFO("Initialized: Logging");
 	};
 
 	

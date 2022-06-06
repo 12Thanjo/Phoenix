@@ -1,31 +1,32 @@
 #pragma once
 
 #include <Phoenix.h>
-#include "panels/panel.h"
+
+#include "panels/Panel.h"
+
 
 namespace Phoenix{
-	
+
 	class RendererImGui{
 		private:
-			Engine* editor;
+			Engine* _editor;
+			glm::vec2 _viewport_size;
 
-			glm::vec2 viewport_size;
-
-			std::vector<Panel*> panels;
+			std::vector<Panel*> _panels;
 	
 		public:
-			RendererImGui(Engine* editor);
+			RendererImGui(Engine* engine);
 			~RendererImGui();
 
+			void init(winID id);
 
 			void begin();
 			void end();
+			void render(FrameBuffer* render_buffer);
 
-			void render(Engine* editor);
 
 			void set_dark_theme();
 			
 	};
 
-	
 }

@@ -22,10 +22,12 @@ IncludeDirs["glm"] = "Phoenix/lib/glm"
 IncludeDirs["ImGui"] = "Phoenix/lib/ImGui"
 IncludeDirs["stb_image"] = "Phoenix/lib/stb_image"
 IncludeDirs["EnTT"] = "Phoenix/lib/EnTT"
+IncludeDirs["jx"] = "Phoenix/lib/jx"
 
 include "Phoenix/lib/GLFW"
 include "Phoenix/lib/Glad"
 include "Phoenix/lib/ImGui"
+include "Phoenix/lib/jx"
 
 project "Phoenix"
 	location "Phoenix"
@@ -35,11 +37,15 @@ project "Phoenix"
 	staticruntime "on"
 
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("bin/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin/intermediates/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "ph_pch.h"
 	pchsource "Phoenix/ph_pch.cpp"
+
+	linkoptions{
+		"/NODEFAULTLIB:'LIBCMT'"
+	}
 
 
 	files{
@@ -70,6 +76,7 @@ project "Phoenix"
 		-- "%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.stb_image}",
 		"%{IncludeDirs.EnTT}",
+		"%{IncludeDirs.jx}",
 
 		"Phoenix/lib/Glad/inlcude/glad"
 	}
@@ -78,7 +85,8 @@ project "Phoenix"
 		"GLFW",
 		"Glad",
 		-- "ImGui",
-		"opengl32.lib"
+		"jx",
+		"opengl32.lib",
 	}
 
 	filter "system:windows"
@@ -114,8 +122,8 @@ project "Phoenix Editor"
 	staticruntime "on"
 
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("bin/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin/intermediates/" .. outputdir .. "/%{prj.name}")
 
 
 	files{
@@ -127,6 +135,7 @@ project "Phoenix Editor"
 		"Phoenix",
 		"Phoenix/src",
 		-- "%{IncludeDirs.EnTT}",
+		"%{IncludeDirs.jx}",
 		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.Glad}",
 		"%{IncludeDirs.GLFW}",

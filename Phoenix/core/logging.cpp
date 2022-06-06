@@ -6,9 +6,9 @@
 namespace Phoenix::_logging{
 	std::string get_time(){
 		time_t current_time;
-		struct tm  local_time;
+		struct tm local_time;
 
-		time ( &current_time );
+		time( &current_time );
 		localtime_s(&local_time, &current_time);
 
 

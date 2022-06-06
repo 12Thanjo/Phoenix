@@ -5,114 +5,106 @@
 namespace Phoenix{
 
 	struct VertexBufferElement{
-		uint32_t type;
-		uint32_t count;
-		uint32_t size;
+		unsigned int type;
+		unsigned int count;
+		unsigned int size;
 	};
 
 	class VertexBuffer{
 		private:
-			RendererID renderer_id;
-			std::vector<VertexBufferElement> layout;
-			uint32_t stride = 0;
+			glID _id;
+			std::vector<VertexBufferElement> _layout;
+			unsigned int _stride = 0;
 	
 		public:
-			VertexBuffer(float* verticies, uint32_t size);
-			VertexBuffer(uint32_t size);
+			VertexBuffer(float* verticies, unsigned int size);
 			~VertexBuffer();
 
 			void bind();
 			void unbind();
 
-			void set_data(const void* data, uint32_t size);
 
-
-			inline uint32_t get_stride() { return stride; }
-			inline std::vector<VertexBufferElement> get_layout() const { return layout; }
+			inline unsigned int getStride() const { return _stride; }
+			inline std::vector<VertexBufferElement> getLayout() const { return _layout; }
 
 
 			///////////////////
 			// with count
 			template<typename T>
-			void push(uint32_t count){
+			void layout(unsigned int count){
 				static_assert(sizeof(T) == 0, "vertex buffer layout type not supported");
 			};
 
 			template<>
-			void push<float>(uint32_t count){
+			void layout<float>(unsigned int count){
 				PH_ASSERT(count < 5, "Largest size for floats in a vertex buffer layout is 4");
 
-				uint32_t elem_size = sizeof(float) * count;
+				unsigned int elem_size = sizeof(float) * count;
 
-				layout.push_back( {GL_FLOAT, count, elem_size} );
-				stride += elem_size;
+				_layout.push_back( {GL_FLOAT, count, elem_size} );
+				_stride += elem_size;
 			};
 
 			template<>
-			void push<int>(uint32_t count){
+			void layout<int>(unsigned int count){
 				PH_ASSERT(count < 5, "Largest size for ints in a vertex buffer layout is 4");
 
-				uint32_t elem_size = sizeof(int) * count;
+				unsigned int elem_size = sizeof(int) * count;
 
-				layout.push_back( {GL_INT, count, elem_size} );
-				stride += elem_size;
+				_layout.push_back( {GL_INT, count, elem_size} );
+				_stride += elem_size;
 			};
 
 			// without count
 			template<typename T>
-			void push(){
+			void layout(){
 				static_assert(sizeof(T) == 0, "vertex buffer layout type not supported");
 			};
 
 			template<>
-			void push<glm::mat3>(){
-				uint32_t elem_size = sizeof(float) * 4 * 3;
+			void layout<glm::mat3>(){
+				unsigned int elem_size = sizeof(float) * 4 * 3;
 
-				layout.push_back( {GL_INT, 3 * 4, elem_size} );
-				stride += elem_size;	
+				_layout.push_back( {GL_INT, 3 * 4, elem_size} );
+				_stride += elem_size;	
 			};
 
 			template<>
-			void push<glm::mat4>(){
-				uint32_t elem_size = sizeof(float) * 4 * 4;
+			void layout<glm::mat4>(){
+				unsigned int elem_size = sizeof(float) * 4 * 4;
 
-				layout.push_back( {GL_INT, 4 * 4, elem_size} );
-				stride += elem_size;	
+				_layout.push_back( {GL_INT, 4 * 4, elem_size} );
+				_stride += elem_size;	
 			};
 
 
 			template<>
-			void push<bool>(){
-				layout.push_back( {GL_INT, 1, 1} );
-				stride += 1;	
+			void layout<bool>(){
+				_layout.push_back( {GL_INT, 1, 1} );
+				_stride += 1;	
 			};
-
+			
 	};
+
 
 
 	class IndexBuffer{
 		private:
-			RendererID renderer_id;
+			glID _id;
 	
 		public:
-			IndexBuffer(Ref<uint32_t> indicies, uint32_t count);
+			IndexBuffer(unsigned int* indicies, unsigned int size);
 			~IndexBuffer();
 
 			void bind();
 			void unbind();
+			
 	};
-
-
-
-
-	////////////////////////////////////////////////////////////////////////////////////////////
 
 
 	class VertexArray{
 		private:
-			RendererID renderer_id;
-			// std::vector<Ref<VertexBuffer>> vertex_buffers;
-			// Ref<IndexBuffer> index_buffer;
+			glID _id;
 	
 		public:
 			VertexArray();
@@ -121,8 +113,9 @@ namespace Phoenix{
 			void bind();
 			void unbind();
 
-			void add_vertex_buffer(const Ref<VertexBuffer>& vertex_buffer);
-			void set_index_buffer(const Ref<IndexBuffer>& index_buffer);
+
+			void addVertexBuffer(VertexBuffer& vertex_buffer);
+
 	};
 	
 }

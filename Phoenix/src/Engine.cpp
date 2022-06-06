@@ -1,85 +1,143 @@
 #include "ph_pch.h"
 #include "Engine.h"
 
+#include "rendering/FrameBuffer.h"
+#include "rendering/Renderer2D.h"
+#include "render objects/cameras.h"
+#include "ECS/components.h"
 
-#define PERF_START(name) Timer _timer_##name
-#define PERF_END(name) performanceMetrics.name = _timer_##name.stop()
 
 namespace Phoenix{
-
-	Engine::Engine(const WindowProperties& props){
-		window = CreateScope<Window>(props);
-		renderer = CreateRef<Renderer>(props.width, props.height);
-
-
-		window->set_event_callback(BIND_FUNCTION(event_callback));
+	
+	Engine::Engine(){
+		_environment = new Environment();
+		_asset_manager = new AssetManager();
+		_renderer_2d = new Renderer2D(_asset_manager);
 	}
+
+	// Engine::Engine(EngineConfig config)
+	// 	: _config(config) {
+
+	// }
+
+
+	Engine::~Engine(){
+		for(std::map<winID, Window*>::iterator itr = _windows.begin(); itr != _windows.end(); itr++){
+	       delete itr->second;
+	   	}
+
+	   	glfwTerminate();
+
+	   	free(_renderer_2d);
+	   	free(_environment);
+	   	free(_asset_manager);
+	};
+
+
 
 	void Engine::run(){
 		create();
-
-		PH_INFO("Begining Render Loop");
-
-		update();
-		while(running){
-			PERF_START(engineFrame);
-				PERF_START(renderLoop);
-					window->clear();
-
-					PERF_START(draw);
-						renderer->begin_scene();
-						renderer->render();
-
-						PERF_START(ECS);
-							environment.update(renderer);
-						PERF_END(ECS);
-						
-						renderer->end_scene();
-
-						window->update();
-					PERF_END(draw);
+		_renderer_2d->init();
+		PH_INFO("Created Engine");
 
 
-					PERF_START(update);
-						update();
-					PERF_END(update);
+		glEnable(GL_BLEND);
+		glDepthFunc(GL_LEQUAL);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		// glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-				PERF_END(renderLoop);
+		while(_running){
+			for(std::map<winID, Window*>::iterator itr = _windows.begin(); itr != _windows.end(); itr++){
+				Window* window = itr->second;
 
-				update_perf_metrics();
+				window->bind();
 
-			PERF_END(engineFrame);
+				_environment->update();
+				
+				glEnable(GL_DEPTH_TEST);
+				glClearColor(PH_COOL_GRAY_900);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+				render3D();
+				if(_camera){
+					_environment->render(_renderer_2d, _camera.getComponent<Component::Camera>().camera);
+				}
+				render2D();
+
+				window->render();
+				window->pollEvents();
+		   	}
 		};
 	}
 
 
 
-	void Engine::event_callback(Event& e){
-		EventType type = e.getType();
-		if(type == PH_WINDOW_CLOSE_EVENT){
-			running = false;
+	winID Engine::createWindow(WindowConfig config){
+		winID id = _window_id;
+		_window_id += 1;
+
+		if(id == 0){
+			_windows[id] = new Window(id, config, nullptr);
+		}else{
+			_windows[id] = new Window(id, config, _windows[0]->getWindowContext());
 		}
 
-		InputManager::onEvent(e);
+		return id;
 	}
 
 
-	void Engine::update_perf_metrics(){
-		performanceMetrics.drawCalls = renderer->performanceMetrics.draw_calls;
-		performanceMetrics.verticies = renderer->performanceMetrics.verticies;
-		performanceMetrics.indicies = renderer->performanceMetrics.indicies;
+	bool Engine::bindWindow(winID id){
+		if(_windows[id]){
+			_windows[id]->bind();
+			return true;
+		}
 
-		performanceMetrics.drawCalls2D = renderer->performanceMetrics.draw_calls_2d;
-		performanceMetrics.quads = renderer->performanceMetrics.quads;
-		performanceMetrics.verticies2D = renderer->performanceMetrics.verticies_2d;
-		performanceMetrics.indicies2D = renderer->performanceMetrics.indicies_2d;
+		return false;
+	}
 
-		performanceMetrics.entities = environment.performanceMetrics.entities;
+
+
+	// void Engine::window_stuffs(winID id){
+	// 	PH_ASSERT(_bound_window, "No window is bound");
+	// }
+
+
+	void Engine::exit(){
+		_running = false;
+	}
+
+
+	bool Engine::keyDown(winID id, keyCode key){
+		return _windows[id]->keyDown(key);
+	}
+
+	bool Engine::mouseButtonDown(winID id, keyCode button){
+		return _windows[id]->mouseButtonDown(button);
+	}
+
+
+	//////////////////////////////////////////////////////////////////////
+	// entities
+	Entity Engine::createEntity(const std::string& name){
+		return _environment->createEntity(name);
+	}
+
+
+	//////////////////////////////////////////////////////////////////////
+	// rendering
+	void Engine::copyFrameBuffer(FrameBuffer* a, FrameBuffer* b){
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, a->getID());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, b->getID());
+		glBlitFramebuffer(0, 0, a->getWidth(), a->getHeight(), 0, 0, b->getWidth(), b->getHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 	
+
+
+	void Engine::setCamera(Entity camera){
+		if(_camera){
+			_camera.getComponent<Component::Camera>().primary = false;
+		}
+		_camera = camera;
+		_camera.getComponent<Component::Camera>().primary = true;
+	}
 }
-
-
-
-#undef PERF_START
-#undef PERF_END
