@@ -12,7 +12,7 @@ namespace Phoenix{
 	
 	void imgui_begin(std::string id, std::string name);
 
-	void imgui_line();
+	void imgui_separator();
 
 	void imgui_spacer();
 	void imgui_spacer(float y);

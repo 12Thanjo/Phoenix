@@ -30,7 +30,7 @@ namespace Phoenix{
 
 
 	Entity Environment::createEntity(const std::string& name){
-		// performanceMetrics.entities += 1;
+		performanceMetrics.entities += 1;
 
 		Entity entity = {_registry.create(), this};
 		entity.addComponent<Component::Name>(name);
@@ -39,10 +39,29 @@ namespace Phoenix{
 		return entity;
 	}
 
+	Entity Environment::createEntity(const std::string& name, const UUID& uuid){
+		performanceMetrics.entities += 1;
+
+		Entity entity = {_registry.create(), this};
+		entity.addComponent<Component::Name>(name);
+		entity.addComponent<Component::UUID>(uuid);
+		
+		return entity;
+	}
+
 	void Environment::destroyEntity(Entity entity){
 		_registry.destroy(entity);
-		// performanceMetrics.entities -= 1;
+		performanceMetrics.entities -= 1;
 	}
+
+
+	void Environment::clear(){
+		_registry.each([&](entt::entity entt_entity){
+			_registry.destroy(entt_entity);
+			performanceMetrics.entities -= 1;
+		});
+	}
+
 
 
 	void Environment::update(){

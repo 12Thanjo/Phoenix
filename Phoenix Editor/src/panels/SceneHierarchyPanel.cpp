@@ -77,7 +77,7 @@ namespace Phoenix{
 				_selection_context = {};
 			}
 
-			editor->getEnvironment()->destroyEntity(entity);
+			editor->destroyEntity(entity);
 		}
 	}
 
@@ -189,7 +189,7 @@ namespace Phoenix{
 
 
 		imgui_spacer();
-		imgui_line();
+		imgui_separator();
 		imgui_spacer();
 
 
@@ -232,7 +232,7 @@ namespace Phoenix{
 			component.camera.setProjection(glm::radians(fov), component.camera.getAspectRatio(), near, far);
 
 			imgui_spacer(5.0f);
-			imgui_line();
+			imgui_separator();
 			imgui_spacer();
 
 

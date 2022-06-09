@@ -7,6 +7,12 @@
 #include "ECS/components.h"
 
 
+
+#define PERF_START(name) Timer _timer_##name
+#define PERF_END(name) performanceMetrics.name = (float)_timer_##name.stop()
+#define PERF_END_WIN(name) performanceMetrics.windows[id].name = (float)_timer_##name.stop()
+
+
 namespace Phoenix{
 	
 	Engine::Engine(){
@@ -47,26 +53,49 @@ namespace Phoenix{
 		// glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 		while(_running){
-			for(std::map<winID, Window*>::iterator itr = _windows.begin(); itr != _windows.end(); itr++){
-				Window* window = itr->second;
+			PERF_START(engineLoop);
+				for(std::map<winID, Window*>::iterator itr = _windows.begin(); itr != _windows.end(); itr++){
+					Window* window = itr->second;
+					winID id = window->getID();
 
-				window->bind();
 
-				_environment->update();
-				
-				glEnable(GL_DEPTH_TEST);
-				glClearColor(PH_COOL_GRAY_900);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					PERF_START(renderLoop);
+						window->bind();
 
-				render3D();
-				if(_camera){
-					_environment->render(_renderer_2d, _camera.getComponent<Component::Camera>().camera);
-				}
-				render2D();
+						PERF_START(updateECS);
+							_environment->update();
+						PERF_END_WIN(updateECS);
+						
+						PERF_START(draw);
+							glEnable(GL_DEPTH_TEST);
+							glClearColor(PH_COOL_GRAY_900);
+							glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-				window->render();
-				window->pollEvents();
-		   	}
+							PERF_START(render3D);
+								render3D();
+							PERF_END_WIN(render3D);
+							PERF_START(draw2D);
+								PERF_START(renderECS);
+									if(_camera){
+										_environment->render(_renderer_2d, _camera.getComponent<Component::Camera>().camera);
+									}
+								PERF_END_WIN(renderECS);
+							PERF_END_WIN(draw2D);
+							PERF_START(render2D);
+								render2D();
+							PERF_END_WIN(render2D);
+
+							window->render();
+						PERF_END_WIN(draw);
+					PERF_END_WIN(renderLoop);
+
+					set_perf_metrics();
+					set_perf_metrics(id);
+					clear_perf_metrics();
+
+					window->pollEvents();
+			   	}
+		   	PERF_END(engineLoop);
 		};
 	}
 
@@ -81,6 +110,8 @@ namespace Phoenix{
 		}else{
 			_windows[id] = new Window(id, config, _windows[0]->getWindowContext());
 		}
+
+		performanceMetrics.windows[id] = WindowPerformanceMetrics();
 
 		return id;
 	}
@@ -122,6 +153,10 @@ namespace Phoenix{
 		return _environment->createEntity(name);
 	}
 
+	Entity Engine::createEntity(const std::string& name, const UUID& uuid){
+		return _environment->createEntity(name, uuid);
+	}
+
 
 	//////////////////////////////////////////////////////////////////////
 	// rendering
@@ -140,4 +175,33 @@ namespace Phoenix{
 		_camera = camera;
 		_camera.getComponent<Component::Camera>().primary = true;
 	}
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// perf metrics
+
+	// clears perf metrics held by renderers etc.
+	void Engine::clear_perf_metrics(){
+		_renderer_2d->resetPerfMetrics();
+	}
+
+	void Engine::set_perf_metrics(winID id){
+		WindowPerformanceMetrics& win_perf_metrics = performanceMetrics.windows[id];
+
+
+		win_perf_metrics.drawCalls2D = _renderer_2d->performanceMetrics.drawCalls;
+		win_perf_metrics.verticies2D = _renderer_2d->performanceMetrics.verticies;
+		win_perf_metrics.indicies2D = _renderer_2d->performanceMetrics.indicies;
+	}
+
+	void Engine::set_perf_metrics(){
+		performanceMetrics.entites = _environment->performanceMetrics.entities;
+	}
+
 }
+
+
+#undef PERF_START
+#undef PERF_START_WIN
+#undef PERF_END

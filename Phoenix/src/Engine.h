@@ -16,6 +16,35 @@ namespace Phoenix{
 		// std::string name = "Phoenix Engine";
 	// };
 
+	struct WindowPerformanceMetrics{
+		float renderLoop = 0;
+		float draw = 0;
+
+		float draw3D = 0;
+		float render3D = 0;
+		unsigned int drawCalls3D = 0;
+		unsigned int verticies3D = 0;
+		unsigned int indicies3D = 0;
+
+		float draw2D = 0;
+		float render2D = 0;
+		unsigned int drawCalls2D = 0;
+		unsigned int verticies2D = 0;
+		unsigned int indicies2D = 0;
+		
+		float updateECS = 0;
+		float renderECS = 0;
+	};
+
+	struct EnginePerformanceMetrics{
+		float engineLoop = 0;
+
+		std::unordered_map<winID, WindowPerformanceMetrics> windows;
+
+		unsigned int entites = 0;
+	};
+
+	
 
 	class Engine{
 		public:
@@ -23,19 +52,17 @@ namespace Phoenix{
 			// Engine(EngineConfig config);
 			~Engine();
 
+			void run();
+			void exit();
 
 			virtual void create(){};
 			virtual void render3D(){};
 			virtual void render2D(){};
-			void run();
-			
 
-			winID createWindow(WindowConfig config);
-			bool bindWindow(winID id);
-
-			void exit();
 
 			// window data
+			winID createWindow(WindowConfig config);
+			bool bindWindow(winID id);
 			bool keyDown(winID id, keyCode keycode);
 			bool mouseButtonDown(winID id, keyCode button);
 			inline int windowWidth(winID id) { return _windows[id]->getWidth(); }
@@ -46,8 +73,12 @@ namespace Phoenix{
 
 
 			// ECS
-			Entity createEntity(const std::string& name = "Entity");
 			inline Environment* getEnvironment() const { return _environment; }
+			inline void clearEnvironment(){ _environment->clear(); };
+			Entity createEntity(const std::string& name = "Entity");
+			Entity createEntity(const std::string& name, const UUID& uuid);
+			inline void destroyEntity(Entity& entity){ _environment->destroyEntity(entity); };
+
 			inline void	serialize(const std::string& filepath) const { _environment->serialize(filepath); }
 			inline void	deserialize(const std::string& filepath) const { _environment->deserialize(filepath); }
 
@@ -70,7 +101,8 @@ namespace Phoenix{
 			inline UUID loadShader(std::string filepath){ return _asset_manager->loadShader(filepath); };
 			inline void bindShader(UUID& uuid){ _asset_manager->bindShader(uuid); };
 
-
+		public:
+			EnginePerformanceMetrics performanceMetrics;
 
 
 		private:
@@ -85,6 +117,11 @@ namespace Phoenix{
 			AssetManager* _asset_manager;
 
 			Entity _camera{};
+
+		private:
+			void clear_perf_metrics();
+			void set_perf_metrics(winID id);
+			void set_perf_metrics();
 	};
 
 

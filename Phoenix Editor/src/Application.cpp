@@ -35,7 +35,24 @@ namespace Phoenix{
 						case PH_WINDOW_CLOSE_EVENT:
 							exit();
 							break;
-						case PH_MOUSE_DOWN_EVENT:
+						case PH_KEY_DOWN_EVENT:
+							bool ctrl_down = keyDown(id, PH_KEY_LEFT_CONTROL) || keyDown(id, PH_KEY_RIGHT_CONTROL);
+							bool shift_down = keyDown(id, PH_KEY_LEFT_SHIFT) || keyDown(id, PH_KEY_RIGHT_SHIFT);
+
+							switch(static_cast<KeyDownEvent&>(e).getKeycode()){
+								case PH_KEY_O:
+									if(ctrl_down){
+										_renderer_ImGui.open(id);
+									}
+									break;
+								case PH_KEY_S:
+									if(ctrl_down && shift_down){
+										_renderer_ImGui.save_as(id);
+									}else if(ctrl_down){
+										_renderer_ImGui.save();
+									}
+									break;
+							};
 							break;
 					}
 				};
@@ -68,22 +85,22 @@ namespace Phoenix{
 
 				///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				Entity box = createEntity("box");
-				box.addComponent<Component::Transform>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 1.0f));
-				box.addComponent<Component::SpriteRenderer>(glm::vec4(0.0f, 0.75f, 1.0f, 0.4f));
+				// Entity box = createEntity("box");
+				// box.addComponent<Component::Transform>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 1.0f));
+				// box.addComponent<Component::SpriteRenderer>(glm::vec4(0.0f, 0.75f, 1.0f, 0.4f));
 
 
-				Entity camera = createEntity("Camera");
-				camera.addComponent<Component::Transform>();
-				camera.addComponent<Component::Camera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
-				setCamera(camera);
+				// Entity camera = createEntity("Camera");
+				// camera.addComponent<Component::Transform>();
+				// camera.addComponent<Component::Camera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+				// setCamera(camera);
 
 
 				// UUID color_shader = loadShader("./assets/shaders/color.shader");
 				// bindShader(color_shader);
 
-				serialize("C:/Users/andrew/OneDrive/programming/Phoenix Projects/test");
-				deserialize("C:/Users/andrew/OneDrive/programming/Phoenix Projects/test");
+				// serialize("C:/Users/andrew/OneDrive/programming/Phoenix Projects/test");
+				// deserialize("C:/Users/andrew/OneDrive/programming/Phoenix Projects/test");
 			}
 
 
@@ -100,7 +117,7 @@ namespace Phoenix{
 				
 
 				_renderer_ImGui.begin();
-				_renderer_ImGui.render(_output_buffer);
+				_renderer_ImGui.render(_output_buffer, _window);
 				_renderer_ImGui.end();
 			}
 			

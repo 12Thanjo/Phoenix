@@ -50,6 +50,18 @@ namespace Phoenix{
 		va.bind();
 		glDrawElements(GL_TRIANGLES, sizeof(indicies), GL_UNSIGNED_INT, 0);
 		va.unbind();
+
+
+		performanceMetrics.drawCalls += 1;
+		performanceMetrics.verticies += 4;
+		performanceMetrics.indicies  += 6;
+	}
+
+
+	void Renderer2D::resetPerfMetrics(){
+		performanceMetrics.drawCalls = 0;
+		performanceMetrics.verticies = 0;
+		performanceMetrics.indicies  = 0;
 	}
 
 }

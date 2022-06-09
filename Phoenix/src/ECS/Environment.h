@@ -9,6 +9,12 @@ namespace Phoenix{
 	class Entity;
 	class Renderer2D;
 	class Camera;
+	class UUID;
+
+
+	struct EnvironmentPerformanceMetrics{
+		unsigned int entities = 0;
+	};
 	
 	
 	class Environment{
@@ -17,7 +23,9 @@ namespace Phoenix{
 			~Environment();
 			
 			Entity createEntity(const std::string& name = "Entity");
+			Entity createEntity(const std::string& name, const UUID& uuid);
 			void destroyEntity(Entity entity);
+			void clear();
 
 
 			void update();
@@ -37,6 +45,10 @@ namespace Phoenix{
 
 			void serialize(const std::string& filepath);
 			void deserialize(const std::string& filepath);
+		
+
+		public:
+			EnvironmentPerformanceMetrics performanceMetrics;
 
 		private:
 			entt::registry _registry;

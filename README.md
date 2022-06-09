@@ -1,6 +1,6 @@
 # Phoenix Engine
 ![Phoenix Logo](logo.png)
-Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine allong with a custom editor (also built upon Phoenix). At this time, Phoenix only officially supports Windows, but other platforms should work as well.
+Phoeninx Engine is realtime 2D/3D application creation platform written in c++ and uses OpenGL. Phoenix is an embeded engine along with a custom editor (also built upon Phoenix). At this time, Phoenix only supports Windows.
 
 
 
@@ -18,7 +18,7 @@ Download Phoenix engine from [Github](https://github.com/12Thanjo/Phoenix).
 ### Building:
 Phoenix has premake scripts. The default is uses Visual Studio 2022, but this can be changed. In `GENERATE_PROJECTS.bat`, you can change the default `vs2022` with any of the options found [here](https://premake.github.io/docs/Using-Premake).
 
-Run `GENERATE_PROJECTS.bat` and your own build workflow. In the default example, the script will create the Visual Studio 2022 solution.
+Run `GENERATE_PROJECTS.bat` with your own build workflow (discussed above). In the default example, the script will create the Visual Studio 2022 solution.
 
 
 

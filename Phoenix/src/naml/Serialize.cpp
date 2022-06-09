@@ -37,11 +37,11 @@ namespace Phoenix{
 	
 	void NAML_S::keyValue(std::string key, std::string value){
 		begin();
-		_text << "-" << key << ": \"" << value << "\"";
+		_text << "-" << key << ": " << value;
 	}
 	void NAML_S::keyValue(std::string key, const char* value){
 		begin();
-		_text << "-" << key << ": \"" << value << "\"";
+		_text << "-" << key << ": " << value;
 	}
 
 	/////////////////////////////////////////////////////////
@@ -76,10 +76,10 @@ namespace Phoenix{
 	}
 
 	void NAML_S::addToList(std::string value){
-		add_to_list("\"" + value + "\"");
+		add_to_list(value);
 	}
 	void NAML_S::addToList(const char* value){
-		add_to_list("\"" + std::string(value) + "\"");
+		add_to_list(std::string(value));
 	}
 	void NAML_S::addToList(float value){
 		add_to_list(std::to_string(value));

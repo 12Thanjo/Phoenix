@@ -93,7 +93,7 @@ namespace Phoenix{
 
 	///////////////////////////////////////////////////////////////////////////////
 
-	void RendererImGui::render(FrameBuffer* render_buffer){
+	void RendererImGui::render(FrameBuffer* render_buffer, const winID& win_id){
 		static bool dockspaceOpen = true;
 		if(dockspaceOpen){
 			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -141,9 +141,21 @@ namespace Phoenix{
 
 			if(ImGui::BeginMenuBar()){
 			    if(ImGui::BeginMenu("File")){
-			        if(ImGui::MenuItem("Exit")){ _editor->exit(); }
-			        ImGui::MenuItem("Item 1");
-			        ImGui::MenuItem("Item 2");
+			    	if(ImGui::MenuItem("New", "Ctrl+N")){
+			    		PH_FATAL("This is an unsupported feature");
+			    		PH_TRACE();
+			    	}else if(ImGui::MenuItem("Open", "Ctrl+O")){
+			    		open(win_id);
+			    	}else if(ImGui::MenuItem("Save", "Ctrl+S")){
+			    		save();
+			    	}else if(ImGui::MenuItem("Save As", "Ctrl+Shift+S")){
+			    		save_as(win_id);
+			    	}
+			    	imgui_separator();
+
+			    	if(ImGui::MenuItem("Exit")){
+			        	_editor->exit();
+			        }
 
 			        ImGui::EndMenu();
 			    }
@@ -180,6 +192,44 @@ namespace Phoenix{
 			// performance metrics
 			imgui_begin("1", "Performance");
 				ImGui::Text("General:");
+				ImGui::Indent();
+					ImGui::Text("FPS:        %.1f", 1 / (_editor->performanceMetrics.engineLoop / 1000000));
+					ImGui::Text("Frame Time: %.3f ms", _editor->performanceMetrics.engineLoop / 1000);
+					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.windows[win_id].renderLoop / 1000);
+					ImGui::Text("Draw:       %.3f ms", _editor->performanceMetrics.windows[win_id].draw / 1000);
+				ImGui::Unindent();
+
+				imgui_separator();
+
+				ImGui::Text("3D Rendering:");
+				ImGui::Indent();
+					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.windows[win_id].render3D / 1000);
+					ImGui::Text("Draw:       %.3f ms", _editor->performanceMetrics.windows[win_id].draw3D / 1000);
+					ImGui::Text("Draw Calls: %d", _editor->performanceMetrics.windows[win_id].drawCalls3D);
+					ImGui::Text("Verticies:  %d", _editor->performanceMetrics.windows[win_id].verticies3D);
+					ImGui::Text("Indicies:   %d", _editor->performanceMetrics.windows[win_id].indicies3D);
+				ImGui::Unindent();
+
+				imgui_separator();
+
+				ImGui::Text("2D Rendering:");
+				ImGui::Indent();
+					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.windows[win_id].render2D / 1000);
+					ImGui::Text("Draw:       %.3f ms", _editor->performanceMetrics.windows[win_id].draw2D / 1000);
+					ImGui::Text("Draw Calls: %d", _editor->performanceMetrics.windows[win_id].drawCalls2D);
+					ImGui::Text("Verticies:  %d", _editor->performanceMetrics.windows[win_id].verticies2D);
+					ImGui::Text("Indicies:   %d", _editor->performanceMetrics.windows[win_id].indicies2D);
+				ImGui::Unindent();
+
+				imgui_separator();
+
+				ImGui::Text("ECS:");
+				ImGui::Indent();
+					ImGui::Text("Entites:    %d", _editor->performanceMetrics.entites);
+					ImGui::Text("Update:     %.3f ms", _editor->performanceMetrics.windows[win_id].updateECS / 1000);
+					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.windows[win_id].renderECS / 1000);
+				ImGui::Unindent();
+
 			ImGui::End();
 
 
@@ -230,6 +280,49 @@ namespace Phoenix{
 		colors[ImGuiCol_TitleBg]            = ImVec4{ PH_GRAY_800 };
 		colors[ImGuiCol_TitleBgActive]      = ImVec4{ PH_GRAY_700 };
 		colors[ImGuiCol_TitleBgCollapsed]   = ImVec4{ PH_GRAY_600 };
+	}
+
+
+
+
+	void RendererImGui::open(winID win_id){
+		std::string filepath = FileDialogs::open(*_editor->getWindow(win_id), "Phoenix Scene (*.phoenix)\0*.phoenix\0");
+
+		if(!filepath.empty()){
+			_editor->clearEnvironment();
+
+			_editor->deserialize(filepath);
+			_open_file = filepath;
+
+			// set primary camera
+			_editor->getEnvironment()->each<Component::Camera>([&](Entity entity, auto& component){
+				if(component.primary){
+					_editor->setCamera(entity);
+				}
+			});
+
+			PH_LOG("Opened Scene: " << _open_file);
+		}
+	}
+
+	void RendererImGui::save(){
+		if(!_open_file.empty()){
+			_editor->serialize(_open_file);
+
+
+			PH_LOG("Saved Scene: " << _open_file);
+		}else{
+			PH_LOG("Attempted to save non open file");
+		}
+	}
+
+	void RendererImGui::save_as(winID win_id){
+		std::string filepath = FileDialogs::save(*_editor->getWindow(win_id), "Phoenix Scene (*.phoenix)\0*.phoenix\0");
+
+		if(!filepath.empty()){
+			_open_file = filepath;
+			save();
+		}
 	}
 
 }

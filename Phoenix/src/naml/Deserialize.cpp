@@ -70,29 +70,35 @@ namespace Phoenix{
 	///////////////////////////////////////////////////////
 	// Nodes
 
-	Node::~Node(){
+	NAML_Node::~NAML_Node(){
 		for(auto& node : _nodes){
 			delete node.second;
 		}
 	};
 
 
-	void Node::add(std::string key, Node* node){
+	void NAML_Node::add(std::string key, NAML_Node* node){
 		_nodes[key] = node;
 	}
 
 
-	Node* Node::get(std::string key){
+	NAML_Node* NAML_Node::get(const std::string& key){
 		PH_ASSERT(_nodes.size() > 0, "Attempted to get an index of a NAML value");
+		PH_ASSERT(_nodes.contains(key), "Attempted to get non-existent NAML key (" << key << ")");
 		return _nodes[key];		
 	}
 
-
-	std::string Node::value(){
-		PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
-		return _value;
+	bool NAML_Node::has(const std::string& key){
+		return _nodes.contains(key);
 	}
 
+
+
+	void NAML_Node::forEach(std::function<void(std::string, NAML_Node*)> func){
+		for(auto& node : _nodes){
+			func(node.first, node.second);
+		}
+	}
 
 
 
@@ -100,13 +106,13 @@ namespace Phoenix{
 	// Deserializer
 
 	NAML_DE::NAML_DE(const std::string& string){
-		_head = new Node();
+		_head = new NAML_Node();
 
 
 
 		std::stringstream ss(string);
 
-		std::vector<Node*> stack{};
+		std::vector<NAML_Node*> stack{};
 		stack.push_back(_head);
 
 		std::string line;
@@ -133,17 +139,17 @@ namespace Phoenix{
 
 			switch(type){
 				case NodeType::Key:
-					stack[stack.size() - 1]->add(key, new Node(value));
+					stack[stack.size() - 1]->add(key, new NAML_Node(value));
 					break;
 				case NodeType::Group:
 					{
-						Node* node = new Node();
+						NAML_Node* node = new NAML_Node();
 						stack[stack.size() - 1]->add(key, node);
 						stack.push_back(node);
 					}
 					break;
 				case NodeType::List:
-					stack[stack.size() - 1]->add(key, new Node(value));
+					stack[stack.size() - 1]->add(key, new NAML_Node(value));
 					break;
 			};
 		}

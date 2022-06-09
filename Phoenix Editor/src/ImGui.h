@@ -8,12 +8,6 @@
 namespace Phoenix{
 
 	class RendererImGui{
-		private:
-			Engine* _editor;
-			glm::vec2 _viewport_size;
-
-			std::vector<Panel*> _panels;
-	
 		public:
 			RendererImGui(Engine* engine);
 			~RendererImGui();
@@ -22,11 +16,23 @@ namespace Phoenix{
 
 			void begin();
 			void end();
-			void render(FrameBuffer* render_buffer);
+			void render(FrameBuffer* render_buffer, const winID& win_id);
 
 
 			void set_dark_theme();
+
+			void open(winID win_id);
+			void save();
+			void save_as(winID win_id);
 			
+		private:
+			Engine* _editor;
+			glm::vec2 _viewport_size;
+
+			std::vector<Panel*> _panels;
+
+			std::string _open_file;
+	
 	};
 
 }

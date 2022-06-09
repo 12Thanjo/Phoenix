@@ -15,6 +15,9 @@
 #include "src/events/events.h"
 #include "src/rendering/buffers.h"
 
+// utils
+#include "src/utils/FileDialogs.h"
+
 // assets
 #include "src/assets/shaders.h"
 #include "src/assets/textures.h"

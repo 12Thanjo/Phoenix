@@ -5,21 +5,77 @@ namespace Phoenix{
 
 	
 
-	class Node{
+	class NAML_Node{
 		public:
-			Node() = default;
-			Node(std::string value) : _value(value) {};
-			~Node();
+			NAML_Node() = default;
+			NAML_Node(std::string value) : _value(value) {};
+			~NAML_Node();
 
 
-			void add(std::string key, Node* node);
+			void add(std::string key, NAML_Node* node);
 
-			Node* get(std::string key);
+			NAML_Node* get(const std::string& key);
+			bool has(const std::string& key);
 
-			std::string value();
+			void forEach(std::function<void(std::string, NAML_Node*)> func);
 
-		private:
-			std::unordered_map<std::string, Node*> _nodes;
+
+			//////////////////////////////////////////////////////////////////////
+			// value
+
+			template<typename T>
+			auto value(){
+				static_assert(sizeof(T) == 0, "BAD");
+			};
+
+			template<>
+			auto value<std::string>(){
+				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+				return _value;
+			};
+
+
+			template<>
+			auto value<float>(){
+				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+				return std::stof(_value);
+			}
+
+
+			template<>
+			auto value<glm::vec3>(){
+				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+				
+				std::vector<std::string> strings = stringDelimiter(_value, ", ");
+
+				return glm::vec3(std::stof(strings[0]), std::stof(strings[1]), std::stof(strings[2]));
+			};
+
+			template<>
+			auto value<glm::vec4>(){
+				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+				
+				std::vector<std::string> strings = stringDelimiter(_value, ", ");
+
+				return glm::vec4(std::stof(strings[0]), std::stof(strings[1]), std::stof(strings[2]), std::stof(strings[2]));
+			};
+
+
+			template<>
+			auto value<bool>(){
+				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+				
+				if(_value == "true"){
+					return true;
+				}else if(_value == "false"){
+					return false;
+				}else{
+					PH_ERROR("Attempted to make a non-boolean into a boolean");
+				};
+			};
+
+		protected:
+			std::unordered_map<std::string, NAML_Node*> _nodes;
 			std::string _value;
 	};
 
@@ -30,10 +86,10 @@ namespace Phoenix{
 			NAML_DE(const std::string& string);
 			~NAML_DE();
 
-			inline Node* get() const { return _head; }
+			inline NAML_Node* get() const { return _head; }
 	
 		private:
-			Node* _head;
+			NAML_Node* _head;
 			int _indentation;
 	};
 

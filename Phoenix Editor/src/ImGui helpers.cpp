@@ -9,7 +9,7 @@ namespace Phoenix{
 	}
 
 
-	void imgui_line(){
+	void imgui_separator(){
 		ImGui::Separator();
 	}
 

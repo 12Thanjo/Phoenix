@@ -75,7 +75,7 @@ namespace Phoenix{
 
 		// serializer.beginGroup("TEST");
 			// serializer.keyValue("foo", "bar");
-			serialize_vec3(serializer, "foo", glm::vec3(1.0f, 1.0f, 2.0f));
+			// serialize_vec3(serializer, "foo", glm::vec3(1.0f, 1.0f, 2.0f));
 		// serializer.endGroup();		
 
 
@@ -108,10 +108,40 @@ namespace Phoenix{
 		NAML_DE test{stream.str()};
 
 
-		PH_WARNING(
-			test.get()->get("Entities")->get("foo")->value()
-		);
+		test.get()->get("Entities")->forEach([&](std::string id, NAML_Node* node){
+			Entity entity = environment->createEntity( node->get("name")->value<std::string>(), {std::stoull(id)} );
 
+
+			if(node->has("Transform")){
+				NAML_Node* component = node->get("Transform");
+				entity.addComponent<Component::Transform>(
+					component->get("translation")->value<glm::vec3>(),
+					component->get("rotation")->value<glm::vec3>(),
+					component->get("scale")->value<glm::vec3>()
+				);
+			}
+
+			if(node->has("Camera")){
+				NAML_Node* component = node->get("Camera");
+				entity.addComponent<Component::Camera>(
+					component->get("fov")->value<float>(),
+					1.0f, //aspect ratio
+					component->get("near")->value<float>(),
+					component->get("far")->value<float>()
+				);
+
+				entity.getComponent<Component::Camera>().primary = component->get("primary")->value<bool>();
+			}
+
+			if(node->has("SpriteRenderer")){
+				entity.addComponent<Component::SpriteRenderer>(
+					node->get("SpriteRenderer")->value<glm::vec4>()
+				);
+			}			
+
+			// glm::vec3 position = node->get("Transform")->get("scale")->value<glm::vec3>();
+			// PH_LOG(position.x << ", " << position.y << ", " << position.z);
+		});
 	}
 
 }

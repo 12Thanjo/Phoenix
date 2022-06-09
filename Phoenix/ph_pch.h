@@ -30,7 +30,11 @@
 
 
 // core
-#include "core/logging.h"
-#include "core/types.h"
-#include "core/colors.h"
-#include "core/UUID.h"
+#include "src/core/logging.h"
+#include "src/core/types.h"
+#include "src/core/colors.h"
+#include "src/core/UUID.h"
+#include "src/core/timings.h"
+
+// utils
+#include "src/utils/strings.h"
