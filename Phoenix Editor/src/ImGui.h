@@ -21,6 +21,7 @@ namespace Phoenix{
 
 			void set_dark_theme();
 
+			void newScene();
 			void open(winID win_id);
 			void save();
 			void save_as(winID win_id);
@@ -32,7 +33,8 @@ namespace Phoenix{
 			std::vector<Panel*> _panels;
 
 			std::string _open_file;
-	
+
+			bool _just_opened = true;
 	};
 
 }

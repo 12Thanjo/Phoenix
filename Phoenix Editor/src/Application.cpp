@@ -22,7 +22,7 @@ namespace Phoenix{
 		public:
 			Editor() : _renderer_ImGui(dynamic_cast<Engine*>(this)) {};
 			~Editor(){
-				free(_output_buffer);
+				delete _output_buffer;
 			};
 
 
@@ -50,6 +50,11 @@ namespace Phoenix{
 										_renderer_ImGui.save_as(id);
 									}else if(ctrl_down){
 										_renderer_ImGui.save();
+									}
+									break;
+								case PH_KEY_N:
+									if(ctrl_down){
+										_renderer_ImGui.newScene();
 									}
 									break;
 							};
@@ -115,7 +120,6 @@ namespace Phoenix{
 				_output_buffer->unbind();
 
 				
-
 				_renderer_ImGui.begin();
 				_renderer_ImGui.render(_output_buffer, _window);
 				_renderer_ImGui.end();

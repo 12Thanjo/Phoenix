@@ -22,12 +22,12 @@ IncludeDirs["glm"] = "Phoenix/lib/glm"
 IncludeDirs["ImGui"] = "Phoenix/lib/ImGui"
 IncludeDirs["stb_image"] = "Phoenix/lib/stb_image"
 IncludeDirs["EnTT"] = "Phoenix/lib/EnTT"
-IncludeDirs["jx"] = "Phoenix/lib/jx"
+-- IncludeDirs["jx"] = "Phoenix/lib/jx"
 
 include "Phoenix/lib/GLFW"
 include "Phoenix/lib/Glad"
 include "Phoenix/lib/ImGui"
-include "Phoenix/lib/jx"
+-- include "Phoenix/lib/jx"
 
 project "Phoenix"
 	location "Phoenix"
@@ -76,7 +76,7 @@ project "Phoenix"
 		-- "%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.stb_image}",
 		"%{IncludeDirs.EnTT}",
-		"%{IncludeDirs.jx}",
+		-- "%{IncludeDirs.jx}",
 
 		"Phoenix/lib/Glad/inlcude/glad"
 	}
@@ -85,7 +85,7 @@ project "Phoenix"
 		"GLFW",
 		"Glad",
 		-- "ImGui",
-		"jx",
+		-- "jx",
 		"opengl32.lib",
 	}
 
@@ -135,7 +135,7 @@ project "Phoenix Editor"
 		"Phoenix",
 		"Phoenix/src",
 		-- "%{IncludeDirs.EnTT}",
-		"%{IncludeDirs.jx}",
+		-- "%{IncludeDirs.jx}",
 		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.Glad}",
 		"%{IncludeDirs.GLFW}",

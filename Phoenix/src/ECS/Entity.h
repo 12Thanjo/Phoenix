@@ -24,6 +24,11 @@ namespace Phoenix{
 				return _environment->_registry.emplace<T>(_id, std::forward<Args>(args)...);
 			}
 
+			template<typename T>
+			void addEmptyComponent(){
+				PH_ASSERT(!hasComponent<T>(), "attempted to add component to an Entity that already has it");
+				_environment->_registry.emplace<T>(_id);
+			}
 
 			template<typename T>
 			T& getComponent(){
@@ -42,7 +47,6 @@ namespace Phoenix{
 				PH_ASSERT(hasComponent<T>(), "attempted to remove a component from an Entity that doesn't have it");
 				_environment->_registry.remove<T>(_id);
 			}
-
 
 
 			operator bool() const { return (_id != entt::null) && (_environment->_valid_entity(_id)); };

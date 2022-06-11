@@ -14,13 +14,9 @@ namespace Phoenix{
 	};
 
 	class Renderer2D{
-		private:
-			UUID _quad_shader;
-			AssetManager* _asset_manager;
-	
 		public:
 			Renderer2D(AssetManager* asset_manager);
-			~Renderer2D();
+			~Renderer2D() = default;
 			
 			void init();
 
@@ -30,6 +26,11 @@ namespace Phoenix{
 
 		public:
 			Renderer2DPerformanceMetrics performanceMetrics;
+			
+		private:
+			UUID _quad_shader;
+			AssetManager* _asset_manager;
+	
 	};
 
 }

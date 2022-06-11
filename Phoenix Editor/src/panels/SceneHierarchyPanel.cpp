@@ -83,8 +83,6 @@ namespace Phoenix{
 
 
 
-	
-
 
 	template<typename T, typename UIFuncton>
 	static void draw_comonent(const std::string& name, Entity entity, UIFuncton ui_function){
@@ -139,6 +137,59 @@ namespace Phoenix{
 		}
 	}
 
+	template<typename T>
+	static void draw_empty_comonent(const std::string& name, Entity entity){
+		
+		if(entity.hasComponent<T>()){
+
+			const ImGuiTreeNodeFlags tree_node_flags = 
+				ImGuiTreeNodeFlags_DefaultOpen |
+				ImGuiTreeNodeFlags_Framed |
+				ImGuiTreeNodeFlags_SpanAvailWidth |
+				ImGuiTreeNodeFlags_FramePadding |
+				ImGuiTreeNodeFlags_AllowItemOverlap;
+
+			// ImGui::Separator();
+			// auto& component = entity.getComponent<T>();
+			ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
+				float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+				bool open = ImGui::TreeNodeEx(name.c_str(), tree_node_flags, name.c_str());
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(content_region_avail.x - (line_height * 0.5f) + 2);
+			if(ImGui::Button("=", ImVec2{line_height, line_height})){
+				ImGui::OpenPopup("ComponentSettings");
+			}
+
+			bool remove_component = false;
+			if(ImGui::BeginPopup("ComponentSettings")){
+				if(ImGui::MenuItem("Remove Component")){
+					remove_component = true;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			if(open){
+				// auto& color = entity.getComponent<T>().color;
+				// ImGui::ColorEdit4("Color", glm::value_ptr(color));
+
+				// ui_function(component);
+				
+				ImGui::TreePop();
+			}
+
+
+			if(remove_component){
+				entity.removeComponent<T>();
+			}
+
+			imgui_spacer(0.0f, 10.0f);
+		}
+	}
+
 
 
 
@@ -172,7 +223,11 @@ namespace Phoenix{
 			}else if(!_selection_context.hasComponent<Component::Camera>() && ImGui::MenuItem("Camera")){
 				_selection_context.addComponent<Component::Camera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
 				ImGui::CloseCurrentPopup();
+			}else if(!_selection_context.hasComponent<Component::Cube>() && ImGui::MenuItem("Cube")){
+				_selection_context.addEmptyComponent<Component::Cube>();
+				ImGui::CloseCurrentPopup();
 			}
+
 
 			ImGui::EndPopup();
 		}
@@ -212,6 +267,10 @@ namespace Phoenix{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 		});
 
+		draw_comonent<Component::Cube>("Cube", entity, [](auto& component){
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+		});
+
 		draw_comonent<Component::Camera>("Camera", entity, [&entity, editor](auto& component){
 			float fov = glm::degrees(component.camera.getFOV());
 			imgui_draw_float_control("FOV", fov, 65.0f, 40.0f, 0.5f);
@@ -227,9 +286,8 @@ namespace Phoenix{
 			imgui_draw_float_control("Far", far, 100.0f, 40.0f, 1.0f);
 
 
-
-
 			component.camera.setProjection(glm::radians(fov), component.camera.getAspectRatio(), near, far);
+
 
 			imgui_spacer(5.0f);
 			imgui_separator();

@@ -15,6 +15,12 @@
 	#define PH_JX_WARNING(x) if(Phoenix::_logging::level <= 2){ std::cout << Phoenix::_logging::color.yellow << Phoenix::_logging::get_time() << " <JX> " << x << Phoenix::_logging::style.reset << "\n"; }
 	#define PH_JX_ERROR(x) if(Phoenix::_logging::level <= 3){ std::cout << Phoenix::_logging::color.red << Phoenix::_logging::get_time() << " <JX> " << x << Phoenix::_logging::style.reset << "\n"; }
 	#define PH_JX_FATAL(x) std::cout << Phoenix::_logging::color.black << Phoenix::_logging::backgroundColor.red << Phoenix::_logging::get_time() << " <JX> " << x << Phoenix::_logging::style.reset << "\n";
+#else
+	#define PH_JX_LOG(x)
+	#define PH_JX_INFO(x)
+	#define PH_JX_WARNING(x)
+	#define PH_JX_ERROR(x)
+	#define PH_JX_FATAL(x)
 #endif
 
 #define flush_console(...)        \

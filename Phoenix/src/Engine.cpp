@@ -3,6 +3,7 @@
 
 #include "rendering/FrameBuffer.h"
 #include "rendering/Renderer2D.h"
+#include "rendering/Renderer3D.h"
 #include "render objects/cameras.h"
 #include "ECS/components.h"
 
@@ -19,6 +20,7 @@ namespace Phoenix{
 		_environment = new Environment();
 		_asset_manager = new AssetManager();
 		_renderer_2d = new Renderer2D(_asset_manager);
+		_renderer_3d = new Renderer3D(_asset_manager);
 	}
 
 	// Engine::Engine(EngineConfig config)
@@ -34,9 +36,10 @@ namespace Phoenix{
 
 	   	glfwTerminate();
 
-	   	free(_renderer_2d);
-	   	free(_environment);
-	   	free(_asset_manager);
+	   	delete _environment;
+	   	delete _renderer_2d;
+	   	delete _renderer_3d;
+	   	delete _asset_manager;
 	};
 
 
@@ -44,11 +47,12 @@ namespace Phoenix{
 	void Engine::run(){
 		create();
 		_renderer_2d->init();
+		_renderer_3d->init();
 		PH_INFO("Created Engine");
 
 
 		glEnable(GL_BLEND);
-		glDepthFunc(GL_LEQUAL);
+		// glDepthFunc(GL_LEQUAL);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		// glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -74,13 +78,18 @@ namespace Phoenix{
 							PERF_START(render3D);
 								render3D();
 							PERF_END_WIN(render3D);
-							PERF_START(draw2D);
-								PERF_START(renderECS);
-									if(_camera){
-										_environment->render(_renderer_2d, _camera.getComponent<Component::Camera>().camera);
-									}
-								PERF_END_WIN(renderECS);
-							PERF_END_WIN(draw2D);
+							PERF_START(renderECS);
+								if(_camera){
+									Camera& camera = _camera.getComponent<Component::Camera>().camera;
+
+									PERF_START(draw3D);
+										_environment->render3D(_renderer_3d, camera);
+									PERF_END_WIN(draw3D);
+									PERF_START(draw2D);
+										_environment->render2D(_renderer_2d, camera);
+									PERF_END_WIN(draw2D);
+								}
+							PERF_END_WIN(renderECS);
 							PERF_START(render2D);
 								render2D();
 							PERF_END_WIN(render2D);
@@ -184,6 +193,7 @@ namespace Phoenix{
 	// clears perf metrics held by renderers etc.
 	void Engine::clear_perf_metrics(){
 		_renderer_2d->resetPerfMetrics();
+		_renderer_3d->resetPerfMetrics();
 	}
 
 	void Engine::set_perf_metrics(winID id){
@@ -193,6 +203,10 @@ namespace Phoenix{
 		win_perf_metrics.drawCalls2D = _renderer_2d->performanceMetrics.drawCalls;
 		win_perf_metrics.verticies2D = _renderer_2d->performanceMetrics.verticies;
 		win_perf_metrics.indicies2D = _renderer_2d->performanceMetrics.indicies;
+
+		win_perf_metrics.drawCalls3D = _renderer_3d->performanceMetrics.drawCalls;
+		win_perf_metrics.verticies3D = _renderer_3d->performanceMetrics.verticies;
+		win_perf_metrics.indicies3D = _renderer_3d->performanceMetrics.indicies;
 	}
 
 	void Engine::set_perf_metrics(){

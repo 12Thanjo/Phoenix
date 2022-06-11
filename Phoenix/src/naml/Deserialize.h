@@ -57,7 +57,7 @@ namespace Phoenix{
 				
 				std::vector<std::string> strings = stringDelimiter(_value, ", ");
 
-				return glm::vec4(std::stof(strings[0]), std::stof(strings[1]), std::stof(strings[2]), std::stof(strings[2]));
+				return glm::vec4(std::stof(strings[0]), std::stof(strings[1]), std::stof(strings[2]), std::stof(strings[3]));
 			};
 
 
@@ -71,6 +71,7 @@ namespace Phoenix{
 					return false;
 				}else{
 					PH_ERROR("Attempted to make a non-boolean into a boolean");
+					return false;
 				};
 			};
 

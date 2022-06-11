@@ -10,6 +10,7 @@
 namespace Phoenix{
 	class FrameBuffer;
 	class Renderer2D;
+	class Renderer3D;
 	// class AssetManager;
 
 	// struct EngineConfig{
@@ -84,9 +85,9 @@ namespace Phoenix{
 
 
 			// rendering								
-			inline void clearColor(){ 		glClearColor(PH_COOL_GRAY_900); glClear(GL_COLOR_BUFFER_BIT); }
-			inline void clearDepth(){ 		glClearColor(PH_COOL_GRAY_900); glClear(GL_DEPTH_BUFFER_BIT); }
-			inline void clearColorDepth(){ 	glClearColor(PH_COOL_GRAY_900); glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
+			inline void clearColor(){ 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); glClear(GL_COLOR_BUFFER_BIT); }
+			inline void clearDepth(){ 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); glClear(GL_DEPTH_BUFFER_BIT); }
+			inline void clearColorDepth(){ 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 			inline void enableDepthTest(){	glEnable(GL_DEPTH_TEST);  }
 			inline void disableDepthTest(){	glDisable(GL_DEPTH_TEST); }
@@ -114,6 +115,7 @@ namespace Phoenix{
 
 			Environment* _environment;
 			Renderer2D* _renderer_2d;
+			Renderer3D* _renderer_3d;
 			AssetManager* _asset_manager;
 
 			Entity _camera{};

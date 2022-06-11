@@ -5,6 +5,16 @@
 
 // panels
 #include "panels/SceneHierarchyPanel.h"
+#include "panels/AssetBrowserPanel.h"
+
+
+// ImGui::SetCursor !!!!!!!!!!!!
+// ImGui::SetCursor !!!!!!!!!!!!
+// ImGui::SetCursor !!!!!!!!!!!!
+// ImGui::SetCursor !!!!!!!!!!!!
+// ImGui::SetCursor !!!!!!!!!!!!
+// ImGui::SetCursor !!!!!!!!!!!!
+// ImGui::SetCursor !!!!!!!!!!!!
 
 namespace Phoenix{
 	
@@ -41,6 +51,7 @@ namespace Phoenix{
 
 
 		_panels.push_back(static_cast<Panel*>(new SceneHierarchyPanel()));
+		_panels.push_back(static_cast<Panel*>(new AssetBrowserPanel()));
 
 
 		PH_INFO("ImGui Initialized");
@@ -171,14 +182,17 @@ namespace Phoenix{
 				imgui_begin("viewport", "Viewport");
 					// check if viewport resized
 					ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
-					if(content_region_avail.x != _viewport_size.x || content_region_avail.y != _viewport_size.y){
+					if(content_region_avail.x != _viewport_size.x || content_region_avail.y != _viewport_size.y || _just_opened){
 						_viewport_size = {content_region_avail.x, content_region_avail.y};
 						render_buffer->resize(content_region_avail.x, content_region_avail.y);
 						
-						_editor->getEnvironment()->each<Component::Camera>([&](Entity entity, Component::Camera component){
+						_editor->getEnvironment()->each<Component::Camera>([&](Entity entity, Component::Camera& component){
 							Camera& camera = component.camera;
 							camera.setProjection(camera.getFOV(), content_region_avail.x/content_region_avail.y, camera.getNear(), camera.getFar());
 						});
+
+
+						_just_opened = false;
 					}
 
 					// draw from frame buffer
@@ -238,6 +252,8 @@ namespace Phoenix{
 				panel->render(_editor);
 			}
 
+			// ImGui::ShowDemoWindow();
+
 
 			ImGui::End();
 		}
@@ -252,38 +268,42 @@ namespace Phoenix{
 
 	void RendererImGui::set_dark_theme(){
 		auto& colors = ImGui::GetStyle().Colors;
-		colors[ImGuiCol_WindowBg]           = ImVec4{ PH_GRAY_900 };
+		colors[ImGuiCol_WindowBg]           = ImVec4{ PH_TRUE_GRAY_900 }; /*PH_GRAY_900*/
 
 		// Headers
-		colors[ImGuiCol_Header]        		= ImVec4{ PH_CYAN_800 };
-		colors[ImGuiCol_HeaderHovered] 		= ImVec4{ PH_CYAN_700 };
-		colors[ImGuiCol_HeaderActive]  		= ImVec4{ PH_CYAN_900 };
+		colors[ImGuiCol_Header]        		= ImVec4{ PH_TRUE_GRAY_800 }; /*PH_CYAN_800*/
+		colors[ImGuiCol_HeaderHovered] 		= ImVec4{ PH_TRUE_GRAY_700 }; /*PH_CYAN_700*/
+		colors[ImGuiCol_HeaderActive]  		= ImVec4{ PH_TRUE_GRAY_800 }; /*PH_CYAN_900*/
 
 		// Buttons
-		colors[ImGuiCol_Button]             = ImVec4{ PH_CYAN_800 };
-		colors[ImGuiCol_ButtonHovered]      = ImVec4{ PH_CYAN_700 };
-		colors[ImGuiCol_ButtonActive]       = ImVec4{ PH_CYAN_900 };
+		colors[ImGuiCol_Button]             = ImVec4{ PH_TRUE_GRAY_800 }; /*PH_CYAN_800*/
+		colors[ImGuiCol_ButtonHovered]      = ImVec4{ PH_TRUE_GRAY_700 }; /*PH_CYAN_700*/
+		colors[ImGuiCol_ButtonActive]       = ImVec4{ PH_TRUE_GRAY_800 }; /*PH_CYAN_900*/
 
 		// Frame Bg
-		colors[ImGuiCol_FrameBg]            = ImVec4{ PH_GRAY_800 };
-		colors[ImGuiCol_FrameBgHovered]     = ImVec4{ PH_GRAY_700 };
-		colors[ImGuiCol_FrameBgActive]      = ImVec4{ PH_GRAY_600 };
+		colors[ImGuiCol_FrameBg]            = ImVec4{ PH_TRUE_GRAY_800 }; /*PH_GRAY_800*/
+		colors[ImGuiCol_FrameBgHovered]     = ImVec4{ PH_TRUE_GRAY_700 }; /*PH_GRAY_700*/
+		colors[ImGuiCol_FrameBgActive]      = ImVec4{ PH_TRUE_GRAY_800 }; /*PH_GRAY_600*/
 
 		// Tabs
-		colors[ImGuiCol_Tab] 				= ImVec4{ PH_CYAN_900 };
-		colors[ImGuiCol_TabHovered] 		= ImVec4{ PH_CYAN_600 };
-		colors[ImGuiCol_TabActive] 			= ImVec4{ PH_CYAN_700 };
-		colors[ImGuiCol_TabUnfocused]       = ImVec4{ PH_CYAN_900 };
-		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ PH_CYAN_900 };
+		colors[ImGuiCol_Tab] 				= ImVec4{ PH_SKY_900 }; /*PH_CYAN_900*/
+		colors[ImGuiCol_TabHovered] 		= ImVec4{ PH_SKY_600 }; /*PH_CYAN_600*/
+		colors[ImGuiCol_TabActive] 			= ImVec4{ PH_SKY_700 }; /*PH_CYAN_700*/
+		colors[ImGuiCol_TabUnfocused]       = ImVec4{ PH_SKY_900 }; /*PH_CYAN_900*/
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ PH_SKY_700 }; /*PH_CYAN_900*/
 
 		// Title Bg
-		colors[ImGuiCol_TitleBg]            = ImVec4{ PH_GRAY_800 };
-		colors[ImGuiCol_TitleBgActive]      = ImVec4{ PH_GRAY_700 };
-		colors[ImGuiCol_TitleBgCollapsed]   = ImVec4{ PH_GRAY_600 };
+		colors[ImGuiCol_TitleBg]            = ImVec4{ PH_TRUE_GRAY_800 }; /*PH_GRAY_800*/
+		colors[ImGuiCol_TitleBgActive]      = ImVec4{ PH_TRUE_GRAY_700 }; /*PH_GRAY_700*/
+		colors[ImGuiCol_TitleBgCollapsed]   = ImVec4{ PH_TRUE_GRAY_800 }; /*PH_GRAY_600*/
 	}
 
 
 
+	void RendererImGui::newScene(){
+		_editor->clearEnvironment();
+		_open_file = std::string();
+	}
 
 	void RendererImGui::open(winID win_id){
 		std::string filepath = FileDialogs::open(*_editor->getWindow(win_id), "Phoenix Scene (*.phoenix)\0*.phoenix\0");
@@ -300,6 +320,8 @@ namespace Phoenix{
 					_editor->setCamera(entity);
 				}
 			});
+
+			_just_opened = true;
 
 			PH_LOG("Opened Scene: " << _open_file);
 		}

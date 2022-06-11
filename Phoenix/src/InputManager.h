@@ -151,7 +151,7 @@ namespace Phoenix{
 	
 		public:
 			InputManager(Window* window);
-			~InputManager();
+			~InputManager() = default;
 
 			inline bool keyDown(int keycode){ return _keys_down[keycode]; }
 			inline bool mouseButtonDown(int button){ return _mouse_buttons_down[button]; };

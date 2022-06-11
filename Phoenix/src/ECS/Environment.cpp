@@ -6,6 +6,7 @@
 #include "Serializer.h"
 
 #include "../rendering/Renderer2D.h"
+#include "../rendering/Renderer3D.h"
 #include "../render objects/cameras.h"
 
 
@@ -22,7 +23,7 @@ namespace Phoenix{
 
 
 	Environment::~Environment(){
-		free(_serializer);
+		delete _serializer;
 	}
 
 
@@ -66,20 +67,20 @@ namespace Phoenix{
 
 	void Environment::update(){
 		_registry.view<Component::Transform>().each([&](entt::entity entity_id, auto& tc){
-				tc.transform = glm::translate(glm::mat4(1.0f), tc.translation);
+			tc.transform = glm::translate(glm::mat4(1.0f), tc.translation);
 
-				// tc.transform = glm::rotate(tc.transform, tc.rotation.x, {1, 0, 0});
-				// tc.transform = glm::rotate(tc.transform, tc.rotation.y, {0, 1, 0});
-				tc.transform = glm::rotate(tc.transform, tc.rotation.z, {0, 0, 1});
+			tc.transform = glm::rotate(tc.transform, tc.rotation.x, {1, 0, 0});
+			tc.transform = glm::rotate(tc.transform, tc.rotation.y, {0, 1, 0});
+			tc.transform = glm::rotate(tc.transform, tc.rotation.z, {0, 0, 1});
 
-				tc.transform = glm::scale(tc.transform, tc.scale);
+			tc.transform = glm::scale(tc.transform, tc.scale);
 		});
 
 
 
 		auto camera_group = _registry.group<Component::Camera>(entt::get<Component::Transform>);
-		for(auto entity : camera_group){
-			auto [camera, transform] = camera_group.get<Component::Camera, Component::Transform>(entity);
+		for(auto entt_entity : camera_group){
+			auto [camera, transform] = camera_group.get<Component::Camera, Component::Transform>(entt_entity);
 
 			camera.camera.setPosition(transform.translation);
 			camera.camera.setRotation(transform.rotation);
@@ -88,16 +89,28 @@ namespace Phoenix{
 
 	}
 
-	void Environment::render(Renderer2D* renderer_2d, Camera& camera){
-
-
-		auto sprite_group = _registry.group<Component::Transform>(entt::get<Component::SpriteRenderer>);
-		for(auto entity : sprite_group){
-			auto [transform, sprite] = sprite_group.get<Component::Transform, Component::SpriteRenderer>(entity);
+	void Environment::render2D(Renderer2D* renderer_2d, Camera& camera)
+	{
+		auto sprite_group = _registry.group<Component::SpriteRenderer>(entt::get<Component::Transform>);
+		for(auto entt_entity : sprite_group){
+			auto [transform, sprite] = sprite_group.get<Component::Transform, Component::SpriteRenderer>(entt_entity);
 			
 			renderer_2d->drawQuad(transform.transform, sprite.color, camera);
 		}
+		
 	}
+
+	void Environment::render3D(Renderer3D* renderer_3d, Camera& camera){
+
+		auto cube_group = _registry.group<Component::Cube>(entt::get<Component::Transform>);
+		for(auto entt_entity : cube_group){
+			auto [transform, cube] = cube_group.get<Component::Transform, Component::Cube>(entt_entity);
+			
+			renderer_3d->drawCube(transform.transform, cube.color, camera);
+		}
+
+	}
+
 
 
 	void Environment::forEach(std::function<void(Entity)> func){

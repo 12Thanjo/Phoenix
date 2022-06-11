@@ -15,6 +15,8 @@ namespace Phoenix{
 
 			void bind(unsigned int slot = 0);
 			void unbind();
+
+			inline glID getID() const { return _id; };
 			
 	};
 

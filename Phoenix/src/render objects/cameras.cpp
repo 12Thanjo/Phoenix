@@ -77,6 +77,8 @@ namespace Phoenix{
 		_near = near;
 		_far = far;
 
+		// PH_LOG("set projection");
+
 		calculate_view();
 		calculate_projection();
 	}

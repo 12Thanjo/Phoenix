@@ -1,5 +1,6 @@
 #pragma once
 
+#define ENTT_ENABLE_ETO
 #include <lib/EnTT/entt.hpp>
 #include "Serializer.h"
 
@@ -8,6 +9,7 @@ namespace Phoenix{
 
 	class Entity;
 	class Renderer2D;
+	class Renderer3D;
 	class Camera;
 	class UUID;
 
@@ -29,7 +31,8 @@ namespace Phoenix{
 
 
 			void update();
-			void render(Renderer2D* renderer_2d, Camera& camera);
+			void render2D(Renderer2D* renderer_2d, Camera& camera);
+			void render3D(Renderer3D* renderer_3d, Camera& camera);
 
 
 

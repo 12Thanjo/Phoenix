@@ -66,7 +66,12 @@ namespace Phoenix{
 						serializer.keyValue("far", component.camera.getFar());
 						serializer.keyValue("primary", component.primary);
 					serializer.endGroup();
-				}			
+				}
+
+				
+				if(entity.hasComponent<Component::Cube>()){
+					serialize_vec4(serializer, "Cube", entity.getComponent<Component::Cube>().color);
+				}
 
 
 				serializer.endGroup();
@@ -92,56 +97,67 @@ namespace Phoenix{
 
 
 	void Serializer::deserialize(Environment* environment, const std::string& filepath){
-		//////////////////////////////////////////////////////////
-		// load file
-		std::ifstream file(filepath);
-		std::stringstream stream;
+		try{
+			//////////////////////////////////////////////////////////
+			// load file
+			std::ifstream file(filepath);
+			std::stringstream stream;
 
-		std::string line;
-		while(getline(file, line)){
-			stream << line << "\n";
+			std::string line;
+			while(getline(file, line)){
+				stream << line << "\n";
+			};
+
+
+			//////////////////////////////////////////////////////////
+			// deserialize
+			NAML_DE test{stream.str()};
+
+
+			test.get()->get("Entities")->forEach([&](std::string id, NAML_Node* node){
+				Entity entity = environment->createEntity( node->get("name")->value<std::string>(), {std::stoull(id)} );
+
+
+				if(node->has("Transform")){
+					NAML_Node* component = node->get("Transform");
+					entity.addComponent<Component::Transform>(
+						component->get("translation")->value<glm::vec3>(),
+						component->get("rotation")->value<glm::vec3>(),
+						component->get("scale")->value<glm::vec3>()
+					);
+				}
+
+				if(node->has("Camera")){
+					NAML_Node* component = node->get("Camera");
+					entity.addComponent<Component::Camera>(
+						component->get("fov")->value<float>(),
+						1.0f, //aspect ratio
+						component->get("near")->value<float>(),
+						component->get("far")->value<float>()
+					);
+
+					entity.getComponent<Component::Camera>().primary = component->get("primary")->value<bool>();
+				}
+
+				if(node->has("SpriteRenderer")){
+					entity.addComponent<Component::SpriteRenderer>(
+						node->get("SpriteRenderer")->value<glm::vec4>()
+					);
+				}
+
+				if(node->has("Cube")){
+					entity.addComponent<Component::Cube>(
+						node->get("Cube")->value<glm::vec4>()
+					);
+				}	
+
+				// glm::vec3 position = node->get("Transform")->get("scale")->value<glm::vec3>();
+				// PH_LOG(position.x << ", " << position.y << ", " << position.z);
+			});
+		}catch(...){
+			PH_WARNING("Failed to deserialize (" << filepath << ")");
 		};
 
-
-		//////////////////////////////////////////////////////////
-		// deserialize
-		NAML_DE test{stream.str()};
-
-
-		test.get()->get("Entities")->forEach([&](std::string id, NAML_Node* node){
-			Entity entity = environment->createEntity( node->get("name")->value<std::string>(), {std::stoull(id)} );
-
-
-			if(node->has("Transform")){
-				NAML_Node* component = node->get("Transform");
-				entity.addComponent<Component::Transform>(
-					component->get("translation")->value<glm::vec3>(),
-					component->get("rotation")->value<glm::vec3>(),
-					component->get("scale")->value<glm::vec3>()
-				);
-			}
-
-			if(node->has("Camera")){
-				NAML_Node* component = node->get("Camera");
-				entity.addComponent<Component::Camera>(
-					component->get("fov")->value<float>(),
-					1.0f, //aspect ratio
-					component->get("near")->value<float>(),
-					component->get("far")->value<float>()
-				);
-
-				entity.getComponent<Component::Camera>().primary = component->get("primary")->value<bool>();
-			}
-
-			if(node->has("SpriteRenderer")){
-				entity.addComponent<Component::SpriteRenderer>(
-					node->get("SpriteRenderer")->value<glm::vec4>()
-				);
-			}			
-
-			// glm::vec3 position = node->get("Transform")->get("scale")->value<glm::vec3>();
-			// PH_LOG(position.x << ", " << position.y << ", " << position.z);
-		});
 	}
 
 }

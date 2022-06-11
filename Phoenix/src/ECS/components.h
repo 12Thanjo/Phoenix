@@ -24,9 +24,9 @@ namespace Phoenix::Component{
 
 
 	struct Transform{
-		glm::vec3 translation = {0.0f, 0.0f, 0.0f};
+		glm::vec3 translation = {0.0f, 0.0f, -1.0f};
 		glm::vec3 rotation = {0.0f, 0.0f, 0.0f};
-		glm::vec3 scale = {100.0f, 100.0f, 100.0f};
+		glm::vec3 scale = {1.0f, 1.0f, 1.0f};
 		glm::mat4 transform{1.0f};
 
 		Transform() = default;
@@ -57,5 +57,12 @@ namespace Phoenix::Component{
 	};
 
 
+	struct Cube{
+		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
 
+		Cube() = default;
+		Cube(const glm::vec4& _color)
+			: color(_color) {}
+	};
+	
 }

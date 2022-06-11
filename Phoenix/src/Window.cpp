@@ -86,7 +86,7 @@ namespace Phoenix{
 
 
 	Window::~Window(){
-		free(_config.input_manager);
+		delete _config.input_manager;
 		glfwDestroyWindow(_window);
 		PH_LOG("Destroyed Window (" << _config.name << ")");
 	}

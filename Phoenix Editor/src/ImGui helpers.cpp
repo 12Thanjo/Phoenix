@@ -116,7 +116,7 @@ namespace Phoenix{
 		ImGui::PopID();
 	}
 
-	void imgui_draw_float_control(const std::string& label, float value, float reset_value, float collumn_width, float iteration_size){
+	void imgui_draw_float_control(const std::string& label, float& value, float reset_value, float collumn_width, float iteration_size){
 		ImGui::PushID(label.c_str());
 
 			ImGui::Columns(2);
@@ -135,6 +135,13 @@ namespace Phoenix{
 			ImGui::Columns(1);
 
 		ImGui::PopID();
+	}
+
+
+
+
+	void imgui_image_button(glID id, float width, float height){
+		ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0});
 	}
 
 }
