@@ -134,11 +134,11 @@
 
 
 // Mouse codes
-#define PH_MOUSE_LEFT	 1
-#define PH_MOUSE_RIGHT	 2
-#define PH_MOUSE_MIDDLE	 3
-#define PH_MOUSE_FORWARD 4
-#define PH_MOUSE_BACK	 5
+#define PH_MOUSE_LEFT	 0
+#define PH_MOUSE_RIGHT	 1
+#define PH_MOUSE_MIDDLE	 2
+#define PH_MOUSE_FORWARD 3
+#define PH_MOUSE_BACK	 4
 
 
 namespace Phoenix{

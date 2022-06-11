@@ -211,7 +211,15 @@ namespace Phoenix{
 			ImGui::OpenPopup("AddComponent");
 		}
 
-		if(ImGui::BeginPopup("AddComponent")){
+		// if(){
+		// 	if(ImGui::MenuItem("Create Empty Entity")){
+		// 		editor->createEntity("Empty Entity");
+		// 	}
+
+		// 	ImGui::EndPopup();
+		// }
+
+		if(ImGui::BeginPopup("AddComponent") || ImGui::BeginPopupContextWindow(0, 1, false)){
 			int num_components = 2;
 
 			if(!_selection_context.hasComponent<Component::Transform>() && ImGui::MenuItem("Transform")){

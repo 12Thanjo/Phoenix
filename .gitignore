@@ -2,7 +2,6 @@
 bin/
 bin-int/
 
-*.ini
 *.user
 *.sublime-project
 *.sublime-workspace

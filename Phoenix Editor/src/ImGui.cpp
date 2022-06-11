@@ -8,14 +8,6 @@
 #include "panels/AssetBrowserPanel.h"
 
 
-// ImGui::SetCursor !!!!!!!!!!!!
-// ImGui::SetCursor !!!!!!!!!!!!
-// ImGui::SetCursor !!!!!!!!!!!!
-// ImGui::SetCursor !!!!!!!!!!!!
-// ImGui::SetCursor !!!!!!!!!!!!
-// ImGui::SetCursor !!!!!!!!!!!!
-// ImGui::SetCursor !!!!!!!!!!!!
-
 namespace Phoenix{
 	
 	RendererImGui::RendererImGui(Engine* engine)
