@@ -30,6 +30,10 @@ namespace Phoenix{
 			inline float getNear() const { return _near; }
 			inline float getFar() const { return _far; }
 
+
+			inline glm::vec3 getFront() const { return _front; };
+			inline glm::vec3 getUp() const { return _up; };
+
 		private:
 			glm::vec3 _front = {1.0f, 0.0f, 0.0f};
 			glm::vec3 _up = {0.0f, 1.0f, 0.0f};

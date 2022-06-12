@@ -1,0 +1,20 @@
+-Environment: !Untitled!
+>Entities:
+	>17679017544780604570:
+		-name: Box
+		>Transform:
+			~translation: 0.000000, 0.000000, 0.000000
+			~rotation: 0.000000, 0.000000, 0.000000
+			~scale: 0.500000, 0.500000, 0.500000
+		~SpriteRenderer: 1.000000, 1.000000, 1.000000, 1.000000
+	>7968319498286932675:
+		-name: Camera
+		>Transform:
+			~translation: 0.000000, 0.000000, 0.000000
+			~rotation: 0.000000, 0.000000, 0.000000
+			~scale: 100.000000, 100.000000, 100.000000
+		>Camera:
+			-fov: 1.134464
+			-near: 0.100000
+			-far: 100.000000
+			-primary: true

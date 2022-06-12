@@ -66,6 +66,8 @@ namespace Phoenix{
 			bool bindWindow(winID id);
 			bool keyDown(winID id, keyCode keycode);
 			bool mouseButtonDown(winID id, keyCode button);
+			float mouseX(winID id);
+			float mouseY(winID id);
 			inline int windowWidth(winID id) { return _windows[id]->getWidth(); }
 			inline int windowHeight(winID id) { return _windows[id]->getHeight(); }
 
@@ -118,6 +120,7 @@ namespace Phoenix{
 			Renderer3D* _renderer_3d;
 			AssetManager* _asset_manager;
 
+		protected:
 			Entity _camera{};
 
 		private:

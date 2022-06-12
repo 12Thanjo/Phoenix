@@ -51,6 +51,8 @@ namespace Phoenix{
 
 			inline bool keyDown(keyCode key) const { return _config.input_manager->keyDown(key); }
 			inline bool mouseButtonDown(keyCode key) const { return _config.input_manager->mouseButtonDown(key); }
+			inline float mouseX() const { return _config.input_manager->mouseX(); };
+			inline float mouseY() const { return _config.input_manager->mouseY(); };
 
 
 			// setting ////////////

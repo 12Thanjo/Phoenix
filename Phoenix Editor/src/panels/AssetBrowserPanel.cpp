@@ -47,40 +47,50 @@ namespace Phoenix{
 
 		ImGui::BeginChild("Scroll");
 
-			float padding = 5.0f;
-			float thumbnail_size = 100.0f;
-			float cell_size = thumbnail_size + padding;
+			static float padding = 7.0f;
+			static float thumbnail_size = 100.0f;
+			static float cell_size = thumbnail_size + (padding*2);
 
 
-			int collumn_number = (int)(ImGui::GetContentRegionAvail().x / cell_size);
-			ImGui::Columns(collumn_number, 0, false);
+			int column_number = (int)(ImGui::GetContentRegionAvail().x / cell_size);
+			if(column_number > 0){
+				imgui_columns(column_number);
 
-				for(auto& dir : std::filesystem::directory_iterator(_current_dir)){
-					const auto& dir_path = dir.path();
-					auto relative_path = std::filesystem::relative(dir_path, project_path);
-					std::string filename = relative_path.filename().string();
+					for(auto& dir : std::filesystem::directory_iterator(_current_dir)){
+
+						const auto& dir_path = dir.path();
+						auto relative_path = std::filesystem::relative(dir_path, project_path);
+						std::string filename = relative_path.filename().string();
+
+						ImGui::PushID(dir_path.string().c_str());
+
+							ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0,0,0,0});
+								if(dir.is_directory()){
+									imgui_image_button(_folder_icon->getID(), thumbnail_size, thumbnail_size);
+									if(ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left)){
+										_current_dir /= dir_path.filename();
+									}
+								}else{
+									imgui_image_button(_gray_file_icon->getID(), thumbnail_size, thumbnail_size);
+								}
+
+								if(ImGui::BeginDragDropSource()){
+									const wchar_t* item_path = dir_path.c_str();
+									ImGui::SetDragDropPayload("Asset Browser Item", item_path, (wcslen(item_path) + 1) * sizeof(wchar_t));
 
 
+									ImGui::EndDragDropSource();
+								}
 
-					if(dir.is_directory()){
-						imgui_image_button(_folder_icon->getID(), thumbnail_size, thumbnail_size);
-						// ImGui::Button("Directory", {thumbnail_size, thumbnail_size});
-						if(ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)){
-							_current_dir /= dir_path.filename();
-						}
-					}else{
-						// ImGui::Button("File", {thumbnail_size, thumbnail_size});
-						imgui_image_button(_gray_file_icon->getID(), thumbnail_size, thumbnail_size);
-						// if(ImGui::Button(filename.c_str())){
-							
-						// }
+							ImGui::PopStyleColor();
+
+							ImGui::TextWrapped(filename.c_str());
+							ImGui::NextColumn();
+						ImGui::PopID();
 					}
 
-					ImGui::TextWrapped(filename.c_str());
-					ImGui::NextColumn();
-				}
-
-			ImGui::Columns(1);
+				imgui_columns(1);
+			}
 
 		ImGui::EndChild();
 

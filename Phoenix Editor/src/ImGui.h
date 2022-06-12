@@ -23,6 +23,7 @@ namespace Phoenix{
 
 			void newScene();
 			void open(winID win_id);
+			void open(std::string filepath);
 			void save();
 			void save_as(winID win_id);
 			

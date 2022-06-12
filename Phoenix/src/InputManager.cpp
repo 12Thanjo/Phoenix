@@ -116,6 +116,9 @@ namespace Phoenix{
 		glfwSetCursorPosCallback(window->getWindowContext(), [](GLFWwindow* window_context, double x, double y){
 			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
 
+			data.input_manager->_mouse_x = (float)x;
+			data.input_manager->_mouse_y = (float)y;
+
 			MouseMoveEvent e((float)x, (float)y);
 			data.eventCallback(e, data.id);
 		});

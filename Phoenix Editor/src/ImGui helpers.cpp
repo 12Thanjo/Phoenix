@@ -29,6 +29,9 @@ namespace Phoenix{
 
 
 
+	void imgui_columns(int columns){
+		ImGui::Columns(columns, 0, false);
+	}
 
 
 
@@ -40,7 +43,7 @@ namespace Phoenix{
 
 		ImGui::PushID(label.c_str());
 
-			ImGui::Columns(2);
+			ImGui::Columns(2, 0, false);
 
 			ImGui::SetColumnWidth(0, collumn_width);
 			ImGui::Text(label.c_str());
@@ -111,7 +114,7 @@ namespace Phoenix{
 
 			ImGui::PopStyleVar();
 
-			ImGui::Columns(1);
+			imgui_columns(1);
 
 		ImGui::PopID();
 	}
@@ -119,7 +122,7 @@ namespace Phoenix{
 	void imgui_draw_float_control(const std::string& label, float& value, float reset_value, float collumn_width, float iteration_size){
 		ImGui::PushID(label.c_str());
 
-			ImGui::Columns(2);
+			imgui_columns(2);
 
 			ImGui::SetColumnWidth(0, collumn_width);
 			ImGui::Text(label.c_str());
@@ -132,7 +135,7 @@ namespace Phoenix{
 			ImGui::SameLine();
 
 
-			ImGui::Columns(1);
+			imgui_columns(1);
 
 		ImGui::PopID();
 	}

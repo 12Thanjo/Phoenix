@@ -144,11 +144,7 @@
 namespace Phoenix{
 	class Window;
 
-	class InputManager{
-		private:
-			bool _keys_down[120];
-			bool _mouse_buttons_down[5];
-	
+	class InputManager{	
 		public:
 			InputManager(Window* window);
 			~InputManager() = default;
@@ -156,6 +152,14 @@ namespace Phoenix{
 			inline bool keyDown(int keycode){ return _keys_down[keycode]; }
 			inline bool mouseButtonDown(int button){ return _mouse_buttons_down[button]; };
 
+			inline float mouseX() const { return _mouse_x; };
+			inline float mouseY() const { return _mouse_y; };
+
+		private:
+			bool _keys_down[120];
+			bool _mouse_buttons_down[5];
+			float _mouse_x = 0;
+			float _mouse_y = 0;
 
 		friend Window;
 	};

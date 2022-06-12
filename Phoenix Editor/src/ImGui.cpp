@@ -190,6 +190,25 @@ namespace Phoenix{
 					// draw from frame buffer
 					uint32_t texture_id = render_buffer->getColorAttachment(0);
 					ImGui::Image((void*)texture_id, ImVec2{content_region_avail.x, content_region_avail.y}, ImVec2{0,1}, ImVec2{1,0});
+
+					if(ImGui::BeginDragDropTarget()){
+						if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset Browser Item")){
+							const wchar_t* path = (const wchar_t*)payload->Data;
+							
+
+							std::filesystem::path filesystem_path(path);
+							if(filesystem_path.extension() == ".phoenix"){
+								std::string path_string = filesystem_path.string();
+								open(path_string);
+							}else{
+								PH_WARNING("Attempted to drag & load a non-scene");
+							}
+
+						}
+
+						ImGui::EndDragDropTarget();
+					}
+
 				ImGui::End();
 			ImGui::PopStyleVar();
 
@@ -301,23 +320,31 @@ namespace Phoenix{
 		std::string filepath = FileDialogs::open(*_editor->getWindow(win_id), "Phoenix Scene (*.phoenix)\0*.phoenix\0");
 
 		if(!filepath.empty()){
-			_editor->clearEnvironment();
-
-			_editor->deserialize(filepath);
-			_open_file = filepath;
-
-			// set primary camera
-			_editor->getEnvironment()->each<Component::Camera>([&](Entity entity, auto& component){
-				if(component.primary){
-					_editor->setCamera(entity);
-				}
-			});
-
-			_just_opened = true;
-
-			PH_LOG("Opened Scene: " << _open_file);
+			open(filepath);
 		}
 	}
+
+	void RendererImGui::open(std::string filepath){
+		_editor->clearEnvironment();
+
+		_editor->deserialize(filepath);
+		_open_file = filepath;
+
+		// set primary camera
+		_editor->getEnvironment()->each<Component::Camera>([&](Entity entity, auto& component){
+			if(component.primary){
+				_editor->setCamera(entity);
+
+				glm::vec3& translation = entity.getComponent<Component::Transform>().translation;
+
+			}
+		});
+
+		_just_opened = true;
+
+		PH_LOG("Opened Scene: " << _open_file);
+	}
+
 
 	void RendererImGui::save(){
 		if(!_open_file.empty()){

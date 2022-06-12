@@ -53,8 +53,8 @@ namespace Phoenix{
 
 		glEnable(GL_BLEND);
 		// glDepthFunc(GL_LEQUAL);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		// glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+		// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 		while(_running){
 			PERF_START(engineLoop);
@@ -153,6 +153,13 @@ namespace Phoenix{
 
 	bool Engine::mouseButtonDown(winID id, keyCode button){
 		return _windows[id]->mouseButtonDown(button);
+	}
+
+	float Engine::mouseX(winID id){
+		return _windows[id]->mouseX();
+	}
+	float Engine::mouseY(winID id){
+		return _windows[id]->mouseY();
 	}
 
 
