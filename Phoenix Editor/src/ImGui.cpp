@@ -20,6 +20,7 @@ namespace Phoenix{
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigFlags |= ImGuiDockNodeFlags_NoWindowMenuButton;
 
 
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-Medium.ttf", 12.0f);
@@ -100,6 +101,7 @@ namespace Phoenix{
 		static bool dockspaceOpen = true;
 		if(dockspaceOpen){
 			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+			dockspace_flags |= ImGuiDockNodeFlags_NoWindowMenuButton; //get rid of window menu button
 
 			// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 			// because it would be confusing to have two docking targets within each others.

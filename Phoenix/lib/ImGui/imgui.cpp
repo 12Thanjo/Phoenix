@@ -15137,9 +15137,8 @@ static ImGuiID ImGui::DockNodeUpdateWindowMenu(ImGuiDockNode* node, ImGuiTabBar*
         node->IsFocused = true;
         if (tab_bar->Tabs.Size == 1)
         {
-            // if (MenuItem("Hide tab bar", NULL, node->IsHiddenTabBar()))
-            //     node->WantHiddenTabBarToggle = true;
-            MenuItem("imgui.cpp, line 15142");
+            if (MenuItem("Hide tab bar", NULL, node->IsHiddenTabBar()))
+                node->WantHiddenTabBarToggle = true;
         }
         else
         {
