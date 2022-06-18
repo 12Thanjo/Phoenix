@@ -11,16 +11,16 @@
 
 #define PERF_START(name) Timer _timer_##name
 #define PERF_END(name) performanceMetrics.name = (float)_timer_##name.stop()
-#define PERF_END_WIN(name) performanceMetrics.windows[id].name = (float)_timer_##name.stop()
 
 
 namespace Phoenix{
 	
 	Engine::Engine(){
-		_environment = new Environment();
+		_scene = new Scene();
 		_asset_manager = new AssetManager();
 		_renderer_2d = new Renderer2D(_asset_manager);
 		_renderer_3d = new Renderer3D(_asset_manager);
+		// _window = new Window();
 	}
 
 	// Engine::Engine(EngineConfig config)
@@ -30,13 +30,11 @@ namespace Phoenix{
 
 
 	Engine::~Engine(){
-		for(std::map<winID, Window*>::iterator itr = _windows.begin(); itr != _windows.end(); itr++){
-	       delete itr->second;
-	   	}
+	   	delete _window;
 
 	   	glfwTerminate();
 
-	   	delete _environment;
+	   	delete _scene;
 	   	delete _renderer_2d;
 	   	delete _renderer_3d;
 	   	delete _asset_manager;
@@ -58,88 +56,64 @@ namespace Phoenix{
 
 		while(_running){
 			PERF_START(engineLoop);
-				for(std::map<winID, Window*>::iterator itr = _windows.begin(); itr != _windows.end(); itr++){
-					Window* window = itr->second;
-					winID id = window->getID();
+				PERF_START(renderLoop);
+					_window->bind();
 
+					PERF_START(updateECS);
+						_scene->update();
+					PERF_END(updateECS);
+					
+					PERF_START(draw);
+						glEnable(GL_DEPTH_TEST);
+						glClearColor(PH_COOL_GRAY_900);
+						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-					PERF_START(renderLoop);
-						window->bind();
+						PERF_START(render3D);
+							render3D();
+						PERF_END(render3D);
+						PERF_START(renderECS);
 
-						PERF_START(updateECS);
-							_environment->update();
-						PERF_END_WIN(updateECS);
-						
-						PERF_START(draw);
-							glEnable(GL_DEPTH_TEST);
-							glClearColor(PH_COOL_GRAY_900);
-							glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+							Camera* camera;
+							if(_camera){
+								if(_camera.hasComponent<PerspectiveCamera>()){
+									camera = &_camera.getComponent<Component::PerspectiveCamera>().camera;
+								}else{
+									camera = &_camera.getComponent<Component::OrbitalCamera>().camera;	
+								};
+							}else{
+								camera = &_scene->camera;	
+							}
 
-							PERF_START(render3D);
-								render3D();
-							PERF_END_WIN(render3D);
-							PERF_START(renderECS);
-								if(_camera){
-									Camera& camera = _camera.getComponent<Component::Camera>().camera;
+							PERF_START(draw3D);
+								_scene->render3D(_renderer_3d, *camera);
+							PERF_END(draw3D);
+							PERF_START(draw2D);
+								_scene->render2D(_renderer_2d, *camera);
+							PERF_END(draw2D);
 
-									PERF_START(draw3D);
-										_environment->render3D(_renderer_3d, camera);
-									PERF_END_WIN(draw3D);
-									PERF_START(draw2D);
-										_environment->render2D(_renderer_2d, camera);
-									PERF_END_WIN(draw2D);
-								}
-							PERF_END_WIN(renderECS);
-							PERF_START(render2D);
-								render2D();
-							PERF_END_WIN(render2D);
+						PERF_END(renderECS);
+						PERF_START(render2D);
+							render2D();
+						PERF_END(render2D);
 
-							window->render();
-						PERF_END_WIN(draw);
-					PERF_END_WIN(renderLoop);
+						_window->render();
+					PERF_END(draw);
+				PERF_END(renderLoop);
 
-					set_perf_metrics();
-					set_perf_metrics(id);
-					clear_perf_metrics();
+				set_perf_metrics();
 
-					window->pollEvents();
-			   	}
+				clear_perf_metrics();
+
+				_window->pollEvents();
 		   	PERF_END(engineLoop);
 		};
 	}
 
 
 
-	winID Engine::createWindow(WindowConfig config){
-		winID id = _window_id;
-		_window_id += 1;
-
-		if(id == 0){
-			_windows[id] = new Window(id, config, nullptr);
-		}else{
-			_windows[id] = new Window(id, config, _windows[0]->getWindowContext());
-		}
-
-		performanceMetrics.windows[id] = WindowPerformanceMetrics();
-
-		return id;
+	void Engine::createWindow(WindowConfig config){
+		_window = new Window(config);
 	}
-
-
-	bool Engine::bindWindow(winID id){
-		if(_windows[id]){
-			_windows[id]->bind();
-			return true;
-		}
-
-		return false;
-	}
-
-
-
-	// void Engine::window_stuffs(winID id){
-	// 	PH_ASSERT(_bound_window, "No window is bound");
-	// }
 
 
 	void Engine::exit(){
@@ -147,30 +121,30 @@ namespace Phoenix{
 	}
 
 
-	bool Engine::keyDown(winID id, keyCode key){
-		return _windows[id]->keyDown(key);
+	bool Engine::keyDown(keyCode key){
+		return _window->keyDown(key);
 	}
 
-	bool Engine::mouseButtonDown(winID id, keyCode button){
-		return _windows[id]->mouseButtonDown(button);
+	bool Engine::mouseButtonDown(keyCode button){
+		return _window->mouseButtonDown(button);
 	}
 
-	float Engine::mouseX(winID id){
-		return _windows[id]->mouseX();
+	float Engine::mouseX(){
+		return _window->mouseX();
 	}
-	float Engine::mouseY(winID id){
-		return _windows[id]->mouseY();
+	float Engine::mouseY(){
+		return _window->mouseY();
 	}
 
 
 	//////////////////////////////////////////////////////////////////////
 	// entities
 	Entity Engine::createEntity(const std::string& name){
-		return _environment->createEntity(name);
+		return _scene->createEntity(name);
 	}
 
 	Entity Engine::createEntity(const std::string& name, const UUID& uuid){
-		return _environment->createEntity(name, uuid);
+		return _scene->createEntity(name, uuid);
 	}
 
 
@@ -185,11 +159,7 @@ namespace Phoenix{
 
 
 	void Engine::setCamera(Entity camera){
-		if(_camera){
-			_camera.getComponent<Component::Camera>().primary = false;
-		}
 		_camera = camera;
-		_camera.getComponent<Component::Camera>().primary = true;
 	}
 
 
@@ -203,21 +173,18 @@ namespace Phoenix{
 		_renderer_3d->resetPerfMetrics();
 	}
 
-	void Engine::set_perf_metrics(winID id){
-		WindowPerformanceMetrics& win_perf_metrics = performanceMetrics.windows[id];
-
-
-		win_perf_metrics.drawCalls2D = _renderer_2d->performanceMetrics.drawCalls;
-		win_perf_metrics.verticies2D = _renderer_2d->performanceMetrics.verticies;
-		win_perf_metrics.indicies2D = _renderer_2d->performanceMetrics.indicies;
-
-		win_perf_metrics.drawCalls3D = _renderer_3d->performanceMetrics.drawCalls;
-		win_perf_metrics.verticies3D = _renderer_3d->performanceMetrics.verticies;
-		win_perf_metrics.indicies3D = _renderer_3d->performanceMetrics.indicies;
-	}
 
 	void Engine::set_perf_metrics(){
-		performanceMetrics.entites = _environment->performanceMetrics.entities;
+		performanceMetrics.entites = _scene->performanceMetrics.entities;
+
+
+		performanceMetrics.drawCalls2D = _renderer_2d->performanceMetrics.drawCalls;
+		performanceMetrics.verticies2D = _renderer_2d->performanceMetrics.verticies;
+		performanceMetrics.indicies2D = _renderer_2d->performanceMetrics.indicies;
+
+		performanceMetrics.drawCalls3D = _renderer_3d->performanceMetrics.drawCalls;
+		performanceMetrics.verticies3D = _renderer_3d->performanceMetrics.verticies;
+		performanceMetrics.indicies3D = _renderer_3d->performanceMetrics.indicies;
 	}
 
 }

@@ -3,7 +3,7 @@
 #define ENTT_ENABLE_ETO
 #include <lib/EnTT/entt.hpp>
 #include "Serializer.h"
-
+#include "src/render objects/cameras.h"
 
 namespace Phoenix{
 
@@ -14,15 +14,23 @@ namespace Phoenix{
 	class UUID;
 
 
-	struct EnvironmentPerformanceMetrics{
+	struct ScenePerformanceMetrics{
 		unsigned int entities = 0;
 	};
 	
 	
-	class Environment{
+	class Scene{
 		public:
-			Environment();
-			~Environment();
+			ScenePerformanceMetrics performanceMetrics;
+			std::string name;
+			UUID uuid;
+			OrbitalCamera camera{};
+
+
+		public:
+			Scene(const std::string& scene_name = "Unnamed");
+			Scene(const std::string& scene_name, const UUID& id);
+			~Scene();
 			
 			Entity createEntity(const std::string& name = "Entity");
 			Entity createEntity(const std::string& name, const UUID& uuid);
@@ -48,14 +56,12 @@ namespace Phoenix{
 
 			void serialize(const std::string& filepath);
 			void deserialize(const std::string& filepath);
-		
 
-		public:
-			EnvironmentPerformanceMetrics performanceMetrics;
 
 		private:
 			entt::registry _registry;
 			Serializer* _serializer;
+			
 
 		private:
 			inline bool _valid_entity(entt::entity entt_entity){ return _registry.valid(entt_entity); }

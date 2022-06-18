@@ -2,7 +2,7 @@
 #include "AssetManager.h"
 
 #include "shaders.h"
-
+#include "src/utils/Files.h"
 
 namespace Phoenix{
 
@@ -45,5 +45,5 @@ namespace Phoenix{
 	void AssetManager::uploadFloat3 (UUID& id, const std::string& name, const glm::vec3& values){ _shaders[id]->uploadFloat3(name, values); }; 
 	void AssetManager::uploadFloat4 (UUID& id, const std::string& name, const glm::vec4& values){ _shaders[id]->uploadFloat4(name, values); }; 
 	void AssetManager::uploadMat4   (UUID& id, const std::string& name, const glm::mat4& matrix){ _shaders[id]->uploadMat4(name, matrix);   }; 
-	void AssetManager::uploadInt    (UUID& id, const std::string& name, const int& value){ 		  _shaders[id]->uploadInt(name, value);     }; 	
+	void AssetManager::uploadInt    (UUID& id, const std::string& name, const int& value){ 		  _shaders[id]->uploadInt(name, value);     };
 }

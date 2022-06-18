@@ -9,8 +9,10 @@ namespace Phoenix{
 	}
 
 
-	void imgui_separator(){
+	void imgui_separator(float top_spacer){
+		ImGui::Dummy(ImVec2(0.0f, top_spacer));
 		ImGui::Separator();
+		ImGui::Dummy(ImVec2(0.0f, 0.0f));
 	}
 
 
@@ -145,6 +147,36 @@ namespace Phoenix{
 
 	void imgui_image_button(glID id, float width, float height){
 		ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0});
+	}
+
+
+
+
+
+	void imgui_draw_collapsable_menu(const std::string& label, std::function<void()> ui_function){
+		const ImGuiTreeNodeFlags tree_node_flags = 
+			ImGuiTreeNodeFlags_DefaultOpen |
+			ImGuiTreeNodeFlags_Framed |
+			ImGuiTreeNodeFlags_SpanAvailWidth |
+			ImGuiTreeNodeFlags_FramePadding |
+			ImGuiTreeNodeFlags_AllowItemOverlap;
+
+		// ImGui::Separator();
+		// auto& component = entity.getComponent<T>();
+		// ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
+			float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			bool open = ImGui::TreeNodeEx(label.c_str(), tree_node_flags, label.c_str());
+		ImGui::PopStyleVar();
+
+		if(open){
+			ui_function();
+			
+			ImGui::TreePop();
+		}
+
+		imgui_spacer(0.0f, 10.0f);
 	}
 
 }

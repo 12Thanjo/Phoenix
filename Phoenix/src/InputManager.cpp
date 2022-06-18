@@ -60,7 +60,7 @@ namespace Phoenix{
 
 			// PH_LOG("Close");
 
-			data.eventCallback(e, data.id);
+			data.eventCallback(e);
 		});
 
 		// resize
@@ -73,7 +73,7 @@ namespace Phoenix{
 			WindowResizeEvent e(width, height);
 
 			// PH_LOG("resize");
-			data.eventCallback(e, data.id);
+			data.eventCallback(e);
 		});
 
 		// keyboard
@@ -85,11 +85,11 @@ namespace Phoenix{
 			if(action == GLFW_PRESS){
 				KeyDownEvent e(ph_key);
 				data.input_manager->_keys_down[ph_key] = true;
-				data.eventCallback(e, data.id);
+				data.eventCallback(e);
 			}else if(action == GLFW_RELEASE){
 				KeyUpEvent e(ph_key);
 				data.input_manager->_keys_down[ph_key] = false;
-				data.eventCallback(e, data.id);
+				data.eventCallback(e);
 			}
 
 		});
@@ -103,11 +103,11 @@ namespace Phoenix{
 			if(action == GLFW_PRESS){
 				MouseDownEvent e(button);
 				data.input_manager->_mouse_buttons_down[button] = true;
-				data.eventCallback(e, data.id);
+				data.eventCallback(e);
 			}else if(action == GLFW_RELEASE){
 				MouseUpEvent e(button);
 				data.input_manager->_mouse_buttons_down[button] = false;
-				data.eventCallback(e, data.id);
+				data.eventCallback(e);
 			}
 		});
 
@@ -120,7 +120,7 @@ namespace Phoenix{
 			data.input_manager->_mouse_y = (float)y;
 
 			MouseMoveEvent e((float)x, (float)y);
-			data.eventCallback(e, data.id);
+			data.eventCallback(e);
 		});
 
 
@@ -129,7 +129,7 @@ namespace Phoenix{
 			WindowConfig& data = *(WindowConfig*)glfwGetWindowUserPointer(window_context);
 
 			MouseScrollEvent e((float)x, (float)y);
-			data.eventCallback(e, data.id);
+			data.eventCallback(e);
 		});
 
 	}

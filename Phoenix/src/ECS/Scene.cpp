@@ -1,5 +1,5 @@
 #include "ph_pch.h"
-#include "Environment.h"
+#include "Scene.h"
 
 #include "components.h"
 #include "Entity.h"
@@ -13,24 +13,33 @@
 
 namespace Phoenix{
 
-	Environment::Environment(){
+	Scene::Scene(const std::string& scene_name)
+		: name(scene_name), uuid(){
+
 		_serializer = new Serializer();
 
+		PH_INFO("Initialized: ECS Scene (" << scene_name << ")");
+	}
 
-		PH_INFO("Initialized: ECS Environment");
+
+	Scene::Scene(const std::string& scene_name, const UUID& id)
+		: name(scene_name), uuid(id){
+
+		_serializer = new Serializer();
+
+		PH_INFO("Initialized: ECS Scene (" << scene_name << ")");
 	}
 
 
 
-	Environment::~Environment(){
+	Scene::~Scene(){
 		delete _serializer;
 	}
 
 
 
 
-
-	Entity Environment::createEntity(const std::string& name){
+	Entity Scene::createEntity(const std::string& name){
 		performanceMetrics.entities += 1;
 
 		Entity entity = {_registry.create(), this};
@@ -40,7 +49,7 @@ namespace Phoenix{
 		return entity;
 	}
 
-	Entity Environment::createEntity(const std::string& name, const UUID& uuid){
+	Entity Scene::createEntity(const std::string& name, const UUID& uuid){
 		performanceMetrics.entities += 1;
 
 		Entity entity = {_registry.create(), this};
@@ -50,13 +59,13 @@ namespace Phoenix{
 		return entity;
 	}
 
-	void Environment::destroyEntity(Entity entity){
+	void Scene::destroyEntity(Entity entity){
 		_registry.destroy(entity);
 		performanceMetrics.entities -= 1;
 	}
 
 
-	void Environment::clear(){
+	void Scene::clear(){
 		_registry.each([&](entt::entity entt_entity){
 			_registry.destroy(entt_entity);
 			performanceMetrics.entities -= 1;
@@ -65,9 +74,9 @@ namespace Phoenix{
 
 
 
-	void Environment::update(){
+	void Scene::update(){
 		_registry.view<Component::Transform>().each([&](entt::entity entity_id, auto& tc){
-			tc.transform = glm::translate(glm::mat4(1.0f), tc.translation);
+			tc.transform = glm::translate(glm::mat4(1.0f), tc.position);
 
 			tc.transform = glm::rotate(tc.transform, tc.rotation.x, {1, 0, 0});
 			tc.transform = glm::rotate(tc.transform, tc.rotation.y, {0, 1, 0});
@@ -78,18 +87,20 @@ namespace Phoenix{
 
 
 
-		auto camera_group = _registry.group<Component::Camera>(entt::get<Component::Transform>);
-		for(auto entt_entity : camera_group){
-			auto [camera, transform] = camera_group.get<Component::Camera, Component::Transform>(entt_entity);
 
-			camera.camera.setPosition(transform.translation);
-			camera.camera.setRotation(transform.rotation);
-				
+
+		auto perspective_camera_group = _registry.group<Component::PerspectiveCamera>(entt::get<Component::Transform>);
+		for(auto entt_entity : perspective_camera_group){
+			auto [camera, transform] = perspective_camera_group.get<Component::PerspectiveCamera, Component::Transform>(entt_entity);
+
+			camera.camera.setPosition(transform.position);
+			camera.camera.setRotation(transform.rotation);	
 		}
+
 
 	}
 
-	void Environment::render2D(Renderer2D* renderer_2d, Camera& camera)
+	void Scene::render2D(Renderer2D* renderer_2d, Camera& camera)
 	{
 		auto sprite_group = _registry.group<Component::SpriteRenderer>(entt::get<Component::Transform>);
 		for(auto entt_entity : sprite_group){
@@ -100,7 +111,7 @@ namespace Phoenix{
 		
 	}
 
-	void Environment::render3D(Renderer3D* renderer_3d, Camera& camera){
+	void Scene::render3D(Renderer3D* renderer_3d, Camera& camera){
 
 		auto cube_group = _registry.group<Component::Cube>(entt::get<Component::Transform>);
 		for(auto entt_entity : cube_group){
@@ -113,7 +124,7 @@ namespace Phoenix{
 
 
 
-	void Environment::forEach(std::function<void(Entity)> func){
+	void Scene::forEach(std::function<void(Entity)> func){
 		_registry.each([&](entt::entity entt_entity){
 			Entity entity{entt_entity, this};
 			func(entity);
@@ -122,17 +133,12 @@ namespace Phoenix{
 
 
 
-
-
-	void Environment::serialize(const std::string& filepath){
+	void Scene::serialize(const std::string& filepath){
 		_serializer->serialize(this, filepath);
 	}
 
-	void Environment::deserialize(const std::string& filepath){
+	void Scene::deserialize(const std::string& filepath){
 		_serializer->deserialize(this, filepath);
 	}
 
 }
-
-
-#undef SINGLE

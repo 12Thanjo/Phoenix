@@ -13,7 +13,7 @@ namespace Phoenix{
 		int width;
 		int height;
 		std::string name = "Phoenix Engine";
-		std::function<void(Event&,winID)> eventCallback;
+		std::function<void(Event&)> eventCallback;
 
 		bool VSync = false;
 		bool captureMouse = false;
@@ -22,7 +22,6 @@ namespace Phoenix{
 		int GLFWVersionMinor = 6;
 
 		// internal
-		winID id;
 		InputManager* input_manager;
 	};
 
@@ -31,10 +30,9 @@ namespace Phoenix{
 		private:
 			GLFWwindow* _window;
 			WindowConfig _config;
-			winID _id;
 	
 		public:
-			Window(winID id, WindowConfig config, GLFWwindow* main_window);
+			Window(WindowConfig config);
 			~Window();
 
 			void render();
@@ -42,7 +40,6 @@ namespace Phoenix{
 
 
 			inline GLFWwindow* getWindowContext() const { return _window; }
-			inline winID getID() const { return _config.id; }
 			inline int getWidth() const { return _config.width; }
 			inline int getHeight() const { return _config.height; }
 

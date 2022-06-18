@@ -12,20 +12,20 @@ namespace Phoenix{
 			RendererImGui(Engine* engine);
 			~RendererImGui();
 
-			void init(winID id);
+			void init();
 
 			void begin();
 			void end();
-			void render(FrameBuffer* render_buffer, const winID& win_id);
+			void render(FrameBuffer* render_buffer);
 
 
 			void set_dark_theme();
 
 			void newScene();
-			void open(winID win_id);
+			void open();
 			void open(std::string filepath);
 			void save();
-			void save_as(winID win_id);
+			void save_as();
 			
 		private:
 			Engine* _editor;

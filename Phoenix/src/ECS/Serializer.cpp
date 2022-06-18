@@ -1,7 +1,7 @@
 #include "ph_pch.h"
 #include "Serializer.h"
 
-#include "Environment.h"
+#include "Scene.h"
 #include "components.h"
 #include "Entity.h"
 #include "src/naml/Serialize.h"
@@ -30,13 +30,33 @@ namespace Phoenix{
 
 
 
-	void Serializer::serialize(Environment* environment, const std::string& filepath){
+	void Serializer::serialize(Scene* scene, const std::string& filepath){
 		NAML_S serializer{};
 
-		serializer.keyValue("Environment", "!Untitled!");
-		serializer.beginGroup("Entities");
+		serializer.keyValue("Scene", std::to_string(scene->uuid));
+		serializer.keyValue("Name", scene->name);
 
-			environment->forEach([&](Entity entity){
+		//////////////////////////////////////////////////////////////////////
+		// Serialize Editor Camera
+
+		serializer.beginGroup("Editor Camera");
+			OrbitalCamera& editor_camera = scene->camera;
+			serializer.keyValue("fov", editor_camera.getFOV());
+			serializer.keyValue("near", editor_camera.getNear());
+			serializer.keyValue("far", editor_camera.getFar());
+			serializer.beginList("coordinates");
+				serializer.addToList(editor_camera.getRho());
+				serializer.addToList(editor_camera.getTheta());
+				serializer.addToList(editor_camera.getPhi());
+			serializer.endList();
+			serialize_vec3(serializer, "focalPoint", editor_camera.getFocalPoint());
+		serializer.endGroup();
+
+		//////////////////////////////////////////////////////////////////////
+		// Serialize Entities
+
+		serializer.beginGroup("Entities");
+			scene->forEach([&](Entity entity){
 				serializer.beginGroup( std::to_string(entity.getComponent<Component::UUID>().id) );
 
 				serializer.keyValue("name", entity.getComponent<Component::Name>().name);
@@ -45,7 +65,7 @@ namespace Phoenix{
 					auto component = entity.getComponent<Component::Transform>();
 
 					serializer.beginGroup("Transform");
-						serialize_vec3(serializer, "translation", component.translation);
+						serialize_vec3(serializer, "position", component.position);
 						serialize_vec3(serializer, "rotation", component.rotation);
 						serialize_vec3(serializer, "scale", component.scale);
 					serializer.endGroup();
@@ -57,14 +77,29 @@ namespace Phoenix{
 					serialize_vec4(serializer, "SpriteRenderer", entity.getComponent<Component::SpriteRenderer>().color);
 				}
 
-				if(entity.hasComponent<Component::Camera>()){
-					auto component = entity.getComponent<Component::Camera>();
+				if(entity.hasComponent<Component::PerspectiveCamera>()){
+					auto component = entity.getComponent<Component::PerspectiveCamera>();
 
-					serializer.beginGroup("Camera");
+					serializer.beginGroup("PerspectiveCamera");
 						serializer.keyValue("fov", component.camera.getFOV());
 						serializer.keyValue("near", component.camera.getNear());
 						serializer.keyValue("far", component.camera.getFar());
-						serializer.keyValue("primary", component.primary);
+					serializer.endGroup();
+				}
+
+				if(entity.hasComponent<Component::OrbitalCamera>()){
+					auto component = entity.getComponent<Component::OrbitalCamera>();
+
+					serializer.beginGroup("OrbitalCamera");
+						serializer.keyValue("fov", component.camera.getFOV());
+						serializer.keyValue("near", component.camera.getNear());
+						serializer.keyValue("far", component.camera.getFar());
+						serializer.beginList("coordinates");
+							serializer.addToList(component.camera.getRho());
+							serializer.addToList(component.camera.getTheta());
+							serializer.addToList(component.camera.getPhi());
+						serializer.endList();
+						serialize_vec3(serializer, "focalPoint", component.camera.getFocalPoint());
 					serializer.endGroup();
 				}
 
@@ -76,12 +111,6 @@ namespace Phoenix{
 
 				serializer.endGroup();
 			});
-
-
-		// serializer.beginGroup("TEST");
-			// serializer.keyValue("foo", "bar");
-			// serialize_vec3(serializer, "foo", glm::vec3(1.0f, 1.0f, 2.0f));
-		// serializer.endGroup();		
 
 
 		serializer.endGroup();
@@ -96,7 +125,7 @@ namespace Phoenix{
 
 
 
-	void Serializer::deserialize(Environment* environment, const std::string& filepath){
+	void Serializer::deserialize(Scene* scene, const std::string& filepath){
 		try{
 			//////////////////////////////////////////////////////////
 			// load file
@@ -111,33 +140,78 @@ namespace Phoenix{
 
 			//////////////////////////////////////////////////////////
 			// deserialize
-			NAML_DE test{stream.str()};
+			NAML_DE naml{stream.str()};
 
+			scene->name = naml.get()->get("Name")->value<std::string>();
+			scene->uuid = { naml.get()->get("Scene")->value<uint64_t>()};
 
-			test.get()->get("Entities")->forEach([&](std::string id, NAML_Node* node){
-				Entity entity = environment->createEntity( node->get("name")->value<std::string>(), {std::stoull(id)} );
+			//////////////////////////////////////////////////////////////////////
+			// Deserialize Editor Camera
+
+			OrbitalCamera& editor_camera = scene->camera;
+			NAML_Node* camera_node = naml.get()->get("Editor Camera");
+			editor_camera.setProjection(
+				camera_node->get("fov")->value<float>(),
+				1.0f, //aspect ratio
+				camera_node->get("near")->value<float>(),
+				camera_node->get("far")->value<float>()
+			);
+
+			glm::vec3 coordinates = camera_node->get("coordinates")->value<glm::vec3>();
+			editor_camera.setCoordinates(coordinates.x, coordinates.y, coordinates.z);
+
+			//////////////////////////////////////////////////////////////////////
+			// Deserialize Entities
+
+			naml.get()->get("Entities")->forEach([&](std::string id, NAML_Node* node){
+				Entity entity = scene->createEntity( node->get("name")->value<std::string>(), {std::stoull(id)} );
 
 
 				if(node->has("Transform")){
 					NAML_Node* component = node->get("Transform");
 					entity.addComponent<Component::Transform>(
-						component->get("translation")->value<glm::vec3>(),
+						component->get("position")->value<glm::vec3>(),
 						component->get("rotation")->value<glm::vec3>(),
 						component->get("scale")->value<glm::vec3>()
 					);
 				}
 
-				if(node->has("Camera")){
-					NAML_Node* component = node->get("Camera");
-					entity.addComponent<Component::Camera>(
+				//////////////////////////////////////////////////////////////////////
+				// Cameras
+
+				if(node->has("PerspectiveCamera")){
+					NAML_Node* component = node->get("PerspectiveCamera");
+					entity.addComponent<Component::PerspectiveCamera>(
 						component->get("fov")->value<float>(),
 						1.0f, //aspect ratio
 						component->get("near")->value<float>(),
 						component->get("far")->value<float>()
 					);
 
-					entity.getComponent<Component::Camera>().primary = component->get("primary")->value<bool>();
 				}
+
+				if(node->has("OrbitalCamera")){
+					NAML_Node* component = node->get("OrbitalCamera");
+					entity.addComponent<Component::OrbitalCamera>(
+						component->get("fov")->value<float>(),
+						1.0f, //aspect ratio
+						component->get("near")->value<float>(),
+						component->get("far")->value<float>()
+					);
+
+					auto& camera_component = entity.getComponent<Component::OrbitalCamera>();
+
+					
+					glm::vec3 coordinates = component->get("coordinates")->value<glm::vec3>();
+					camera_component.camera.setCoordinates(coordinates.x, coordinates.y, coordinates.z);
+
+					camera_component.camera.setFocalPoint(component->get("focalPoint")->value<glm::vec3>());
+
+				}
+
+
+				//////////////////////////////////////////////////////////////////////
+				// rendering
 
 				if(node->has("SpriteRenderer")){
 					entity.addComponent<Component::SpriteRenderer>(

@@ -12,7 +12,7 @@ namespace Phoenix{
 	
 	void imgui_begin(std::string id, std::string name);
 
-	void imgui_separator();
+	void imgui_separator(float top_spacer = 5.0f);
 
 	void imgui_spacer();
 	void imgui_spacer(float y);
@@ -24,4 +24,6 @@ namespace Phoenix{
 	void imgui_draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value = 0.0f, float collumn_width = 60.0f, float iteration_size = 1.0f);
 
 	void imgui_image_button(glID id, float width, float height);
+
+	void imgui_draw_collapsable_menu(const std::string& label, std::function<void()> ui_function);
 }

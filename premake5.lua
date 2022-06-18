@@ -23,11 +23,15 @@ IncludeDirs["ImGui"] = "Phoenix/lib/ImGui"
 IncludeDirs["stb_image"] = "Phoenix/lib/stb_image"
 IncludeDirs["EnTT"] = "Phoenix/lib/EnTT"
 -- IncludeDirs["jx"] = "Phoenix/lib/jx"
+-- IncludeDirs["NodeJS"] = "Phoenix/lib/nodejs/src"
+-- IncludeDirs["lemon"] = "Phoenix/lib/lemon"
 
 include "Phoenix/lib/GLFW"
 include "Phoenix/lib/Glad"
 include "Phoenix/lib/ImGui"
 -- include "Phoenix/lib/jx"
+-- include "Phoenix/lib/nodejs"
+-- include "Phoenix/lib/lemon"
 
 project "Phoenix"
 	location "Phoenix"
@@ -72,20 +76,24 @@ project "Phoenix"
 
 		"%{IncludeDirs.GLFW}",
 		"%{IncludeDirs.Glad}",
+		-- "%{IncludeDirs.NodeJS}",
 		"%{IncludeDirs.glm}",
 		-- "%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.stb_image}",
 		"%{IncludeDirs.EnTT}",
 		-- "%{IncludeDirs.jx}",
+		-- "%{IncludeDirs.lemon}",
 
-		"Phoenix/lib/Glad/inlcude/glad"
+		"Phoenix/lib/Glad/inlcude/glad",
 	}
 
 	links{
 		"GLFW",
 		"Glad",
+		-- "lemon",
 		-- "ImGui",
 		-- "jx",
+		-- "NodeJS",
 		"opengl32.lib",
 	}
 
@@ -139,6 +147,7 @@ project "Phoenix Editor"
 		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.Glad}",
 		"%{IncludeDirs.GLFW}",
+		-- "%{IncludeDirs.lemon}",
 	}
 
 
@@ -147,6 +156,8 @@ project "Phoenix Editor"
 		"ImGui",
 		"GLFW",
 		"Glad",
+		-- "lemon",
+		-- "NodeJS",
 	}
 
 
@@ -170,4 +181,3 @@ project "Phoenix Editor"
 
 	filter { "system:windows", "configurations:Release" }
 	   buildoptions "/MT"
-

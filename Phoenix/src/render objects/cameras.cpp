@@ -3,7 +3,10 @@
 
 namespace Phoenix{
 
-	Camera::Camera(float fov, float aspect_ratio, float near, float far)
+	//////////////////////////////////////////////////////////////////////
+	// PerspectiveCamera
+
+	PerspectiveCamera::PerspectiveCamera(float fov, float aspect_ratio, float near, float far)
 		:  _fov(fov),  _aspect_ratio(aspect_ratio),  _near(near),  _far(far) {
 
 		calculate_view();
@@ -12,45 +15,45 @@ namespace Phoenix{
 
 
 
-	void Camera::moveForward(float amount){
+	void PerspectiveCamera::moveForward(float amount){
 		_position += amount * _front;
 		calculate_view();
 	}
 
-	void Camera::moveBackward(float amount){
+	void PerspectiveCamera::moveBackward(float amount){
 		_position -= amount * _front;
 		calculate_view();
 	}
 
-	void Camera::moveLeft(float amount){
+	void PerspectiveCamera::moveLeft(float amount){
 		_position -= glm::normalize(glm::cross(_front, _up)) * amount;
 		calculate_view();
 	}
 
-	void Camera::moveRight(float amount){
+	void PerspectiveCamera::moveRight(float amount){
 		_position += glm::normalize(glm::cross(_front, _up)) * amount;
 		calculate_view();
 	}
 
-	void Camera::moveUp(float amount){
+	void PerspectiveCamera::moveUp(float amount){
 		_position += _up * amount;
 		calculate_view();
 	}
 
-	void Camera::moveDown(float amount){
+	void PerspectiveCamera::moveDown(float amount){
 		_position -= _up * amount;
 		calculate_view();
 	}
 
 
 
-	void Camera::setPosition(glm::vec3 position){
+	void PerspectiveCamera::setPosition(glm::vec3 position){
 		_position = position;
 		calculate_view();
 	}
 
 
-	void Camera::setRotation(glm::vec3 rotation){
+	void PerspectiveCamera::setRotation(glm::vec3 rotation){
 		// x: roll
 		// y: yaw
 		// z: pitch
@@ -71,7 +74,7 @@ namespace Phoenix{
 
 
 
-	void Camera::setProjection(float fov, float aspect_ratio, float near, float far){
+	void PerspectiveCamera::setProjection(float fov, float aspect_ratio, float near, float far){
 		_fov = fov;
 		_aspect_ratio = aspect_ratio;
 		_near = near;
@@ -79,25 +82,115 @@ namespace Phoenix{
 
 		// PH_LOG("set projection");
 
+		// calculate_view();
+		calculate_projection();
+	}
+
+
+
+	void PerspectiveCamera::calculate_view(){
+		_view = glm::rotate(glm::mat4(1.0f), _rotation.x, {0, 0, 1}) * glm::lookAt(_position, _position + _front, _up);
+	}
+
+	void PerspectiveCamera::calculate_projection(){
+		_projection = glm::perspective(_fov, _aspect_ratio, _near, _far);
+	}
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// OrbitalCamera
+
+	OrbitalCamera::OrbitalCamera(float fov, float aspect_ratio, float near, float far)
+		:  _fov(fov),  _aspect_ratio(aspect_ratio),  _near(near),  _far(far) {
+
 		calculate_view();
 		calculate_projection();
 	}
 
 
 
-	glm::mat4 Camera::getViewProjection(){
-		return _projection * _view;
+
+	void OrbitalCamera::setPosition(glm::vec3 position){
+		_position = position;
+		calculate_view();
+	}
+
+
+
+	void OrbitalCamera::setRotation(glm::vec3 rotation){
+		// x: roll
+		// y: yaw
+		// z: pitch
+
+		_rotation = rotation;
+
+		
+		_front = glm::normalize( glm::vec3(
+			cos(_rotation.y) * cos(_rotation.z),
+			sin(_rotation.z),
+			sin(_rotation.y) * cos(_rotation.z)
+		));
+
+		calculate_view();
+	}
+
+
+	void OrbitalCamera::setFocalPoint(glm::vec3 focal_point){
+		_focal_point = focal_point;
+		place();
 	}
 
 
 
 
-	void Camera::calculate_view(){
+	void OrbitalCamera::setProjection(float fov, float aspect_ratio, float near, float far){
+		_fov = fov;
+		_aspect_ratio = aspect_ratio;
+		_near = near;
+		_far = far;
+
+
+		calculate_projection();
+	}
+
+
+
+	void OrbitalCamera::setCoordinates(float rho, float theta, float phi){
+		_rho = rho;
+		_theta = theta;
+		_phi = phi;
+
+		place();
+	}
+
+
+	void OrbitalCamera::calculate_view(){
 		_view = glm::rotate(glm::mat4(1.0f), _rotation.x, {0, 0, 1}) * glm::lookAt(_position, _position + _front, _up);
 	}
 
-	void Camera::calculate_projection(){
+	void OrbitalCamera::calculate_projection(){
 		_projection = glm::perspective(_fov, _aspect_ratio, _near, _far);
+	}
+
+
+	void OrbitalCamera::place(){
+		if(_phi < 0.01f){
+			_phi = 0.01f;
+		}else if(_phi > 3.14f - 0.01f){
+			_phi = 3.14f - 0.01f;
+		};
+
+
+		_position.x = (_rho * cos(_theta) * sin(_phi)) + _focal_point.x;
+		_position.z = (_rho * sin(_theta) * sin(_phi)) + _focal_point.z;
+		_position.y = (_rho * cos(_phi)) + _focal_point.y;
+
+		_rotation.z = _phi - (3.14f*0.5f);
+		_rotation.y = _theta - 3.14f;
+
+		calculate_view();
+		setRotation(_rotation);
 	}
 
 }

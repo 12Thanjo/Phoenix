@@ -13,16 +13,14 @@ namespace Phoenix{
 	};
 
 	
-	Window::Window(winID id, WindowConfig config, GLFWwindow* main_window)
+	Window::Window(WindowConfig config)
 		: _config(config){
 
 		PH_ASSERT(config.eventCallback, "Must define eventCallback in WindowConfig");
 
 		// enforcing internals
-		PH_ASSERT(config.id, "window id should not be set");
-		PH_ASSERT(config.id, "window InputManager should not be set");
+		PH_ASSERT(config.input_manager, "window InputManager should not be set");
 
-		_config.id = id;
 
 
 
@@ -40,7 +38,7 @@ namespace Phoenix{
 		}
 
 
-		_window = glfwCreateWindow(_config.width, _config.height, _config.name.c_str(), nullptr, main_window);
+		_window = glfwCreateWindow(_config.width, _config.height, _config.name.c_str(), nullptr, nullptr);
 		// GLFWwindow* window = glfwCreateWindow((int)WINDOW_WIDTH, (int)WINDOW_HEIGHT, 
 			// "Phoenix", glfwGetPrimaryMonitor(), nullptr);
 		// glfwSetWindowAttrib(window_context, GLFW_DECORATED, GLFW_FALSE);

@@ -9,7 +9,7 @@ namespace Phoenix{
 	void SceneHierarchyPanel::render(Engine* editor){
 		// Scene Hierarchy Panel
 		imgui_begin("2", "Scene Hierarchy");
-			editor->getEnvironment()->forEach([&](Entity entity){
+			editor->getScene()->forEach([&](Entity entity){
 				draw_entity_node(editor, entity);
 			});
 
@@ -31,7 +31,7 @@ namespace Phoenix{
 
 
 		// properties
-		imgui_begin("3", "Properties");
+		imgui_begin("3", "Entity Properties");
 			if(_selection_context){
 				draw_components(editor, _selection_context);
 			}
@@ -228,8 +228,11 @@ namespace Phoenix{
 			}else if(!_selection_context.hasComponent<Component::SpriteRenderer>() && ImGui::MenuItem("Sprite Renderer")){
 				_selection_context.addComponent<Component::SpriteRenderer>();
 				ImGui::CloseCurrentPopup();
-			}else if(!_selection_context.hasComponent<Component::Camera>() && ImGui::MenuItem("Camera")){
-				_selection_context.addComponent<Component::Camera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+			}else if(!_selection_context.hasComponent<Component::PerspectiveCamera>() && ImGui::MenuItem("Perspective Camera")){
+				_selection_context.addComponent<Component::PerspectiveCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+				ImGui::CloseCurrentPopup();
+			}else if(!_selection_context.hasComponent<Component::OrbitalCamera>() && ImGui::MenuItem("Orbital Camera")){
+				_selection_context.addComponent<Component::OrbitalCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
 				ImGui::CloseCurrentPopup();
 			}else if(!_selection_context.hasComponent<Component::Cube>() && ImGui::MenuItem("Cube")){
 				_selection_context.addEmptyComponent<Component::Cube>();
@@ -251,13 +254,12 @@ namespace Phoenix{
 		}
 
 
-		imgui_spacer();
-		imgui_separator();
-		imgui_spacer();
+		imgui_separator(0.0f);
 
 
-		draw_comonent<Component::Transform>("Transform", entity, [](auto& component){
-			imgui_draw_vec3_control("Position", component.translation, 0.0f, 60.0f, 0.01f);
+		draw_comonent<Component::Transform>("Transform", entity, [&entity](auto& component){
+			imgui_draw_vec3_control("Position", component.position, 0.0f, 60.0f, 0.01f);
+
 
 			imgui_spacer();
 
@@ -265,9 +267,12 @@ namespace Phoenix{
 			imgui_draw_vec3_control("Rotation", rotation, 0.0f, 60.0f, 0.5f);
 			component.rotation = glm::radians(rotation);
 
-			imgui_spacer();
 
-			imgui_draw_vec3_control("Scale", component.scale, 0.5f, 60.0f, 0.01f);
+			if(!entity.hasComponent<Component::PerspectiveCamera>()){
+				imgui_spacer();
+				imgui_draw_vec3_control("Scale", component.scale, 0.5f, 60.0f, 0.01f);
+			}
+
 		});
 
 
@@ -279,7 +284,11 @@ namespace Phoenix{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 		});
 
-		draw_comonent<Component::Camera>("Camera", entity, [&entity, editor](auto& component){
+
+		//////////////////////////////////////////////////////////////////////
+		// Cameras
+
+		draw_comonent<Component::PerspectiveCamera>("Perspective Camera", entity, [&entity, editor](auto& component){
 			float fov = glm::degrees(component.camera.getFOV());
 			imgui_draw_float_control("FOV", fov, 65.0f, 40.0f, 0.5f);
 
@@ -297,16 +306,80 @@ namespace Phoenix{
 			component.camera.setProjection(glm::radians(fov), component.camera.getAspectRatio(), near, far);
 
 
-			imgui_spacer(5.0f);
-			imgui_separator();
+			imgui_separator(); ////////////////////////////////////////////////////////////////
+
+
+			bool currently_viewing = editor->usingCamera(entity);
+			bool start_viewing = editor->usingCamera(entity);
+			ImGui::Checkbox("View Perspective", &start_viewing);
+
+			if(!currently_viewing && start_viewing){
+				editor->setCamera(entity);
+			}else if(currently_viewing && !start_viewing){
+				editor->setCamera({});
+			}
+
+		});
+
+
+
+		draw_comonent<Component::OrbitalCamera>("Orbital Camera", entity, [&entity, editor](auto& component){
+
+			glm::vec3 focal_point = component.camera.getFocalPoint();
+			imgui_draw_vec3_control("Focal Point", focal_point, 0.0f, 70.0f, 0.5f);
+			component.camera.setFocalPoint(focal_point);
+
+			imgui_separator(); ////////////////////////////////////////////////////////////////
+
+
+			float rho = component.camera.getRho();
+			imgui_draw_float_control("Rho", rho, 10.0f, 40.0f, 0.5f);
+
 			imgui_spacer();
 
+			float theta = glm::degrees(component.camera.getTheta());
+			imgui_draw_float_control("Theta", theta, 1.5f, 40.0f, 0.5f);
 
-			bool primary = component.primary;
-			ImGui::Checkbox("Primary Camera", &primary);
+			imgui_spacer();
 
-			if(!component.primary && primary){
+			float phi = glm::degrees(component.camera.getPhi());
+			imgui_draw_float_control("Phi", phi, 1.5f, 40.0f, 0.5f);
+
+			component.camera.setCoordinates(rho, glm::radians(theta), glm::radians(phi));
+
+
+			imgui_separator(); ////////////////////////////////////////////////////////////////
+
+
+			float fov = glm::degrees(component.camera.getFOV());
+			imgui_draw_float_control("FOV", fov, 65.0f, 40.0f, 0.5f);
+
+			imgui_spacer();
+
+			float near = component.camera.getNear();
+			imgui_draw_float_control("Near", near, 0.1f, 40.0f, 0.1f);
+
+			imgui_spacer();
+
+			float far = component.camera.getFar();
+			imgui_draw_float_control("Far", far, 100.0f, 40.0f, 1.0f);
+
+
+			component.camera.setProjection(glm::radians(fov), component.camera.getAspectRatio(), near, far);
+
+
+			imgui_separator(); ////////////////////////////////////////////////////////////////
+ 
+
+
+			bool currently_viewing = editor->usingCamera(entity);
+			bool start_viewing = editor->usingCamera(entity);
+			ImGui::Checkbox("View Perspective", &start_viewing);
+
+			if(!currently_viewing && start_viewing){
 				editor->setCamera(entity);
+			}else if(currently_viewing && !start_viewing){
+				editor->setCamera({});
 			}
 
 		});

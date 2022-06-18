@@ -2,7 +2,7 @@
 
 #include "Window.h"
 
-#include "ECS/Environment.h"
+#include "ECS/Scene.h"
 #include "ECS/Entity.h"
 #include "assets/AssetManager.h"
 
@@ -17,7 +17,11 @@ namespace Phoenix{
 		// std::string name = "Phoenix Engine";
 	// };
 
-	struct WindowPerformanceMetrics{
+
+
+	struct EnginePerformanceMetrics{
+		float engineLoop = 0;
+
 		float renderLoop = 0;
 		float draw = 0;
 
@@ -35,12 +39,6 @@ namespace Phoenix{
 		
 		float updateECS = 0;
 		float renderECS = 0;
-	};
-
-	struct EnginePerformanceMetrics{
-		float engineLoop = 0;
-
-		std::unordered_map<winID, WindowPerformanceMetrics> windows;
 
 		unsigned int entites = 0;
 	};
@@ -62,28 +60,28 @@ namespace Phoenix{
 
 
 			// window data
-			winID createWindow(WindowConfig config);
-			bool bindWindow(winID id);
-			bool keyDown(winID id, keyCode keycode);
-			bool mouseButtonDown(winID id, keyCode button);
-			float mouseX(winID id);
-			float mouseY(winID id);
-			inline int windowWidth(winID id) { return _windows[id]->getWidth(); }
-			inline int windowHeight(winID id) { return _windows[id]->getHeight(); }
+			void createWindow(WindowConfig config);
+			// bool bindWindow(winID id);
+			bool keyDown(keyCode keycode);
+			bool mouseButtonDown(keyCode button);
+			float mouseX();
+			float mouseY();
+			inline int windowWidth() { return _window->getWidth(); }
+			inline int windowHeight() { return _window->getHeight(); }
 
-			inline Window* getWindow(winID id) { return _windows[id]; }
+			inline Window* getWindow() { return _window; }
 			// void render();
 
 
 			// ECS
-			inline Environment* getEnvironment() const { return _environment; }
-			inline void clearEnvironment(){ _environment->clear(); };
+			inline Scene* getScene() const { return _scene; }
+			inline void clearScene(){ _scene = new Scene(); };
 			Entity createEntity(const std::string& name = "Entity");
 			Entity createEntity(const std::string& name, const UUID& uuid);
-			inline void destroyEntity(Entity& entity){ _environment->destroyEntity(entity); };
+			inline void destroyEntity(Entity& entity){ _scene->destroyEntity(entity); };
 
-			inline void	serialize(const std::string& filepath) const { _environment->serialize(filepath); }
-			inline void	deserialize(const std::string& filepath) const { _environment->deserialize(filepath); }
+			inline void	serialize(const std::string& filepath) const { _scene->serialize(filepath); }
+			inline void	deserialize(const std::string& filepath) const { _scene->deserialize(filepath); }
 
 
 			// rendering								
@@ -97,7 +95,8 @@ namespace Phoenix{
 			void copyFrameBuffer(FrameBuffer* a, FrameBuffer* b);
 
 			void setCamera(Entity camera);
-
+			inline bool usingCamera() const { return _camera; };
+			inline bool usingCamera(Entity camera) const { return camera == _camera; };
 
 
 			// asset manager
@@ -112,20 +111,18 @@ namespace Phoenix{
 			// EngineConfig _config;
 			bool _running = true;
 
-			winID _window_id = 0;
-			std::map<winID, Window*> _windows;
+			Window* _window;
 
-			Environment* _environment;
 			Renderer2D* _renderer_2d;
 			Renderer3D* _renderer_3d;
 			AssetManager* _asset_manager;
 
 		protected:
+			Scene* _scene;
 			Entity _camera{};
 
 		private:
 			void clear_perf_metrics();
-			void set_perf_metrics(winID id);
 			void set_perf_metrics();
 	};
 

@@ -2,7 +2,7 @@
 
 #include "src/render objects/cameras.h"
 #include "core/UUID.h"
-
+#include "Entity.h"
 
 
 namespace Phoenix::Component{
@@ -24,29 +24,42 @@ namespace Phoenix::Component{
 
 
 	struct Transform{
-		glm::vec3 translation = {0.0f, 0.0f, -1.0f};
+		glm::vec3 position = {0.0f, 0.0f, -1.0f};
 		glm::vec3 rotation = {0.0f, 0.0f, 0.0f};
 		glm::vec3 scale = {1.0f, 1.0f, 1.0f};
 		glm::mat4 transform{1.0f};
 
 		Transform() = default;
-		Transform(const glm::vec3& _translation, const glm::vec3& _rotation, const glm::vec3& _scale)
-			: translation(_translation), rotation(_rotation), scale(_scale) {};
+		Transform(const glm::vec3& _position, const glm::vec3& _rotation, const glm::vec3& _scale)
+			: position(_position), rotation(_rotation), scale(_scale) {};
 		Transform(const glm::mat4 & _transform)
 			: transform(_transform) {};
 
 	};
 
 
+	//////////////////////////////////////////////////////////////////////
+	// cameras
 
-	struct Camera{
-		Phoenix::Camera camera;
-		bool primary = false;
+	struct PerspectiveCamera{
+		Phoenix::PerspectiveCamera camera;
 
-		Camera(float fov, float aspect_ratio, float near, float far)
+		PerspectiveCamera(float fov, float aspect_ratio, float near, float far)
 			: camera(fov, aspect_ratio, near, far) {}
 	};
 
+	struct OrbitalCamera{
+		Phoenix::OrbitalCamera camera;
+
+		OrbitalCamera(float fov, float aspect_ratio, float near, float far)
+			: camera(fov, aspect_ratio, near, far) {}
+	};
+
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// rendering
 
 	struct SpriteRenderer{
 		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};

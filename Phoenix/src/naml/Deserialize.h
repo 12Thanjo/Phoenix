@@ -43,6 +43,13 @@ namespace Phoenix{
 
 
 			template<>
+			auto value<uint64_t>(){
+				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+				return std::stoull(_value);
+			};
+
+
+			template<>
 			auto value<glm::vec3>(){
 				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
 				
@@ -75,8 +82,17 @@ namespace Phoenix{
 				};
 			};
 
+			template<>
+			auto value<std::vector<std::string>>(){
+				PH_ASSERT(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+				
+				std::vector<std::string> strings = stringDelimiter(_value, ", ");
+
+				return strings;
+			};
+
 		protected:
-			std::unordered_map<std::string, NAML_Node*> _nodes;
+			std::map<std::string, NAML_Node*> _nodes;
 			std::string _value;
 	};
 

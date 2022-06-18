@@ -3,7 +3,7 @@
 
 
 namespace Phoenix{
-	class Environment;
+	class Scene;
 	
 	class Serializer{
 		public:
@@ -11,9 +11,9 @@ namespace Phoenix{
 			~Serializer() = default;
 
 
-			void serialize(Environment* environment, const std::string& filepath);
+			void serialize(Scene* scene, const std::string& filepath);
 			
-			void deserialize(Environment* environment, const std::string& filepath);
+			void deserialize(Scene* scene, const std::string& filepath);
 	};
 
 }
