@@ -11,10 +11,11 @@ project "jx"
 	objdir ("bin/intermediates/" .. outputdir .. "/%{prj.name}")
 
 	files{
-		-- "**.h",
-		-- "**.cpp",
+		"**.h",
+		"**.cpp",
 		-- "jxcore.cpp"
 	}
+
 
 	libdirs {
 		"./x64"

@@ -9,6 +9,7 @@ namespace Phoenix{
 
 		// color
 		RGBA8,
+		RED_INTEGER,
 		// DepthColor,
 
 		// depth/stencis
@@ -67,8 +68,6 @@ namespace Phoenix{
 	class FrameBuffer{
 		private:
 			glID _id;
-			// glID _color_attachment;
-			// glID _depth_attachment;//////////////
 			FrameBufferConfig _config;
 
 			std::vector<FrameBufferTextureConfig> _color_attachment_configs;
@@ -82,15 +81,14 @@ namespace Phoenix{
 			~FrameBuffer();
 
 
-
 			void bind();
 
-			void textureBind();
-			void textureBind(int i);
+			// void textureBind();
+			// void textureBind(int i);
+
+			void clearAttachment(glID attachment_index, int value);
 
 			void unbind();
-
-
 
 			void resize(unsigned int width, unsigned int height);
 

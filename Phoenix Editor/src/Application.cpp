@@ -81,7 +81,7 @@ namespace Phoenix{
 			config.height = WINDOW_HEIGHT;
 			config.name = "Phoenix Engine Editor";
 			config.eventCallback = event_callback;
-			createWindow(config);
+		createWindow(config);
 
 
 
@@ -104,13 +104,13 @@ namespace Phoenix{
 
 
 
-	void Editor::render3D(){
+	void Editor::render(){
 		_output_buffer->bind();
 		clearColorDepth();
-	}
 
+		render3D();
+		render2D();
 
-	void Editor::render2D(){
 		_output_buffer->unbind();
 		
 		_renderer_ImGui.begin();

@@ -34,6 +34,8 @@ namespace Phoenix{
 		imgui_begin("3", "Entity Properties");
 			if(_selection_context){
 				draw_components(editor, _selection_context);
+			}else{
+				ImGui::Text("No Entity Selected");
 			}
 		ImGui::End();
 
@@ -62,14 +64,6 @@ namespace Phoenix{
 			ImGui::EndPopup();
 		}
 
-		// if(opened){
-		// 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-		// 	bool opened = ImGui::TreeNodeEx((void*)3251685, flags, name.c_str());
-		// 	if(opened){
-		// 		ImGui::TreePop();
-		// 	}
-		// 	ImGui::TreePop();
-		// }
 
 
 		if(entity_deleted){
@@ -308,7 +302,6 @@ namespace Phoenix{
 
 
 		imgui_separator(0.0f);
-
 
 		draw_comonent<Component::Transform>("Transform", entity, [&entity](auto& component){
 			imgui_draw_vec3_control("Position", component.position, 0.0f, 60.0f, 0.01f);

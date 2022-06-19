@@ -22,14 +22,14 @@ IncludeDirs["glm"] = "Phoenix/lib/glm"
 IncludeDirs["ImGui"] = "Phoenix/lib/ImGui"
 IncludeDirs["stb_image"] = "Phoenix/lib/stb_image"
 IncludeDirs["EnTT"] = "Phoenix/lib/EnTT"
--- IncludeDirs["jx"] = "Phoenix/lib/jx"
+IncludeDirs["jx"] = "Phoenix/lib/jx"
 -- IncludeDirs["NodeJS"] = "Phoenix/lib/nodejs/src"
 -- IncludeDirs["lemon"] = "Phoenix/lib/lemon"
 
 include "Phoenix/lib/GLFW"
 include "Phoenix/lib/Glad"
 include "Phoenix/lib/ImGui"
--- include "Phoenix/lib/jx"
+include "Phoenix/lib/jx"
 -- include "Phoenix/lib/nodejs"
 -- include "Phoenix/lib/lemon"
 
@@ -81,7 +81,7 @@ project "Phoenix"
 		-- "%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.stb_image}",
 		"%{IncludeDirs.EnTT}",
-		-- "%{IncludeDirs.jx}",
+		"%{IncludeDirs.jx}",
 		-- "%{IncludeDirs.lemon}",
 
 		"Phoenix/lib/Glad/inlcude/glad",
@@ -92,7 +92,7 @@ project "Phoenix"
 		"Glad",
 		-- "lemon",
 		-- "ImGui",
-		-- "jx",
+		"jx",
 		-- "NodeJS",
 		"opengl32.lib",
 	}
@@ -143,7 +143,7 @@ project "Phoenix Editor"
 		"Phoenix",
 		"Phoenix/src",
 		-- "%{IncludeDirs.EnTT}",
-		-- "%{IncludeDirs.jx}",
+		"%{IncludeDirs.jx}",
 		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.Glad}",
 		"%{IncludeDirs.GLFW}",
@@ -161,6 +161,7 @@ project "Phoenix Editor"
 	}
 
 
+
 	filter "system:windows"
 		systemversion "latest"
 
@@ -168,6 +169,9 @@ project "Phoenix Editor"
 			"PH_PLATFORM_WINDOWS"
 		}
 
+		postbuildcommands {
+			('{COPYDIR} "$(SolutionDir)/Phoenix/lib/jx/x64" "$(SolutionDir)%{cfg.targetdir.relpath}"')
+		}
 
 	filter "configurations:Debug"
 		defines "PH_DEBUG"
@@ -181,3 +185,7 @@ project "Phoenix Editor"
 
 	filter { "system:windows", "configurations:Release" }
 	   buildoptions "/MT"
+
+
+
+

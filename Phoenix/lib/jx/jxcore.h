@@ -201,7 +201,7 @@ namespace jxcore{
 		while (JX_LoopOnce() != 0) Sleep(1);
 
 		
-		std::string file = read_file("C:/Users/andrew/OneDrive/programming/Phoenix/bin/bin/Debug/windows/Phoenix Editor/test.js");
+		// std::string file = read_file("./bin/bin/Debug/windows/Phoenix Editor/test.js");
 
 		run("internal", "try{"
 			"const phoenix = process.natives;"
@@ -210,6 +210,8 @@ namespace jxcore{
 			"console.log = process.natives.log;"
 			// "process.natives = undefined;"
 		"}catch(e){process.natives.error('\\n', e.stack);\n}");
+
+		run("internal", "console.log('jxcore!');");
 
 		// run("./test.js", file);
 

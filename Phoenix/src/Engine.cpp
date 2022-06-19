@@ -43,7 +43,10 @@ namespace Phoenix{
 
 
 	void Engine::run(){
+
 		create();
+		PH_ASSERT(_created_window, "No Window Created");
+		
 		_renderer_2d->init();
 		_renderer_3d->init();
 		PH_INFO("Created Engine");
@@ -68,33 +71,7 @@ namespace Phoenix{
 						glClearColor(PH_COOL_GRAY_900);
 						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-						PERF_START(render3D);
-							render3D();
-						PERF_END(render3D);
-						PERF_START(renderECS);
-
-							Camera* camera;
-							if(_camera){
-								if(_camera.hasComponent<Component::PerspectiveCamera>()){
-									camera = &_camera.getComponent<Component::PerspectiveCamera>().camera;
-								}else{
-									camera = &_camera.getComponent<Component::OrbitalCamera>().camera;	
-								};
-							}else{
-								camera = &_scene->camera;	
-							}
-
-							PERF_START(draw3D);
-								_scene->render3D(_renderer_3d, *camera);
-							PERF_END(draw3D);
-							PERF_START(draw2D);
-								_scene->render2D(_renderer_2d, *camera);
-							PERF_END(draw2D);
-
-						PERF_END(renderECS);
-						PERF_START(render2D);
-							render2D();
-						PERF_END(render2D);
+						render();
 
 						_window->render();
 					PERF_END(draw);
@@ -109,10 +86,48 @@ namespace Phoenix{
 		};
 	}
 
+	void Engine::render3D(){
+		// PERF_START(renderECS);
+		PERF_START(draw3D);
+			Camera* camera;
+			if(_camera){
+				if(_camera.hasComponent<Component::PerspectiveCamera>()){
+					camera = &_camera.getComponent<Component::PerspectiveCamera>().camera;
+				}else{
+					camera = &_camera.getComponent<Component::OrbitalCamera>().camera;	
+				};
+			}else{
+				camera = &_scene->camera;
+			}
+
+			_scene->render3D(_renderer_3d, *camera);
+		PERF_END(draw3D);
+	}
+
+
+	void Engine::render2D(){
+		PERF_START(draw2D);
+			Camera* camera;
+			if(_camera){
+				if(_camera.hasComponent<Component::PerspectiveCamera>()){
+					camera = &_camera.getComponent<Component::PerspectiveCamera>().camera;
+				}else{
+					camera = &_camera.getComponent<Component::OrbitalCamera>().camera;	
+				};
+			}else{
+				camera = &_scene->camera;
+			}
+
+			_scene->render2D(_renderer_2d, *camera);
+		PERF_END(draw2D);
+		// PERF_END(renderECS);
+	}
+
 
 
 	void Engine::createWindow(WindowConfig config){
 		_window = new Window(config);
+		_created_window = true;
 	}
 
 

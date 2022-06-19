@@ -20,6 +20,17 @@ namespace Phoenix{
 	};
 
 
+	static GLenum convert_texture_format(FrameBufferTextureFormat format){
+		switch(format){
+			case FrameBufferTextureFormat::RGBA8: 		return GL_RGBA8;
+			case FrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+		};
+
+		PH_ASSERT(false, "Unknown format");
+		return 0;
+	}
+
+
 	static GLenum texture_target(bool multisampled){
 		return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 	}
@@ -136,6 +147,9 @@ namespace Phoenix{
 					case FrameBufferTextureFormat::RGBA8: 
 						attatch_color_texture(_color_attachments[i], _config.samples, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, (GLint)_config.width, (GLint)_config.height, (int)i);
 						break;
+					case FrameBufferTextureFormat::RED_INTEGER:
+						attatch_color_texture(_color_attachments[i], _config.samples, GL_R32I, GL_RED_INTEGER, GL_UNSIGNED_BYTE, (GLint)_config.width, (GLint)_config.height, (int)i);
+						break;
 					// case FrameBufferTextureFormat::DepthColor: 
 					// 	attatch_color_texture(_color_attachments[i], _config.samples, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT,  (GLint)_config.width, (GLint)_config.height, (int)i);
 						// glDrawBuffer(GL_NONE);
@@ -183,15 +197,24 @@ namespace Phoenix{
 		glViewport(0, 0, (GLint)_config.width, (GLint)_config.height);
 	}
 
-	void FrameBuffer::textureBind(){
-		glActiveTexture(GL_TEXTURE0); // makes it render the buffer, and the last loaded texture
-		glBindTexture(GL_TEXTURE_2D, _id);
+	// void FrameBuffer::textureBind(){
+	// 	glActiveTexture(GL_TEXTURE0); // makes the engine render the buffer, and the last loaded texture
+	// 	glBindTexture(GL_TEXTURE_2D, _id);
+	// }
+
+	// void FrameBuffer::textureBind(int i){
+	// 	glActiveTexture(GL_TEXTURE0); // makes the engine render the buffer, and the last loaded texture
+	// 	glBindTexture(GL_TEXTURE_2D, _color_attachments[i]);
+	// }
+
+
+	void FrameBuffer::clearAttachment(glID attachment_index, int value){
+		PH_ASSERT(attachment_index < _color_attachments.size(), "invalid attachment index");
+
+		auto& config = _color_attachment_configs[attachment_index];
+		glClearTexImage(_color_attachments[attachment_index], 0, convert_texture_format(config.textureFormat), GL_INT, &value);
 	}
 
-	void FrameBuffer::textureBind(int i){
-		glActiveTexture(GL_TEXTURE0); // makes it render the buffer, and the last loaded texture
-		glBindTexture(GL_TEXTURE_2D, _color_attachments[i]);
-	}
 
 	void FrameBuffer::unbind(){
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

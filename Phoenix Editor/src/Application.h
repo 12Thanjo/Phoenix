@@ -12,8 +12,7 @@ namespace Phoenix{
 			~Editor();
 			
 			void create() override;
-			void render3D() override;
-			void render2D() override;
+			void render() override;
 
 		private:
 			void pan_camera(float dx, float dy);
@@ -34,7 +33,5 @@ namespace Phoenix{
 	};
 
 
-
-	Engine* init();
 
 }

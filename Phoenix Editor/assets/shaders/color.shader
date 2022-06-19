@@ -1,7 +1,7 @@
 #shader vertex
 #version 450 core
 
-layout (location = 0) in vec2 a_position;
+layout(location = 0) in vec2 a_position;
 
 
 uniform mat4 u_model;
@@ -20,7 +20,6 @@ void main(){
 out vec4 frag_color;
 
 uniform vec4 u_color;
-
 
 
 void main(){

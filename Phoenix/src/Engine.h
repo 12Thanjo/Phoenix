@@ -55,8 +55,9 @@ namespace Phoenix{
 			void exit();
 
 			virtual void create(){};
-			virtual void render3D(){};
-			virtual void render2D(){};
+			virtual void render(){};
+			void render3D();
+			void render2D();
 
 
 			// window data
@@ -112,6 +113,7 @@ namespace Phoenix{
 			bool _running = true;
 
 			Window* _window;
+			bool _created_window = false;
 
 			Renderer2D* _renderer_2d;
 			Renderer3D* _renderer_3d;
