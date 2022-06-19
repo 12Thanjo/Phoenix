@@ -75,7 +75,7 @@ namespace Phoenix{
 
 							Camera* camera;
 							if(_camera){
-								if(_camera.hasComponent<PerspectiveCamera>()){
+								if(_camera.hasComponent<Component::PerspectiveCamera>()){
 									camera = &_camera.getComponent<Component::PerspectiveCamera>().camera;
 								}else{
 									camera = &_camera.getComponent<Component::OrbitalCamera>().camera;	

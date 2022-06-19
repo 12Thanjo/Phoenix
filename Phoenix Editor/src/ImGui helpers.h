@@ -26,4 +26,7 @@ namespace Phoenix{
 	void imgui_image_button(glID id, float width, float height);
 
 	void imgui_draw_collapsable_menu(const std::string& label, std::function<void()> ui_function);
+
+	void imgui_begin_disable_menu_item(bool disable, bool color = true);
+	void imgui_end_disable_menu_item();
 }

@@ -37,7 +37,6 @@ namespace Phoenix{
 
 
 
-
 	void imgui_draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value, float collumn_width, float iteration_size){
 
 		ImGuiIO& io = ImGui::GetIO();
@@ -177,6 +176,23 @@ namespace Phoenix{
 		}
 
 		imgui_spacer(0.0f, 10.0f);
+	}
+
+
+
+	void imgui_begin_disable_menu_item(bool disable, bool color){
+		ImGui::PushItemFlag(ImGuiItemFlags_Disabled, disable);
+		if(disable && color){
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		}else{
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 1.0f);
+		}
+	}
+
+
+	void imgui_end_disable_menu_item(){
+		ImGui::PopItemFlag();
+		ImGui::PopStyleVar();
 	}
 
 }

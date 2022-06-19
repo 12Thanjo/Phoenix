@@ -220,24 +220,77 @@ namespace Phoenix{
 		// }
 
 		if(ImGui::BeginPopup("AddComponent") || ImGui::BeginPopupContextWindow(0, 1, false)){
-			int num_components = 2;
+			bool has_transform = _selection_context.hasComponent<Component::Transform>();
 
-			if(!_selection_context.hasComponent<Component::Transform>() && ImGui::MenuItem("Transform")){
-				_selection_context.addComponent<Component::Transform>();
-				ImGui::CloseCurrentPopup();
-			}else if(!_selection_context.hasComponent<Component::SpriteRenderer>() && ImGui::MenuItem("Sprite Renderer")){
-				_selection_context.addComponent<Component::SpriteRenderer>();
-				ImGui::CloseCurrentPopup();
-			}else if(!_selection_context.hasComponent<Component::PerspectiveCamera>() && ImGui::MenuItem("Perspective Camera")){
-				_selection_context.addComponent<Component::PerspectiveCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
-				ImGui::CloseCurrentPopup();
-			}else if(!_selection_context.hasComponent<Component::OrbitalCamera>() && ImGui::MenuItem("Orbital Camera")){
-				_selection_context.addComponent<Component::OrbitalCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
-				ImGui::CloseCurrentPopup();
-			}else if(!_selection_context.hasComponent<Component::Cube>() && ImGui::MenuItem("Cube")){
-				_selection_context.addEmptyComponent<Component::Cube>();
-				ImGui::CloseCurrentPopup();
-			}
+			bool has_perspective = _selection_context.hasComponent<Component::PerspectiveCamera>();
+			bool has_orbital = _selection_context.hasComponent<Component::OrbitalCamera>();
+			bool has_camera = has_perspective || has_orbital;
+
+			bool has_sprite = _selection_context.hasComponent<Component::SpriteRenderer>();
+			bool has_cube = _selection_context.hasComponent<Component::Cube>();
+			bool has_renderer = has_sprite || has_cube;
+
+			///////////////////////////////////////////////
+
+			ImGuiIO& io = ImGui::GetIO();
+			auto bold_font = io.Fonts->Fonts[1];
+
+			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+			ImGui::PushFont(bold_font);
+				ImGui::MenuItem("Add Component:");
+			ImGui::PopFont();
+			ImGui::PopItemFlag();
+			imgui_separator(0.0f);
+
+			///////////////////////////////////////////////
+
+			imgui_begin_disable_menu_item(has_transform, true);
+				if(ImGui::MenuItem("Transform")){
+					_selection_context.addComponent<Component::Transform>();
+					ImGui::CloseCurrentPopup();
+				}
+			imgui_end_disable_menu_item();
+
+	
+		    if(ImGui::BeginMenu("Cameras", !has_camera && !has_renderer)){
+				if(ImGui::MenuItem("Perspective Camera")){
+					_selection_context.addComponent<Component::PerspectiveCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+					if(!has_transform){
+						_selection_context.addComponent<Component::Transform>();
+					}
+				}else if(ImGui::MenuItem("Orbital Camera", "", has_transform)){
+					_selection_context.addComponent<Component::OrbitalCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+				}
+		        ImGui::EndMenu();
+		    }
+
+
+		    imgui_separator(0.0f);
+
+
+		    if(ImGui::BeginMenu("2D Render Objects", !has_renderer && !has_camera)){
+				if(ImGui::MenuItem("Sprite Renderer")){
+					_selection_context.addComponent<Component::SpriteRenderer>();
+					if(!has_transform){
+						_selection_context.addComponent<Component::Transform>(glm::vec3{0.0f, 0.0f, -1.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
+					}
+				}
+
+		        ImGui::EndMenu();
+		    }
+
+
+		    if(ImGui::BeginMenu("3D Render Objects", !has_renderer && !has_camera)){
+				if(ImGui::MenuItem("Cube")){
+					_selection_context.addEmptyComponent<Component::Cube>();
+					if(!has_transform){
+						_selection_context.addComponent<Component::Transform>();
+					}
+				}
+
+		        ImGui::EndMenu();
+		    }
+
 
 
 			ImGui::EndPopup();
