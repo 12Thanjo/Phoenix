@@ -83,8 +83,8 @@ namespace Phoenix{
 
 
 	NAML_Node* NAML_Node::get(const std::string& key){
-		PH_ASSERT(_nodes.size() > 0, "Attempted to get an index of a NAML value");
-		PH_ASSERT(_nodes.contains(key), "Attempted to get non-existent NAML key (" << key << ")");
+		PH_THROW(_nodes.size() > 0, "Attempted to get an index of a NAML value");
+		PH_THROW(_nodes.contains(key), "Attempted to get non-existent NAML key (" << key << ")");
 		return _nodes[key];		
 	}
 
@@ -109,7 +109,6 @@ namespace Phoenix{
 		_head = new NAML_Node();
 
 
-
 		std::stringstream ss(string);
 
 		std::vector<NAML_Node*> stack{};
@@ -121,7 +120,7 @@ namespace Phoenix{
 			line = remove_indentation(line);
 
 			NodeType type = get_type(line);
-			PH_ASSERT(type != NodeType::None, "Invalid Node Type");
+			PH_THROW(type != NodeType::None, "Invalid Node Type");
 
 			line = remove_type(line);
 			std::string key = get_key(line);

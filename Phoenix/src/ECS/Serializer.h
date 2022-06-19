@@ -13,7 +13,7 @@ namespace Phoenix{
 
 			void serialize(Scene* scene, const std::string& filepath);
 			
-			void deserialize(Scene* scene, const std::string& filepath);
+			bool deserialize(Scene* scene, const std::string& filepath);
 	};
 
 }

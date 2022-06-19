@@ -120,12 +120,11 @@ namespace Phoenix{
 		fout << serializer.output().c_str();
 
 
-
 	}
 
 
 
-	void Serializer::deserialize(Scene* scene, const std::string& filepath){
+	bool Serializer::deserialize(Scene* scene, const std::string& filepath){
 		try{
 			//////////////////////////////////////////////////////////
 			// load file
@@ -228,10 +227,21 @@ namespace Phoenix{
 				// glm::vec3 position = node->get("Transform")->get("scale")->value<glm::vec3>();
 				// PH_LOG(position.x << ", " << position.y << ", " << position.z);
 			});
+		}catch(const std::runtime_error& e){
+			PH_WARNING("Failed to deserialize (" << filepath << ")\n\t" << e.what());
+			return false;
+		}catch(const std::exception& e){
+		    PH_WARNING("Failed to deserialize (" << filepath << ")\n\t" << e.what());
+		    return false;
+		}catch(const std::string& e){
+		    PH_WARNING("Failed to deserialize (" << filepath << ")\n\t" << e);
+		    return false;
 		}catch(...){
-			PH_WARNING("Failed to deserialize (" << filepath << ")");
+			PH_WARNING("Failed to deserialize (" << filepath << ")\n\tUNKNOWN ERROR");
+			return false;
 		};
 
+		return true;
 	}
 
 }

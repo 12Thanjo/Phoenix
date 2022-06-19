@@ -26,19 +26,26 @@
 			std::cout << "Continuing...\n";\
 		}
 #else
-	#define PH_LOG_LEVEL(x)
+	#undef PH_LOG_LEVEL
 
-	#define PH_LOG(x)
-	#define PH_INFO(x)
-	#define PH_WARNING(x)
-	#define PH_ERROR(x)
-	#define PH_FATAL(x)
+	#undef PH_LOG
+	#undef PH_INFO
+	#undef PH_WARNING
+	#undef PH_ERROR
+	#undef PH_FATAL
 
-	#define PH_TRACE()
+	#undef PH_TRACE
 
-	#define PH_ASSERT(x, y)
+	#undef PH_ASSERT
 #endif
 
+
+
+#define PH_THROW(cond, msg) if(!(cond)){ \
+		std::stringstream throw_message{}; \
+		throw_message << msg; \
+		throw throw_message.str(); \
+	}
 
 
 namespace Phoenix::_logging{

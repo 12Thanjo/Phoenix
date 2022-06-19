@@ -18,7 +18,7 @@ namespace Phoenix{
 
 		_serializer = new Serializer();
 
-		PH_INFO("Initialized: ECS Scene (" << scene_name << ")");
+		PH_INFO("Initialized: ECS Scene");
 	}
 
 
@@ -27,7 +27,7 @@ namespace Phoenix{
 
 		_serializer = new Serializer();
 
-		PH_INFO("Initialized: ECS Scene (" << scene_name << ")");
+		PH_INFO("Initialized: ECS Scene");
 	}
 
 
@@ -137,8 +137,8 @@ namespace Phoenix{
 		_serializer->serialize(this, filepath);
 	}
 
-	void Scene::deserialize(const std::string& filepath){
-		_serializer->deserialize(this, filepath);
+	bool Scene::deserialize(const std::string& filepath){
+		return _serializer->deserialize(this, filepath);
 	}
 
 }

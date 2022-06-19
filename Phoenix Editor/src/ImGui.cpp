@@ -92,13 +92,6 @@ namespace Phoenix{
 	}
 
 
-	///////////////////////////////////////////////////////////////////////////////
-
-
-	// void imgui_begin(std::string id, std::string name){
-	// 	std::string imgui_id = name + "###" + id;
-	// 	ImGui::Begin(imgui_id.c_str());
-	// }
 
 	///////////////////////////////////////////////////////////////////////////////
 
@@ -229,50 +222,6 @@ namespace Phoenix{
 
 
 
-			// performance metrics
-			imgui_begin("1", "Performance");
-				ImGui::Text("General:");
-				ImGui::Indent();
-					ImGui::Text("FPS:        %.1f", 1 / (_editor->performanceMetrics.engineLoop / 1000000));
-					ImGui::Text("Frame Time: %.3f ms", _editor->performanceMetrics.engineLoop / 1000);
-					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.renderLoop / 1000);
-					ImGui::Text("Draw:       %.3f ms", _editor->performanceMetrics.draw / 1000);
-				ImGui::Unindent();
-
-				imgui_separator();
-
-				ImGui::Text("3D Rendering:");
-				ImGui::Indent();
-					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.render3D / 1000);
-					ImGui::Text("Draw:       %.3f ms", _editor->performanceMetrics.draw3D / 1000);
-					ImGui::Text("Draw Calls: %d", _editor->performanceMetrics.drawCalls3D);
-					ImGui::Text("Verticies:  %d", _editor->performanceMetrics.verticies3D);
-					ImGui::Text("Indicies:   %d", _editor->performanceMetrics.indicies3D);
-				ImGui::Unindent();
-
-				imgui_separator();
-
-				ImGui::Text("2D Rendering:");
-				ImGui::Indent();
-					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.render2D / 1000);
-					ImGui::Text("Draw:       %.3f ms", _editor->performanceMetrics.draw2D / 1000);
-					ImGui::Text("Draw Calls: %d", _editor->performanceMetrics.drawCalls2D);
-					ImGui::Text("Verticies:  %d", _editor->performanceMetrics.verticies2D);
-					ImGui::Text("Indicies:   %d", _editor->performanceMetrics.indicies2D);
-				ImGui::Unindent();
-
-				imgui_separator();
-
-				ImGui::Text("ECS:");
-				ImGui::Indent();
-					ImGui::Text("Entites:    %d", _editor->performanceMetrics.entites);
-					ImGui::Text("Update:     %.3f ms", _editor->performanceMetrics.updateECS / 1000);
-					ImGui::Text("Render:     %.3f ms", _editor->performanceMetrics.renderECS / 1000);
-				ImGui::Unindent();
-
-			ImGui::End();
-
-
 			// panels
 			for(auto panel : _panels){
 				panel->render(_editor);
@@ -342,11 +291,14 @@ namespace Phoenix{
 	void RendererImGui::open(std::string filepath){
 		_editor->clearScene();
 
-		_editor->deserialize(filepath);
-		_open_file = filepath;
-		_just_opened = true;
+		if(_editor->deserialize(filepath)){
+			_open_file = filepath;
+			_just_opened = true;
 
-		PH_LOG("Opened Scene: " << _open_file);
+			PH_LOG("Opened Scene: " << _open_file);
+		}else{
+			newScene();
+		}
 	}
 
 
