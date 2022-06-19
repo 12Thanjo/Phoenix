@@ -40,7 +40,7 @@
 #endif
 
 
-
+// This is meant work in prod too
 #define PH_THROW(cond, msg) if(!(cond)){ \
 		std::stringstream throw_message{}; \
 		throw_message << msg; \
