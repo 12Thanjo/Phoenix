@@ -109,7 +109,7 @@ namespace Phoenix{
 		private:
 			void check_float(const std::string& string, int period_count){
 				int periods = 0;
-				int chars = 1;
+				int chars = 0;
 				for(auto& character : string){
 					switch(character){
 						case '0': break;
@@ -125,8 +125,12 @@ namespace Phoenix{
 						case '.':
 							periods += 1;
 							break;
+						case '-':
+							if(chars == 0){
+								break;
+							}
 						case ' ': 
-							if(chars == 1){
+							if(chars == 0){
 								break;
 							}
 						default:

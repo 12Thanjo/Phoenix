@@ -82,7 +82,7 @@ namespace Phoenix{
 			inline void destroyEntity(Entity& entity){ _scene->destroyEntity(entity); };
 
 			inline void	serialize(const std::string& filepath) const { _scene->serialize(filepath); }
-			inline bool	deserialize(const std::string& filepath) const { return _scene->deserialize(filepath); }
+			inline std::string deserialize(const std::string& filepath) const { return _scene->deserialize(filepath); }
 
 
 			// rendering								

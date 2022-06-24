@@ -38,6 +38,15 @@ namespace Phoenix::Component{
 	};
 
 
+	struct Script{
+		std::string path;
+
+		Script() = default;
+		Script(const std::string& script_path)
+			: path(script_path) {};
+	};
+
+
 	//////////////////////////////////////////////////////////////////////
 	// cameras
 

@@ -17,6 +17,7 @@
 
 // utils
 #include "src/utils/FileDialogs.h"
+#include "src/utils/Files.h"
 
 // assets
 #include "src/assets/shaders.h"

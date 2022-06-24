@@ -34,6 +34,8 @@
 
 
 namespace jxcore{
+
+	// static JXValue eventCB = {0};
 	
 	void ConvertResult(JXValue *result, std::string &to_result) {
 		switch (result->type_) {
@@ -152,9 +154,6 @@ namespace jxcore{
 
 
 
-
-
-
 	void run(std::string file, std::string code){
 
 		JXValue result;
@@ -170,6 +169,15 @@ namespace jxcore{
 	}
 
 
+	// static void defineEventCB(JXValue *results, int argc) {
+	//   if (!JX_IsFunction(results + 1)) {
+	//     PH_WARNING("defineEventCB expects a function");
+	//     return;
+	//   }
+
+	//   JX_MakePersistent(results+1);
+	//   eventCB = *(results + 1);
+	// }
 
 
 	void callback(JXResult *results, int argc) {
@@ -190,6 +198,7 @@ namespace jxcore{
 		JX_DefineExtension("test_func", test_func);
 		JX_DefineExtension("log", log);
 		JX_DefineExtension("warning", warning);
+		// JX_DefineExtension("warning", defineEventCB);
 
 
 		JX_DefineFile("test.js", "exports.x=4");
@@ -213,8 +222,25 @@ namespace jxcore{
 
 		run("internal", "console.log('jxcore!');");
 
+
+		JXValue cb;
+		JXValue test;
+		JXValue out;
+
+		JX_Evaluate("(function (x) { console.log('x:', x); })", "", &cb);
+		JX_Evaluate(read_file("assets/scripts/test.js").c_str(), "", &test);
+
+		// JXValue foo;
+		// const int32_t val = 12;
+		// JX_SetInt32(&foo, val);
+
+		JXValue params[1] = { cb };
+		// JX_CallFunction(&cb, params, 1, &out);
+
+		JX_CallFunction(&test, params, 1, &out);
 		// run("./test.js", file);
 
+		// run("assets/scripts/test.js", read_file("assets/scripts/test.js"));
 
 		// loop for possible IO
 		// or JX_Loop() without usleep / while

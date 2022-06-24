@@ -12,6 +12,8 @@
 
 
 namespace Phoenix{
+
+	static MyGui mygui{};
 	
 	RendererImGui::RendererImGui(Engine* engine)
 		: _editor(engine) {
@@ -46,10 +48,10 @@ namespace Phoenix{
 		ImGui_ImplOpenGL3_Init("#version 410");
 
 
+		_panels.push_back(static_cast<Panel*>(new ScenePanel()));
 		_panels.push_back(static_cast<Panel*>(new SceneHierarchyPanel()));
 		_panels.push_back(static_cast<Panel*>(new AssetBrowserPanel()));
 		_panels.push_back(static_cast<Panel*>(new PerformancePanel()));
-		_panels.push_back(static_cast<Panel*>(new ScenePanel()));
 
 
 		PH_INFO("ImGui Initialized");
@@ -229,6 +231,8 @@ namespace Phoenix{
 
 			// ImGui::ShowDemoWindow();
 
+			mygui.alert();
+
 
 			ImGui::End();
 		}
@@ -291,12 +295,14 @@ namespace Phoenix{
 	void RendererImGui::open(std::string filepath){
 		_editor->clearScene();
 
-		if(_editor->deserialize(filepath)){
+		std::string deserialize = _editor->deserialize(filepath);
+		if(deserialize.empty()){
 			_open_file = filepath;
 			_just_opened = true;
 
 			PH_LOG("Opened Scene: " << _open_file);
 		}else{
+			mygui.start_alert(deserialize);
 			newScene();
 		}
 	}

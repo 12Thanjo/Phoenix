@@ -47,5 +47,11 @@ namespace Phoenix::Utils{
 
 		return output;
 	}
+
+
+
+	 void openInDefaultProgram(std::string filepath){
+		ShellExecuteA(NULL, "open", filepath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
 	
 }

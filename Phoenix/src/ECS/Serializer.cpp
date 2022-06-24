@@ -8,6 +8,12 @@
 #include "src/naml/Deserialize.h"
 
 
+#define DESERIALIZE_ERROR(msg) PH_WARNING(msg); \
+	std::stringstream ss; \
+	ss << msg; \
+	return ss.str();
+
+
 namespace Phoenix{
 
 
@@ -71,11 +77,12 @@ namespace Phoenix{
 					serializer.endGroup();
 				}
 
-
-
-				if(entity.hasComponent<Component::SpriteRenderer>()){
-					serialize_vec4(serializer, "SpriteRenderer", entity.getComponent<Component::SpriteRenderer>().color);
+				if(entity.hasComponent<Component::Script>()){
+					serializer.keyValue("Script", entity.getComponent<Component::Script>().path);
 				}
+
+				//////////////////////////////////////////////////////////////////////
+				// Cameras
 
 				if(entity.hasComponent<Component::PerspectiveCamera>()){
 					auto component = entity.getComponent<Component::PerspectiveCamera>();
@@ -103,10 +110,19 @@ namespace Phoenix{
 					serializer.endGroup();
 				}
 
+
+				//////////////////////////////////////////////////////////////////////
+				// Rendering
+
+				if(entity.hasComponent<Component::SpriteRenderer>()){
+					serialize_vec4(serializer, "SpriteRenderer", entity.getComponent<Component::SpriteRenderer>().color);
+				}
 				
 				if(entity.hasComponent<Component::Cube>()){
 					serialize_vec4(serializer, "Cube", entity.getComponent<Component::Cube>().color);
 				}
+
+
 
 
 				serializer.endGroup();
@@ -124,7 +140,7 @@ namespace Phoenix{
 
 
 
-	bool Serializer::deserialize(Scene* scene, const std::string& filepath){
+	std::string Serializer::deserialize(Scene* scene, const std::string& filepath){
 		try{
 			//////////////////////////////////////////////////////////
 			// load file
@@ -172,6 +188,12 @@ namespace Phoenix{
 						component->get("position")->value<glm::vec3>(),
 						component->get("rotation")->value<glm::vec3>(),
 						component->get("scale")->value<glm::vec3>()
+					);
+				}
+
+				if(node->has("Script")){
+					entity.addComponent<Component::Script>(
+						node->get("Script")->value<std::string>()
 					);
 				}
 
@@ -228,20 +250,20 @@ namespace Phoenix{
 				// PH_LOG(position.x << ", " << position.y << ", " << position.z);
 			});
 		}catch(const std::runtime_error& e){
-			PH_WARNING("Failed to deserialize (" << filepath << ")\n\t" << e.what());
-			return false;
+			DESERIALIZE_ERROR("Failed to deserialize (" << filepath << ")\n\t" << e.what());
+			// return false;
 		}catch(const std::exception& e){
-		    PH_WARNING("Failed to deserialize (" << filepath << ")\n\t" << e.what());
-		    return false;
+		    DESERIALIZE_ERROR("Failed to deserialize (" << filepath << ")\n\t" << e.what());
+		    // return false;
 		}catch(const std::string& e){
-		    PH_WARNING("Failed to deserialize (" << filepath << ")\n\t" << e);
-		    return false;
+		    DESERIALIZE_ERROR("Failed to deserialize (" << filepath << ")\n\t" << e);
+		    // return false;
 		}catch(...){
-			PH_WARNING("Failed to deserialize (" << filepath << ")\n\tUNKNOWN ERROR");
-			return false;
+			DESERIALIZE_ERROR("Failed to deserialize (" << filepath << ")\n\tUNKNOWN ERROR");
+			// return false;
 		};
 
-		return true;
+		return std::string();
 	}
 
 }

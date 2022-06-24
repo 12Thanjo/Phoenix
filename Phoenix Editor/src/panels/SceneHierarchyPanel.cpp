@@ -4,6 +4,8 @@
 #include "../ImGui helpers.h"
 
 
+
+
 namespace Phoenix{
 	
 	void SceneHierarchyPanel::render(Engine* editor){
@@ -215,6 +217,7 @@ namespace Phoenix{
 
 		if(ImGui::BeginPopup("AddComponent") || ImGui::BeginPopupContextWindow(0, 1, false)){
 			bool has_transform = _selection_context.hasComponent<Component::Transform>();
+			bool has_script = _selection_context.hasComponent<Component::Script>();
 
 			bool has_perspective = _selection_context.hasComponent<Component::PerspectiveCamera>();
 			bool has_orbital = _selection_context.hasComponent<Component::OrbitalCamera>();
@@ -241,6 +244,14 @@ namespace Phoenix{
 			imgui_begin_disable_menu_item(has_transform, true);
 				if(ImGui::MenuItem("Transform")){
 					_selection_context.addComponent<Component::Transform>();
+					ImGui::CloseCurrentPopup();
+				}
+			imgui_end_disable_menu_item();
+
+
+			imgui_begin_disable_menu_item(has_script, true);
+				if(ImGui::MenuItem("Script")){
+					_selection_context.addComponent<Component::Script>();
 					ImGui::CloseCurrentPopup();
 				}
 			imgui_end_disable_menu_item();
@@ -319,6 +330,42 @@ namespace Phoenix{
 				imgui_draw_vec3_control("Scale", component.scale, 0.5f, 60.0f, 0.01f);
 			}
 
+		});
+
+
+		draw_comonent<Component::Script>("Script", entity, [&entity](auto& component){
+			float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+
+			// ImGui::Columns(2, 0, false);
+			ImGui::Text("Script:");
+			ImGui::SameLine();
+			std::string button_label;
+
+			if(!component.path.empty()){
+				button_label = component.path;
+			}else{
+				button_label = "Add Script...";
+			};
+
+
+			if(imgui_button(button_label, ImGui::GetContentRegionAvail().x, line_height) && !component.path.empty()){
+				// Do nothing when clicked (at least for now)
+			}
+
+			if(ImGui::BeginDragDropTarget()){
+				if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset Browser Item")){
+					const wchar_t* path = (const wchar_t*)payload->Data;
+
+					std::filesystem::path filesystem_path(path);
+					if(filesystem_path.extension() == ".js"){
+						std::string path_string = filesystem_path.string();
+						component.path = path_string;
+					}else{
+						PH_WARNING("Attempted to drag & load a non-script");
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
 		});
 
 

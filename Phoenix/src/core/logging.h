@@ -26,17 +26,17 @@
 			std::cout << "Continuing...\n";\
 		}
 #else
-	#undef PH_LOG_LEVEL
+	#define PH_LOG_LEVEL(x)
 
-	#undef PH_LOG
-	#undef PH_INFO
-	#undef PH_WARNING
-	#undef PH_ERROR
-	#undef PH_FATAL
+	#define PH_LOG(x)
+	#define PH_INFO(x)
+	#define PH_WARNING(x)
+	#define PH_ERROR(x)
+	#define PH_FATAL(x)
 
-	#undef PH_TRACE
+	#define PH_TRACE()
 
-	#undef PH_ASSERT
+	#define PH_ASSERT(cons, msg)
 #endif
 
 

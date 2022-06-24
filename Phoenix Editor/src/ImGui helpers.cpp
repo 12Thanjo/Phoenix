@@ -142,10 +142,13 @@ namespace Phoenix{
 	}
 
 
+	bool imgui_button(std::string label, float width, float height){
+		return ImGui::Button(label.c_str(), ImVec2{width, height});
+	}
 
 
-	void imgui_image_button(glID id, float width, float height){
-		ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0});
+	bool imgui_image_button(glID id, float width, float height){
+		return ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0});
 	}
 
 
@@ -195,4 +198,30 @@ namespace Phoenix{
 		ImGui::PopStyleVar();
 	}
 
+
+
+	void MyGui::alert(){
+		if(_open_alert){
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			
+			ImGui::OpenPopup("Alert");
+			if(ImGui::BeginPopupModal("Alert", NULL, 0)){
+			    ImGui::Text(_alert_text.c_str());
+
+			    if(ImGui::Button("Close")){
+			        ImGui::CloseCurrentPopup();
+			        _open_alert = false;
+			    }
+			    ImGui::EndPopup();
+			}
+		}
+	}
+
+
+	void MyGui::start_alert(std::string text){
+		_alert_text = text;
+		_open_alert = true;
+		alert();
+	}
 }

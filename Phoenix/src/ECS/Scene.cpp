@@ -137,7 +137,7 @@ namespace Phoenix{
 		_serializer->serialize(this, filepath);
 	}
 
-	bool Scene::deserialize(const std::string& filepath){
+	std::string Scene::deserialize(const std::string& filepath){
 		return _serializer->deserialize(this, filepath);
 	}
 
