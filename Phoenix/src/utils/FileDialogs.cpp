@@ -12,7 +12,20 @@
 
 namespace Phoenix{
 
-	std::string FileDialogs::open(Window& window, const char* filter){
+	std::string get_filter_str(std::map<std::string, std::string>& filters){
+		std::string filter_str = "";
+
+		for(auto& filter : filters){
+			filter_str += filter.first + '\0' + filter.second + '\0';
+		}
+
+		return filter_str;
+	}
+
+
+	std::string FileDialogs::open(Window& window, FileDialogsConfig config){
+		std::string filter_str = get_filter_str(config.filters);
+
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
@@ -24,7 +37,10 @@ namespace Phoenix{
 		if(GetCurrentDirectoryA(256, currentDir)){
 			ofn.lpstrInitialDir = currentDir;
 		}
-		ofn.lpstrFilter = filter;
+
+		ofn.lpstrFilter = filter_str.c_str();
+		ofn.lpstrTitle = config.title;
+
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
@@ -36,7 +52,10 @@ namespace Phoenix{
 	}
 
 
-	std::string FileDialogs::save(Window& window, const char* filter){
+	std::string FileDialogs::save(Window& window, FileDialogsConfig config){
+		std::string filter_str = get_filter_str(config.filters);
+
+
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
@@ -48,12 +67,15 @@ namespace Phoenix{
 		if(GetCurrentDirectoryA(256, currentDir)){
 			ofn.lpstrInitialDir = currentDir;
 		}
-		ofn.lpstrFilter = filter;
+
+		ofn.lpstrFilter = filter_str.c_str();
+		ofn.lpstrTitle = config.title;
+
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
 		// Sets the default extension by extracting it from the filter
-		ofn.lpstrDefExt = strchr(filter, '\0') + 1;
+		ofn.lpstrDefExt = strchr(ofn.lpstrFilter, '\0') + 1;
 
 		if(GetSaveFileNameA(&ofn) == TRUE){
 			return ofn.lpstrFile;

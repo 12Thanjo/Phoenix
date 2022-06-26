@@ -126,7 +126,7 @@ namespace Phoenix{
 							periods += 1;
 							break;
 						case '-':
-							if(chars == 0){
+							if(chars == 0 || chars == 1){
 								break;
 							}
 						case ' ': 
@@ -135,7 +135,7 @@ namespace Phoenix{
 							}
 						default:
 							std::stringstream ss{};
-							ss << "Expected a float, got (" << character << ")\n\tfound in: " << string << create_pointer_string(chars);
+							ss << "Expected a float, got (" << character << ")\n\tfound in: " << string << create_error_position_string(chars);
 							throw ss.str();
 					}
 					
@@ -149,10 +149,10 @@ namespace Phoenix{
 				}
 			}
 
-			std::string create_pointer_string(int chars){
+			std::string create_error_position_string(int chars){
 				std::stringstream ss{};
 
-				ss << "\n\t         ";
+				ss << "\n\t          ";
 				for(int i = 0; i < chars; i += 1){
 					ss << " ";
 				}

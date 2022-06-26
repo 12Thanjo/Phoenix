@@ -12,8 +12,6 @@
 
 
 namespace Phoenix{
-
-	static MyGui mygui{};
 	
 	RendererImGui::RendererImGui(Engine* engine)
 		: _editor(engine) {
@@ -209,7 +207,7 @@ namespace Phoenix{
 							std::filesystem::path filesystem_path(path);
 							if(filesystem_path.extension() == ".phoenix"){
 								std::string path_string = filesystem_path.string();
-								open(path_string);
+								open_scene(path_string);
 							}else{
 								PH_WARNING("Attempted to drag & load a non-scene");
 							}
@@ -231,7 +229,7 @@ namespace Phoenix{
 
 			// ImGui::ShowDemoWindow();
 
-			mygui.alert();
+			imgui_alert();
 
 
 			ImGui::End();
@@ -284,15 +282,51 @@ namespace Phoenix{
 		_open_file = std::string();
 	}
 
-	void RendererImGui::open(){
-		std::string filepath = FileDialogs::open(*_editor->getWindow(), "Phoenix Scene (*.phoenix)\0*.phoenix\0");
+	std::string RendererImGui::newProject(){
+		return FileDialogs::save(*_editor->getWindow(), {
+			.title = "Create Project",
+			.filters = {
+				{"Phoenix Project", ""}
+			}
+		});
+	}
+
+	std::string RendererImGui::open(){
+		std::string filepath = FileDialogs::open(*_editor->getWindow(), {
+			.filters = {
+				{"Phoenix Scene (*.phoenix)", "*.phoenix"}
+			}
+		});
 
 		if(!filepath.empty()){
 			open(filepath);
 		}
+
+		return filepath;
 	}
 
+	// void RendererImGui::open(std::string filepath){
+	// 	_editor->clearScene();
+
+	// 	std::string deserialize = _editor->deserialize(filepath);
+	// 	if(deserialize.empty()){
+	// 		_open_file = filepath;
+	// 		_just_opened = true;
+
+	// 		PH_LOG("Opened Scene: " << _open_file);
+	// 	}else{
+	// 		imgui_start_alert(deserialize);
+	// 		newScene();
+	// 	}
+	// }
+
 	void RendererImGui::open(std::string filepath){
+		PH_WARNING("Open doesn't do anything");
+		PH_TRACE();
+	}
+
+
+	void RendererImGui::open_scene(std::string filepath){
 		_editor->clearScene();
 
 		std::string deserialize = _editor->deserialize(filepath);
@@ -302,7 +336,7 @@ namespace Phoenix{
 
 			PH_LOG("Opened Scene: " << _open_file);
 		}else{
-			mygui.start_alert(deserialize);
+			imgui_start_alert(deserialize);
 			newScene();
 		}
 	}
@@ -320,7 +354,11 @@ namespace Phoenix{
 	}
 
 	void RendererImGui::save_as(){
-		std::string filepath = FileDialogs::save(*_editor->getWindow(), "Phoenix Scene (*.phoenix)\0*.phoenix\0");
+		std::string filepath = FileDialogs::save(*_editor->getWindow(), {
+			.filters = {
+				{"Phoenix Scene (*.phoenix)", "*.phoenix"}
+			}
+		});
 
 		if(!filepath.empty()){
 			_open_file = filepath;

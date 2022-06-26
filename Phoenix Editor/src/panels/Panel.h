@@ -8,6 +8,7 @@
 #include "backends/imgui_impl_glfw.h"
 
 namespace Phoenix{
+	class MyGui;
 	
 	class Panel{
 		private:

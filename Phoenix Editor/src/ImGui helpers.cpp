@@ -142,6 +142,25 @@ namespace Phoenix{
 	}
 
 
+
+	//////////////////////////////////////////////////////////////////////
+	// buttons
+
+	bool imgui_button(std::string label){
+		return ImGui::Button(label.c_str(), ImVec2{
+			ImGui::GetContentRegionAvail().x,
+			GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f
+		});
+	}
+
+
+	bool imgui_button(std::string label, float width){
+		return ImGui::Button(label.c_str(), ImVec2{
+			width,
+			GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f
+		});
+	}
+
 	bool imgui_button(std::string label, float width, float height){
 		return ImGui::Button(label.c_str(), ImVec2{width, height});
 	}
@@ -153,7 +172,8 @@ namespace Phoenix{
 
 
 
-
+	//////////////////////////////////////////////////////////////////////
+	// menus
 
 	void imgui_draw_collapsable_menu(const std::string& label, std::function<void()> ui_function){
 		const ImGuiTreeNodeFlags tree_node_flags = 
@@ -200,18 +220,24 @@ namespace Phoenix{
 
 
 
-	void MyGui::alert(){
-		if(_open_alert){
+	//////////////////////////////////////////////////////////////////////
+	// popups
+
+	static bool open_alert = false;
+	static std::string alert_text = "Alert Text...";
+
+	void imgui_alert(){
+		if(open_alert){
 			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
 			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 			
 			ImGui::OpenPopup("Alert");
 			if(ImGui::BeginPopupModal("Alert", NULL, 0)){
-			    ImGui::Text(_alert_text.c_str());
+			    ImGui::Text(alert_text.c_str());
 
 			    if(ImGui::Button("Close")){
 			        ImGui::CloseCurrentPopup();
-			        _open_alert = false;
+			        open_alert = false;
 			    }
 			    ImGui::EndPopup();
 			}
@@ -219,9 +245,23 @@ namespace Phoenix{
 	}
 
 
-	void MyGui::start_alert(std::string text){
-		_alert_text = text;
-		_open_alert = true;
-		alert();
+	void imgui_start_alert(std::string text){
+		alert_text = text;
+		open_alert = true;
+		imgui_alert();
+	}
+
+
+
+
+	void imgui_popup(std::string title, std::function<void()> draw_window){
+		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+		
+		ImGui::OpenPopup(title.c_str());
+		if(ImGui::BeginPopupModal(title.c_str(), NULL, 0)){
+		   	draw_window();
+		    ImGui::EndPopup();
+		}
 	}
 }

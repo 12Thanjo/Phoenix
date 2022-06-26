@@ -4,10 +4,160 @@
 #include <windows.h>
 #include <stdio.h>
 
-namespace Phoenix::Utils{
+
+#define FILE_PATH_REF 	   const std::string& path
+#define ERROR_CALLBACK std::function<void(std::string)> error_callback
+
+#define RUN_ERROR_CHECK(func) try{ \
+			return func; \
+		}catch(const fs::filesystem_error& err){ \
+			error_callback(err.what()); \
+			return false; \
+		}
+
+
+
+namespace Files{
+
+	namespace fs = std::filesystem;
 	
-	static std::string getFileCreationTime(std::string filepath){
-		std::wstring widestr = std::wstring(filepath.begin(), filepath.end());
+	
+	std::string readFile(FILE_PATH_REF){
+		std::ifstream file(path);
+		std::stringstream stream;
+
+		std::string line;
+		while(getline(file, line)){
+			stream << line << "\n";
+		};
+
+		return stream.str();
+	}
+
+	void writeFile(FILE_PATH_REF, const std::string& output){
+		std::ofstream fout(path);
+		fout << output;
+	}
+
+
+
+
+	bool deleteFile(FILE_PATH_REF, ERROR_CALLBACK){
+		RUN_ERROR_CHECK(fs::remove(path));
+	}
+
+	bool copyFile(FILE_PATH_REF, const std::string& destination, ERROR_CALLBACK){
+		RUN_ERROR_CHECK(fs::copy_file(path, destination));
+	}
+
+	bool renameFile(FILE_PATH_REF, const std::string& name, ERROR_CALLBACK){
+		try{ 
+			fs::rename(path, name);
+			return true;
+		}catch(const fs::filesystem_error& err){
+			error_callback(err.what());
+			return false;
+		}
+	}
+
+
+	bool fileExists(FILE_PATH_REF, ERROR_CALLBACK){
+		RUN_ERROR_CHECK(fs::exists(path));
+	}
+
+
+
+	bool createDirectory(FILE_PATH_REF, ERROR_CALLBACK){
+		RUN_ERROR_CHECK(fs::create_directories(path));
+	}
+
+	bool deleteDirectory(FILE_PATH_REF, ERROR_CALLBACK){
+		RUN_ERROR_CHECK(fs::remove_all(path));
+	}
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// path manipulation
+
+
+	std::string getFileExtention(std::string path){
+		size_t dot_index = path.find_last_of('.');
+		size_t forward = path.find_last_of('/');
+		size_t backward = path.find_last_of('\\');
+		if(dot_index < forward || dot_index < backward){
+		    return "";
+		}else{
+		    return path.substr(dot_index + 1);
+		}
+	}
+
+	std::string getFileName(std::string path){
+	    size_t forward = path.find_last_of('/');
+	    size_t backward = path.find_last_of('\\');
+	    if(forward > backward){
+	    	return path.substr(forward+1);	
+	    }else{
+	    	return path.substr(backward+1);
+	    }
+	}
+
+
+	std::string getFileNameWithoutExtention(std::string path){
+		std::string name = getFileName(path);
+		std::string ext = getFileExtention(path);
+		if(ext != ""){
+		    return name.substr(0, name.length() - ext.length() - 1);
+		}else{
+		    return name;
+		}
+	}
+
+
+	std::string normalize(std::string path, bool forwards){
+		if(forwards == false){
+			std::replace( path.begin(), path.end(), '\\', '/');
+		}else{
+			std::replace( path.begin(), path.end(), '/', '\\');
+		}
+
+		return path;
+	}
+
+
+	std::string getFilePath(std::string path){
+	    if(getFileExtention(path) != ""){
+	        return normalize(path).substr(0, path.find_last_of('/') + 1);
+	    }else{
+	        return path;
+	    };
+	}
+
+
+	std::string getFilePathUpDirectory(std::string path, int number){
+		if(getFileExtention(path) != ""){
+		    number += 1;
+		}
+
+		path = normalize(path);
+
+		for(int i = 0; i < number; i += 1){
+			char last_char = path[path.length()-1];
+		    if(last_char == '/' || last_char == '\\'){
+		        path = path.substr(0, path.length()-1);      
+		    }
+		    path = path.substr(0, path.find_last_of("/")+1);
+		}
+
+		return path;
+	}
+
+	
+	//////////////////////////////////////////////////////////////////////
+
+
+	std::string getFileCreationTime(FILE_PATH_REF){
+		std::wstring widestr = std::wstring(path.begin(), path.end());
 		const wchar_t* widecstr = widestr.c_str();
 
 		HANDLE hFile1;
@@ -31,10 +181,6 @@ namespace Phoenix::Utils{
 		// printf("UTC System Time format:\n");
 		// printf("Created on: %02d/%02d/%d %02d:%02d\n", stUTC.wDay, stUTC.wMonth, stUTC.wYear, stUTC.wHour, stUTC.wMinute);
 
- 
-
-
-
 		std::string output =
 			std::to_string(stUTC.wYear)   + "," +
 			std::to_string(stUTC.wMonth)  + "," +
@@ -50,8 +196,12 @@ namespace Phoenix::Utils{
 
 
 
-	 void openInDefaultProgram(std::string filepath){
-		ShellExecuteA(NULL, "open", filepath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	void openInDefaultProgram(FILE_PATH_REF){
+		ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
-	
+
+
 }
+
+
+#undef ERROR_CALLBACK

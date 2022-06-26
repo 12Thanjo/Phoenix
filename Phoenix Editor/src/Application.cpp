@@ -7,7 +7,7 @@
 
 namespace Phoenix{
 
-	Editor::Editor() : _renderer_ImGui(dynamic_cast<Engine*>(this)) {};
+	Editor::Editor() : renderer_ImGui(dynamic_cast<Engine*>(this)) {};
 	Editor::~Editor(){
 		delete _output_buffer;
 	};
@@ -30,19 +30,19 @@ namespace Phoenix{
 					switch(static_cast<KeyDownEvent&>(e).getKeycode()){
 						case PH_KEY_O:
 							if(ctrl_down){
-								_renderer_ImGui.open();
+								renderer_ImGui.open();
 							}
 							break;
 						case PH_KEY_S:
 							if(ctrl_down && shift_down){
-								_renderer_ImGui.save_as();
+								renderer_ImGui.save_as();
 							}else if(ctrl_down){
-								_renderer_ImGui.save();
+								renderer_ImGui.save();
 							}
 							break;
 						case PH_KEY_N:
 							if(ctrl_down){
-								_renderer_ImGui.newScene();
+								renderer_ImGui.newScene();
 							}
 							break;
 					};
@@ -99,7 +99,7 @@ namespace Phoenix{
 
 
 
-		_renderer_ImGui.init();
+		renderer_ImGui.init();
 	}
 
 
@@ -113,9 +113,9 @@ namespace Phoenix{
 
 		_output_buffer->unbind();
 		
-		_renderer_ImGui.begin();
-		_renderer_ImGui.render(_output_buffer);
-		_renderer_ImGui.end();
+		renderer_ImGui.begin();
+		renderer_ImGui.render(_output_buffer);
+		renderer_ImGui.end();
 	}
 
 

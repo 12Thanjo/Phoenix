@@ -132,30 +132,20 @@ namespace Phoenix{
 		serializer.endGroup();
 
 
-		std::ofstream fout(filepath);
-		fout << serializer.output().c_str();
+		// std::ofstream fout(filepath);
+		// fout << serializer.output().c_str();
 
-
+		Files::writeFile(filepath, serializer.output().c_str());
 	}
 
 
 
 	std::string Serializer::deserialize(Scene* scene, const std::string& filepath){
 		try{
-			//////////////////////////////////////////////////////////
-			// load file
-			std::ifstream file(filepath);
-			std::stringstream stream;
-
-			std::string line;
-			while(getline(file, line)){
-				stream << line << "\n";
-			};
-
 
 			//////////////////////////////////////////////////////////
 			// deserialize
-			NAML_DE naml{stream.str()};
+			NAML_DE naml{Files::readFile(filepath)};
 
 			scene->name = naml.get()->get("Name")->value<std::string>();
 			scene->uuid = { naml.get()->get("Scene")->value<uint64_t>()};

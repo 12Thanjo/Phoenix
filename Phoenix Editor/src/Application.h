@@ -14,6 +14,10 @@ namespace Phoenix{
 			void create() override;
 			void render() override;
 
+		public:
+			RendererImGui renderer_ImGui;
+
+
 		private:
 			void pan_camera(float dx, float dy);
 			void rotate_camera(float dx, float dy);
@@ -23,8 +27,6 @@ namespace Phoenix{
 
 
 		private:
-			RendererImGui _renderer_ImGui;
-
 			FrameBuffer* _output_buffer;
 
 			float _mouse_x = 0;

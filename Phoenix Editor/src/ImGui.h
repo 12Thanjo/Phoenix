@@ -18,12 +18,13 @@ namespace Phoenix{
 			void end();
 			void render(FrameBuffer* render_buffer);
 
-
 			void set_dark_theme();
 
 			void newScene();
-			void open();
+			std::string newProject();
+			std::string open();
 			void open(std::string filepath);
+			void open_scene(std::string filepath);
 			void save();
 			void save_as();
 			
