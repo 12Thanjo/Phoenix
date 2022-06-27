@@ -49,8 +49,8 @@ namespace Phoenix{
 	//////////////////////////////////////////////////////////////////////
 	// popups
 
-	void imgui_start_alert(std::string text);
-	void imgui_alert();
+	void imgui_start_alert(std::string text); // use this to start
+	void imgui_alert(); //call this automatically
 
 	void imgui_popup(std::string title, std::function<void()> draw_window);
 

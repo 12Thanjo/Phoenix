@@ -34,7 +34,7 @@ namespace Phoenix{
 
 			std::vector<Panel*> _panels;
 
-			std::string _open_file;
+			std::string _open_scene;
 
 			bool _just_opened = true;
 	};

@@ -279,7 +279,7 @@ namespace Phoenix{
 
 	void RendererImGui::newScene(){
 		_editor->clearScene();
-		_open_file = std::string();
+		_open_scene = std::string();
 	}
 
 	std::string RendererImGui::newProject(){
@@ -310,10 +310,10 @@ namespace Phoenix{
 
 	// 	std::string deserialize = _editor->deserialize(filepath);
 	// 	if(deserialize.empty()){
-	// 		_open_file = filepath;
+	// 		_open_scene = filepath;
 	// 		_just_opened = true;
 
-	// 		PH_LOG("Opened Scene: " << _open_file);
+	// 		PH_LOG("Opened Scene: " << _open_scene);
 	// 	}else{
 	// 		imgui_start_alert(deserialize);
 	// 		newScene();
@@ -331,10 +331,10 @@ namespace Phoenix{
 
 		std::string deserialize = _editor->deserialize(filepath);
 		if(deserialize.empty()){
-			_open_file = filepath;
+			_open_scene = filepath;
 			_just_opened = true;
 
-			PH_LOG("Opened Scene: " << _open_file);
+			PH_LOG("Opened Scene: " << _open_scene);
 		}else{
 			imgui_start_alert(deserialize);
 			newScene();
@@ -343,13 +343,13 @@ namespace Phoenix{
 
 
 	void RendererImGui::save(){
-		if(!_open_file.empty()){
-			_editor->serialize(_open_file);
+		if(!_open_scene.empty()){
+			_editor->serialize(_open_scene);
 
-
-			PH_LOG("Saved Scene: " << _open_file);
+			PH_LOG("Saved Scene: " << _open_scene);
 		}else{
-			PH_LOG("Attempted to save non open file");
+			imgui_start_alert(std::string("Attempted to save a scene, but there is none currently open"));
+			PH_WARNING("Attempted to save scene, but none open");
 		}
 	}
 
@@ -361,7 +361,7 @@ namespace Phoenix{
 		});
 
 		if(!filepath.empty()){
-			_open_file = filepath;
+			_open_scene = filepath;
 			save();
 		}
 	}
