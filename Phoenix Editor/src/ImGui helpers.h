@@ -54,4 +54,11 @@ namespace Phoenix{
 
 	void imgui_popup(std::string title, std::function<void()> draw_window);
 
+
+	//////////////////////////////////////////////////////////////////////
+	// helpers
+
+	float imgui_get_line_height();
+
+
 }

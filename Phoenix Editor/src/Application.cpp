@@ -28,11 +28,11 @@ namespace Phoenix{
 					break;
 				case PH_KEY_DOWN_EVENT:
 					switch(static_cast<KeyDownEvent&>(e).getKeycode()){
-						case PH_KEY_O:
-							if(ctrl_down){
-								renderer_ImGui.open();
-							}
-							break;
+						// case PH_KEY_O:
+						// 	if(ctrl_down){
+						// 		renderer_ImGui.open();
+						// 	}
+						// 	break;
 						case PH_KEY_S:
 							if(ctrl_down && shift_down){
 								renderer_ImGui.save_as();

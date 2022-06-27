@@ -9,8 +9,8 @@
 namespace Phoenix{
 
 	// change when projects are used
-	static std::filesystem::path project_path = "assets";
-	// static std::filesystem::path project_path;
+	// static std::filesystem::path project_path = "assets";
+	static std::filesystem::path project_path;
 
 
 
@@ -33,6 +33,7 @@ namespace Phoenix{
 
 
 		if(!project_path.empty()){
+			// back button
 			if(_current_dir != project_path){
 				if(ImGui::Button("<-")){
 					_current_dir = _current_dir.parent_path();
@@ -41,6 +42,19 @@ namespace Phoenix{
 				ImGui::Button("-");
 			}
 
+			ImGui::SameLine();
+
+			// open in file explorer button
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0,0,0,0});
+				float size = imgui_get_line_height();
+				if(imgui_image_button(_folder_icon->getID(), size, size)){
+					std::string command = "cd \"" + _current_dir.string() + "\" && start .";
+					system(command.c_str());
+					PH_LOG("Opened File Explorer to: " << _current_dir.string())
+				}
+			ImGui::PopStyleColor();
+
+			// write out current file path
 			ImGui::SameLine();
 			ImGui::Text(_current_dir.string().c_str());
 
@@ -64,7 +78,6 @@ namespace Phoenix{
 							std::string filename = relative_path.filename().string();
 
 							ImGui::PushID(dir_path.string().c_str());
-
 								ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0,0,0,0});
 									if(dir.is_directory()){
 										imgui_image_button(_folder_icon->getID(), thumbnail_size, thumbnail_size);
@@ -78,7 +91,7 @@ namespace Phoenix{
 									if(ImGui::BeginDragDropSource()){
 										const wchar_t* item_path = dir_path.c_str();
 										ImGui::SetDragDropPayload("Asset Browser Item", item_path, (wcslen(item_path) + 1) * sizeof(wchar_t));
-
+										ImGui::Text(dir_path.string().c_str());
 
 										ImGui::EndDragDropSource();
 									}
@@ -106,8 +119,20 @@ namespace Phoenix{
 					std::string new_project_path = static_cast<Editor*>(editor)->renderer_ImGui.newProject();
 					if(!new_project_path.empty()){
 
+						std::function<void(std::string)> error_callback = [](std::string e){
+							PH_ERROR("Directory Creation Error\n\t" << e);
+						};
 
-						project_path = "assets";
+						std::string project_name = Files::getFileNameWithoutExtention(new_project_path);
+
+
+						Files::createDirectory(new_project_path + "\\scripts", error_callback);
+						Files::createDirectory(new_project_path + "\\scenes", error_callback);
+						Files::writeFile(new_project_path + "\\" + Files::getFileName(new_project_path) + ".phoenix", project_name);
+
+						PH_LOG("Created a new Project (" << project_name << ")");
+
+						project_path = new_project_path;
 						_current_dir = project_path;
 					}
 				}
@@ -116,7 +141,7 @@ namespace Phoenix{
 				if(imgui_button("Open", 40)){
 					std::string opened_project_path = static_cast<Editor*>(editor)->renderer_ImGui.open();
 					if(!opened_project_path.empty()){
-						project_path = "assets";
+						project_path = Files::getFilePath(opened_project_path);
 						_current_dir = project_path;
 					}
 				}

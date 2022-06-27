@@ -3,7 +3,7 @@
 
 #include <windows.h>
 #include <stdio.h>
-
+#include "Shlwapi.h"
 
 #define FILE_PATH_REF 	   const std::string& path
 #define ERROR_CALLBACK std::function<void(std::string)> error_callback
@@ -35,6 +35,8 @@ namespace Files{
 	}
 
 	void writeFile(FILE_PATH_REF, const std::string& output){
+		PH_ASSERT(directoryExists(getFilePath(path)), "Invalid Path\n\t" << path);
+
 		std::ofstream fout(path);
 		fout << output;
 	}
@@ -65,6 +67,10 @@ namespace Files{
 		RUN_ERROR_CHECK(fs::exists(path));
 	}
 
+	bool directoryExists(FILE_PATH_REF){
+		return PathFileExistsA(path.c_str()) == 1;
+	}
+
 
 
 	bool createDirectory(FILE_PATH_REF, ERROR_CALLBACK){
@@ -86,17 +92,17 @@ namespace Files{
 		size_t forward = path.find_last_of('/');
 		size_t backward = path.find_last_of('\\');
 		if(dot_index < forward || dot_index < backward){
-		    return "";
-		}else{
 		    return path.substr(dot_index + 1);
+		}else{
+		    return "";
 		}
 	}
 
 	std::string getFileName(std::string path){
 	    size_t forward = path.find_last_of('/');
 	    size_t backward = path.find_last_of('\\');
-	    if(forward > backward){
-	    	return path.substr(forward+1);	
+	    if(forward < backward){
+	    	return path.substr(forward+1);
 	    }else{
 	    	return path.substr(backward+1);
 	    }
@@ -115,10 +121,10 @@ namespace Files{
 
 
 	std::string normalize(std::string path, bool forwards){
-		if(forwards == false){
-			std::replace( path.begin(), path.end(), '\\', '/');
-		}else{
+		if(forwards == true){
 			std::replace( path.begin(), path.end(), '/', '\\');
+		}else{
+			std::replace( path.begin(), path.end(), '\\', '/');
 		}
 
 		return path;
@@ -127,7 +133,7 @@ namespace Files{
 
 	std::string getFilePath(std::string path){
 	    if(getFileExtention(path) != ""){
-	        return normalize(path).substr(0, path.find_last_of('/') + 1);
+	        return path.substr(0, normalize(path).find_last_of('\\'));
 	    }else{
 	        return path;
 	    };
@@ -146,7 +152,7 @@ namespace Files{
 		    if(last_char == '/' || last_char == '\\'){
 		        path = path.substr(0, path.length()-1);      
 		    }
-		    path = path.substr(0, path.find_last_of("/")+1);
+		    path = path.substr(0, path.find_last_of("/"));
 		}
 
 		return path;

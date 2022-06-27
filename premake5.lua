@@ -48,7 +48,8 @@ project "Phoenix"
 	pchsource "Phoenix/ph_pch.cpp"
 
 	linkoptions{
-		"/NODEFAULTLIB:'LIBCMT'"
+		"/NODEFAULTLIB:'LIBCMT'",
+		"/ignore:4006",
 	}
 
 
@@ -95,6 +96,7 @@ project "Phoenix"
 		"jx",
 		-- "NodeJS",
 		"opengl32.lib",
+		"shlwapi.lib",
 	}
 
 	filter "system:windows"

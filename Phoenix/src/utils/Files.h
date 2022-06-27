@@ -16,6 +16,7 @@ namespace Files{
 	bool renameFile(FILE_PATH_REF, const std::string& name, ERROR_CALLBACK);
 	
 	bool fileExists(FILE_PATH_REF, ERROR_CALLBACK);
+	bool directoryExists(FILE_PATH_REF);
 
 	bool createDirectory(FILE_PATH_REF, ERROR_CALLBACK); // supports nested
 	bool deleteDirectory(FILE_PATH_REF, ERROR_CALLBACK); // supports nested
@@ -27,7 +28,7 @@ namespace Files{
 	std::string getFileExtention(std::string path);
 	std::string getFileName(std::string path);
 	std::string getFileNameWithoutExtention(std::string path);
-	std::string normalize(std::string path, bool forwards = false);
+	std::string normalize(std::string path, bool forwards = true);
 	std::string getFilePath(std::string path);
 	std::string getFilePathUpDirectory(std::string path, int number = 1);
 

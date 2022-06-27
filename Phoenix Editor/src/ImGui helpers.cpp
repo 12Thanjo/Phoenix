@@ -264,4 +264,15 @@ namespace Phoenix{
 		    ImGui::EndPopup();
 		}
 	}
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// helpers
+
+
+	float imgui_get_line_height(){
+		return GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+	}
+
 }

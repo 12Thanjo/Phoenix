@@ -147,8 +147,8 @@ namespace Phoenix{
 			    	if(ImGui::MenuItem("New", "Ctrl+N")){
 			    		PH_FATAL("This is an unsupported feature");
 			    		PH_TRACE();
-			    	}else if(ImGui::MenuItem("Open", "Ctrl+O")){
-			    		open();
+			    	// }else if(ImGui::MenuItem("Open", "Ctrl+O")){
+			    	// 	open();
 			    	}else if(ImGui::MenuItem("Save", "Ctrl+S")){
 			    		save();
 			    	}else if(ImGui::MenuItem("Save As", "Ctrl+Shift+S")){
@@ -205,7 +205,7 @@ namespace Phoenix{
 							
 
 							std::filesystem::path filesystem_path(path);
-							if(filesystem_path.extension() == ".phoenix"){
+							if(filesystem_path.extension() == ".phoenix_scene"){
 								std::string path_string = filesystem_path.string();
 								open_scene(path_string);
 							}else{
@@ -214,7 +214,7 @@ namespace Phoenix{
 
 						}
 
-						ImGui::EndDragDropTarget();
+						// ImGui::EndDragDropTarget();
 					}
 
 				ImGui::End();
@@ -294,7 +294,7 @@ namespace Phoenix{
 	std::string RendererImGui::open(){
 		std::string filepath = FileDialogs::open(*_editor->getWindow(), {
 			.filters = {
-				{"Phoenix Scene (*.phoenix)", "*.phoenix"}
+				{"Phoenix Project (*.phoenix)", "*.phoenix"}
 			}
 		});
 
@@ -356,7 +356,7 @@ namespace Phoenix{
 	void RendererImGui::save_as(){
 		std::string filepath = FileDialogs::save(*_editor->getWindow(), {
 			.filters = {
-				{"Phoenix Scene (*.phoenix)", "*.phoenix"}
+				{"Phoenix Scene (*.phoenix_scene)", "*.phoenix_scene"}
 			}
 		});
 
