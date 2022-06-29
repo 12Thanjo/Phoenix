@@ -23,7 +23,7 @@ namespace Phoenix{
 
 			Files::writeFile(path.string(), serializer.output());
 		}else{
-			imgui_start_alert("No startup scene is set");
+			imgui_start_alert("No startup scene is set\nThis can be set in the Scene tab under \"General\"");
 		}
 	}
 
