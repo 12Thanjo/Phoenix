@@ -49,6 +49,15 @@ namespace Phoenix{
 				return std::stoull(_value);
 			};
 
+			template<>
+			auto value<UUID>(){
+				PH_THROW(_nodes.size() == 0, "Attempted to get a value of a NAML group");
+
+				check_float(_value, 0);
+
+				return UUID{std::stoull(_value)};
+			};
+
 
 			template<>
 			auto value<glm::vec3>(){

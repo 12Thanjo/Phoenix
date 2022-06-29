@@ -253,17 +253,24 @@ namespace Phoenix{
 		// imgui_alert();
 	}
 
+	bool imugi_will_draw_alert(){
+		return open_alert;
+	}
+
 
 
 
 	void imgui_popup(std::string title, std::function<void()> draw_window){
-		ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-		ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-		
-		ImGui::OpenPopup(title.c_str());
-		if(ImGui::BeginPopupModal(title.c_str(), NULL, 0)){
-		   	draw_window();
-		    ImGui::EndPopup();
+		if(!open_alert){
+			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			
+			ImGui::OpenPopup(title.c_str());
+			if(ImGui::BeginPopupModal(title.c_str(), NULL)){
+				// PH_LOG("POPUP");
+			   	draw_window();
+			    ImGui::EndPopup();
+			}
 		}
 	}
 

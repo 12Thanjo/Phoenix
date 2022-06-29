@@ -108,6 +108,7 @@ namespace Phoenix{
 
 			ImGui::EndChild();
 		}else{
+			// if(!imugi_will_draw_alert()){
 			ImGui::Text("Open Project...");
 			imgui_popup("Getting Started", [&](){
 				ImGui::Text("Foundry Engine");
@@ -139,14 +140,18 @@ namespace Phoenix{
 
 				// open project
 				if(imgui_button("Open", 40)){
-					std::string opened_project_path = static_cast<Editor*>(editor)->renderer_ImGui.open();
+					std::string opened_project_path = static_cast<Editor*>(editor)->renderer_ImGui.open(static_cast<Editor*>(editor)->project);
 					if(!opened_project_path.empty()){
+						// PH_LOG("Not empty: " << opened_project_path);
+						static_cast<Editor*>(editor)->project.path = opened_project_path;
+
 						project_path = Files::getFilePath(opened_project_path);
 						_current_dir = project_path;
 					}
 				}
 
 			});
+			// }
 		}
 
 

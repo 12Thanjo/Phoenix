@@ -7,7 +7,7 @@
 
 namespace Phoenix{
 
-	Editor::Editor() : renderer_ImGui(dynamic_cast<Engine*>(this)) {};
+	Editor::Editor() : renderer_ImGui(dynamic_cast<Engine*>(this)), project() {};
 	Editor::~Editor(){
 		delete _output_buffer;
 	};

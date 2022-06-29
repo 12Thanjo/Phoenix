@@ -63,7 +63,7 @@ namespace Phoenix{
 
 		serializer.beginGroup("Entities");
 			scene->forEach([&](Entity entity){
-				serializer.beginGroup( std::to_string(entity.getComponent<Component::UUID>().id) );
+				serializer.beginGroup(entity.getComponent<Component::UUID>().id);
 
 				serializer.keyValue("name", entity.getComponent<Component::Name>().name);
 
@@ -148,7 +148,7 @@ namespace Phoenix{
 			NAML_DE naml{Files::readFile(filepath)};
 
 			scene->name = naml.get()->get("Name")->value<std::string>();
-			scene->uuid = { naml.get()->get("Scene")->value<uint64_t>()};
+			scene->uuid = { naml.get()->get("Scene")->value<UUID>()};
 
 			//////////////////////////////////////////////////////////////////////
 			// Deserialize Editor Camera

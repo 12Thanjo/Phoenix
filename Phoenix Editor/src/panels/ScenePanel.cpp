@@ -3,6 +3,7 @@
 
 #include <Phoenix.h>
 #include "../ImGui helpers.h"
+#include "../Application.h"
 
 namespace Phoenix{
 
@@ -33,6 +34,23 @@ namespace Phoenix{
 
 			//////////////////////////////////////////////////////////////////////
 			// Editor Camera
+
+			imgui_draw_collapsable_menu("General", [&](){
+				Project& project = static_cast<Editor*>(editor)->project;
+
+				bool is_startup_scene = false;
+				if(project.hasStartupScene()){
+					is_startup_scene = project.getStartupScene() == scene->uuid;
+				}
+
+				bool checkbox_val = is_startup_scene;
+				ImGui::Checkbox("Startup Scene", &checkbox_val);
+
+				if(!is_startup_scene && checkbox_val){
+					project.setStartupScene(scene->uuid);
+				}
+
+			});
 
 			imgui_draw_collapsable_menu("Editor Camera", [&](){
 

@@ -3,6 +3,8 @@
 #include <Phoenix.h>
 #include "ImGui.h"
 
+#include "Project.h"
+
 namespace Phoenix{
 
 	
@@ -16,6 +18,7 @@ namespace Phoenix{
 
 		public:
 			RendererImGui renderer_ImGui;
+			Project project;
 
 
 		private:

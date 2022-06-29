@@ -6,6 +6,7 @@
 
 
 namespace Phoenix{
+	class Project;
 
 	class RendererImGui{
 		public:
@@ -22,9 +23,9 @@ namespace Phoenix{
 
 			void newScene();
 			std::string newProject();
-			std::string open();
-			void open(std::string filepath);
-			void open_scene(std::string filepath);
+			std::string open(Project& project);
+			std::string open(const std::string& filepath, Project& project);
+			void open_scene(const std::string& filepath);
 			void save();
 			void save_as();
 			

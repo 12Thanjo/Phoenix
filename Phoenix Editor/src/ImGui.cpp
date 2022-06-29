@@ -4,11 +4,14 @@
 #include "Application.h"
 #include "ImGui helpers.h"
 
+#include "Project.h"
+
 // panels
 #include "panels/SceneHierarchyPanel.h"
 #include "panels/AssetBrowserPanel.h"
 #include "panels/PerformancePanel.h"
 #include "panels/ScenePanel.h"
+
 
 
 namespace Phoenix{
@@ -206,8 +209,7 @@ namespace Phoenix{
 
 							std::filesystem::path filesystem_path(path);
 							if(filesystem_path.extension() == ".phoenix_scene"){
-								std::string path_string = filesystem_path.string();
-								open_scene(path_string);
+								open_scene(filesystem_path.string());
 							}else{
 								PH_WARNING("Attempted to drag & load a non-scene");
 							}
@@ -291,7 +293,7 @@ namespace Phoenix{
 		});
 	}
 
-	std::string RendererImGui::open(){
+	std::string RendererImGui::open(Project& project){
 		std::string filepath = FileDialogs::open(*_editor->getWindow(), {
 			.filters = {
 				{"Phoenix Project (*.phoenix)", "*.phoenix"}
@@ -299,7 +301,10 @@ namespace Phoenix{
 		});
 
 		if(!filepath.empty()){
-			open(filepath);
+			std::string opened = open(filepath, project);
+			if(!opened.empty()){
+				return std::string();
+			}
 		}
 
 		return filepath;
@@ -320,13 +325,16 @@ namespace Phoenix{
 	// 	}
 	// }
 
-	void RendererImGui::open(std::string filepath){
-		PH_WARNING("Open doesn't do anything");
-		PH_TRACE();
+	std::string RendererImGui::open(const std::string& filepath, Project& project){
+		std::string deserialize = project.deserialize(filepath);
+		if(!deserialize.empty()){
+			imgui_start_alert(deserialize);
+		}
+		return deserialize;
 	}
 
 
-	void RendererImGui::open_scene(std::string filepath){
+	void RendererImGui::open_scene(const std::string& filepath){
 		_editor->clearScene();
 
 		std::string deserialize = _editor->deserialize(filepath);
@@ -343,13 +351,16 @@ namespace Phoenix{
 
 
 	void RendererImGui::save(){
+		static_cast<Editor*>(_editor)->project.serialize();
+		
+
 		if(!_open_scene.empty()){
 			_editor->serialize(_open_scene);
 
 			PH_LOG("Saved Scene: " << _open_scene);
-		}else{
-			imgui_start_alert(std::string("Attempted to save a scene, but there is none currently open"));
-			PH_WARNING("Attempted to save scene, but none open");
+		// }else{
+		// 	imgui_start_alert(std::string("Attempted to save a scene, but there is none currently open"));
+		// 	PH_WARNING("Attempted to save scene, but none open");
 		}
 	}
 

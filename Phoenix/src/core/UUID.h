@@ -15,6 +15,10 @@ namespace Phoenix{
 
 
 			operator uint64_t() const { return _id; }
+			operator std::string() const { return std::to_string(_id); }
+			bool operator==(const UUID& other){
+				return _id == other._id;
+			}
 	};
 
 
