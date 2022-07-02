@@ -42,6 +42,7 @@ namespace Phoenix{
 		serializer.keyValue("Scene", std::to_string(scene->uuid));
 		serializer.keyValue("Name", scene->name);
 
+
 		//////////////////////////////////////////////////////////////////////
 		// Serialize Editor Camera
 
@@ -68,7 +69,7 @@ namespace Phoenix{
 				serializer.keyValue("name", entity.getComponent<Component::Name>().name);
 
 				if(entity.hasComponent<Component::Transform>()){
-					auto component = entity.getComponent<Component::Transform>();
+					auto& component = entity.getComponent<Component::Transform>();
 
 					serializer.beginGroup("Transform");
 						serialize_vec3(serializer, "position", component.position);
@@ -85,7 +86,7 @@ namespace Phoenix{
 				// Cameras
 
 				if(entity.hasComponent<Component::PerspectiveCamera>()){
-					auto component = entity.getComponent<Component::PerspectiveCamera>();
+					auto& component = entity.getComponent<Component::PerspectiveCamera>();
 
 					serializer.beginGroup("PerspectiveCamera");
 						serializer.keyValue("fov", component.camera.getFOV());
@@ -94,8 +95,9 @@ namespace Phoenix{
 					serializer.endGroup();
 				}
 
+
 				if(entity.hasComponent<Component::OrbitalCamera>()){
-					auto component = entity.getComponent<Component::OrbitalCamera>();
+					auto& component = entity.getComponent<Component::OrbitalCamera>();
 
 					serializer.beginGroup("OrbitalCamera");
 						serializer.keyValue("fov", component.camera.getFOV());
@@ -130,7 +132,6 @@ namespace Phoenix{
 
 
 		serializer.endGroup();
-
 
 		// std::ofstream fout(filepath);
 		// fout << serializer.output().c_str();

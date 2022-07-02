@@ -83,6 +83,13 @@ namespace Files{
 
 
 
+	void directoryIterator(std::string path, std::function<void(const std::string&, bool)> func){
+		for(auto& dir : fs::directory_iterator(path)){
+			func(dir.path().string(), dir.is_directory());
+		}
+	}
+
+
 	//////////////////////////////////////////////////////////////////////
 	// path manipulation
 
@@ -158,6 +165,15 @@ namespace Files{
 		return path;
 	}
 
+
+	std::string relative(std::string path, std::string relative){
+		if(path.substr(0, relative.length()) == relative){
+			return path.substr(relative.length());
+		}else{
+			return path;
+		};
+	}
+
 	
 	//////////////////////////////////////////////////////////////////////
 
@@ -169,7 +185,7 @@ namespace Files{
 		HANDLE hFile1;
 	    FILETIME ftCreate;
 	    SYSTEMTIME stUTC;
-	    hFile1 = CreateFile(widecstr, GENERIC_READ, FILE_SHARE_READ,  NULL,  OPEN_EXISTING,  FILE_ATTRIBUTE_NORMAL, NULL);
+	    hFile1 = CreateFile(widecstr, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 		if(hFile1 == INVALID_HANDLE_VALUE)
 		{

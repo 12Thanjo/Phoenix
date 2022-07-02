@@ -45,10 +45,15 @@ namespace Phoenix{
 								renderer_ImGui.newScene();
 							}
 							break;
+						case PH_KEY_P:
+							if(ctrl_down){
+								renderer_ImGui.playEvent();
+							}
+							break;
 					};
 					break;
 				case PH_MOUSE_MOVE_EVENT:
-					{
+					/*if(renderer_ImGui.getMouseOverViewport())*/{
 						float current_mouse_x = mouseX();
 						float current_mouse_y = mouseY();
 
@@ -70,9 +75,13 @@ namespace Phoenix{
 					}
 					break;
 				case PH_MOUSE_SCROLL_EVENT:
-					zoom_camera(static_cast<MouseScrollEvent&>(e).getY() * -0.1f);
+					if(renderer_ImGui.getMouseOverViewport()){
+						zoom_camera(static_cast<MouseScrollEvent&>(e).getY() * -0.1f);
+					}
 					break;
 			}
+
+
 		};
 
 

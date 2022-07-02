@@ -4,7 +4,6 @@
 
 #include "panels/Panel.h"
 
-
 namespace Phoenix{
 	class Project;
 
@@ -28,6 +27,16 @@ namespace Phoenix{
 			void open_scene(const std::string& filepath);
 			void save();
 			void save_as();
+
+			void playEvent();
+
+
+			inline bool getMouseOverViewport() const { return _mouse_over_viewport; };
+
+
+		private:
+			void play_scene();
+			void stop_scene();
 			
 		private:
 			Engine* _editor;
@@ -36,8 +45,17 @@ namespace Phoenix{
 			std::vector<Panel*> _panels;
 
 			std::string _open_scene;
-
 			bool _just_opened = true;
+
+			bool _mouse_over_viewport = false;
+
+			enum class SceneState{
+				Edit = 0,
+				Play = 1
+			};
+
+			SceneState _scene_state = SceneState::Edit;
+
 	};
 
 }

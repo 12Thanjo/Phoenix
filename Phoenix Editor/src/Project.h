@@ -17,11 +17,18 @@ namespace Phoenix{
 			UUID getStartupScene() const;
 			inline bool hasStartupScene() const { return _has_startup_scene; };
 
+			std::string getRelativePath();
+
 		public:
 			std::filesystem::path path;
 
+			// assets
+			Utils::Bimap<std::string, UUID> scenes;
+			Utils::Bimap<std::string, UUID> scripts;
+
 		private:
 			std::string deserialize_functionality();
+			bool index();
 
 		private:
 			UUID _startup_scene;

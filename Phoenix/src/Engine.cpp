@@ -153,7 +153,13 @@ namespace Phoenix{
 
 
 	//////////////////////////////////////////////////////////////////////
-	// entities
+	// ECS
+
+	void Engine::clearScene(){
+		delete _scene;
+		_scene = new Scene();
+	}
+
 	Entity Engine::createEntity(const std::string& name){
 		return _scene->createEntity(name);
 	}

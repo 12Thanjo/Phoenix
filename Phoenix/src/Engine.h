@@ -76,7 +76,7 @@ namespace Phoenix{
 
 			// ECS
 			inline Scene* getScene() const { return _scene; }
-			inline void clearScene(){ _scene = new Scene(); };
+			void clearScene();
 			Entity createEntity(const std::string& name = "Entity");
 			Entity createEntity(const std::string& name, const UUID& uuid);
 			inline void destroyEntity(Entity& entity){ _scene->destroyEntity(entity); };

@@ -11,6 +11,7 @@ namespace Phoenix{
 
 		calculate_view();
 		calculate_projection();
+
 	}
 
 
@@ -106,6 +107,7 @@ namespace Phoenix{
 
 		calculate_view();
 		calculate_projection();
+
 	}
 
 

@@ -342,7 +342,7 @@ namespace Phoenix{
 			std::string button_label;
 
 			if(!component.path.empty()){
-				button_label = component.path;
+				button_label = Files::getFileName(component.path);
 			}else{
 				button_label = "Add Script...";
 			};

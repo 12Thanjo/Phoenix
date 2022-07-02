@@ -22,7 +22,7 @@ namespace Phoenix{
 	class PerspectiveCamera : public Camera{
 		public:
 			PerspectiveCamera(float fov, float aspect_ratio, float near, float far);
-			~PerspectiveCamera() = default;
+			~PerspectiveCamera(){};
 
 			void moveForward(float amount);
 			void moveBackward(float amount);
@@ -73,7 +73,7 @@ namespace Phoenix{
 	class OrbitalCamera : public Camera{
 		public:
 			OrbitalCamera(float fov = glm::radians(65.0f), float aspect_ratio = 1.0f, float near = 0.1f, float far = 100.0f);
-			~OrbitalCamera() = default;
+			~OrbitalCamera(){};
 
 			void setProjection(float fov, float aspect_ratio, float near, float far);
 			// glm::mat4 getViewProjection();

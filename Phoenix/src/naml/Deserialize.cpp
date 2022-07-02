@@ -83,7 +83,7 @@ namespace Phoenix{
 
 
 	NAML_Node* NAML_Node::get(const std::string& key){
-		PH_THROW(_nodes.size() > 0, "Attempted to get an index of a NAML value");
+		PH_THROW(_nodes.size() > 0, "Attempted to get an index of a NAML value (" << key << ") = " << _value);
 		PH_THROW(_nodes.contains(key), "Attempted to get non-existent NAML key (" << key << ")");
 		return _nodes[key];		
 	}

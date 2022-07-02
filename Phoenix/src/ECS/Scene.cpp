@@ -87,8 +87,6 @@ namespace Phoenix{
 
 
 
-
-
 		auto perspective_camera_group = _registry.group<Component::PerspectiveCamera>(entt::get<Component::Transform>);
 		for(auto entt_entity : perspective_camera_group){
 			auto [camera, transform] = perspective_camera_group.get<Component::PerspectiveCamera, Component::Transform>(entt_entity);

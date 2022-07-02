@@ -21,6 +21,7 @@ namespace Files{
 	bool createDirectory(FILE_PATH_REF, ERROR_CALLBACK); // supports nested
 	bool deleteDirectory(FILE_PATH_REF, ERROR_CALLBACK); // supports nested
 
+	void directoryIterator(std::string path, std::function<void(const std::string&, bool)> func);
 
 	//////////////////////////////////////////////////////////////////////
 	// path manipulation
@@ -31,6 +32,7 @@ namespace Files{
 	std::string normalize(std::string path, bool forwards = true);
 	std::string getFilePath(std::string path);
 	std::string getFilePathUpDirectory(std::string path, int number = 1);
+	std::string relative(std::string path, std::string relative);
 
 	//////////////////////////////////////////////////////////////////////
 	

@@ -33,7 +33,9 @@ namespace Phoenix{
 	bool imgui_button(std::string label);
 	bool imgui_button(std::string label, float width);
 	bool imgui_button(std::string label, float width, float height);
-	bool imgui_image_button(glID id, float width, float height);
+
+	bool imgui_image_button(glID id, float width, float height, int padding = -1);
+	bool imgui_image_button(Texture* texture, float width, float height, int padding = -1);
 
 
 

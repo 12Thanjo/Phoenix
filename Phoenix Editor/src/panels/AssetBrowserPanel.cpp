@@ -17,7 +17,7 @@ namespace Phoenix{
 	AssetBrowserPanel::AssetBrowserPanel()
 		: _current_dir(project_path) {
 
-		_folder_icon = new Texture("assets/icons/file explorer/folder.png");
+		_folder_icon    = new Texture("assets/icons/file explorer/folder.png");
 		_gray_file_icon = new Texture("assets/icons/file explorer/gray file.png");
 	}
 
@@ -58,7 +58,7 @@ namespace Phoenix{
 			ImGui::SameLine();
 			ImGui::Text(_current_dir.string().c_str());
 
-			imgui_separator();
+			imgui_separator(0);
 
 			ImGui::BeginChild("Scroll");
 

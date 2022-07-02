@@ -10,7 +10,6 @@ namespace Phoenix{
 		private:
 			std::unordered_map<UUID, Shader*> _shaders;
 			std::unordered_map<UUID, UUID*> _uuids;
-			std::map<std::string, int> test;
 	
 		public:
 			AssetManager() = default;

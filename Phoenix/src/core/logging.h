@@ -14,7 +14,7 @@
 	#define PH_INFO(x) if(Phoenix::_logging::level <= 1){ std::cout << Phoenix::_logging::color.cyan << Phoenix::_logging::get_time() << " <Phoenix> " << x << Phoenix::_logging::style.reset << "\n"; }
 	#define PH_WARNING(x) if(Phoenix::_logging::level <= 2){ std::cout << Phoenix::_logging::color.yellow << Phoenix::_logging::get_time() << " <Phoenix> " << x << Phoenix::_logging::style.reset << "\n"; }
 	#define PH_ERROR(x) if(Phoenix::_logging::level <= 3){ std::cout << Phoenix::_logging::color.red << Phoenix::_logging::get_time() << " <Phoenix> " << x << Phoenix::_logging::style.reset << "\n"; }
-	#define PH_FATAL(x) std::cout << Phoenix::_logging::color.black << Phoenix::_logging::backgroundColor.red << Phoenix::_logging::get_time() << " <Phoenix> " << x << Phoenix::_logging::style.reset << "\n";
+	#define PH_FATAL(x) std::cout << Phoenix::_logging::color.white << Phoenix::_logging::backgroundColor.red << Phoenix::_logging::get_time() << " <Phoenix> " << x << Phoenix::_logging::style.reset << "\n";
 	
 	#define PH_TRACE() std::cout << Phoenix::_logging::style.dim << Phoenix::_logging::get_time() << " <Trace> File: " << __FILE__ << "\n                   Line: " << __LINE__ << Phoenix::_logging::style.reset << "\n";
 

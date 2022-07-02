@@ -5,7 +5,7 @@ namespace Phoenix{
 	
 	void imgui_begin(std::string id, std::string name){
 		std::string imgui_id = name + "###" + id;
-		ImGui::Begin(imgui_id.c_str());
+		ImGui::Begin(imgui_id.c_str(), nullptr);
 	}
 
 
@@ -34,7 +34,6 @@ namespace Phoenix{
 	void imgui_columns(int columns){
 		ImGui::Columns(columns, 0, false);
 	}
-
 
 
 	void imgui_draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value, float collumn_width, float iteration_size){
@@ -166,8 +165,12 @@ namespace Phoenix{
 	}
 
 
-	bool imgui_image_button(glID id, float width, float height){
-		return ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0});
+	bool imgui_image_button(glID id, float width, float height, int padding){
+		return ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0}, padding);
+	}
+
+	bool imgui_image_button(Texture* texture, float width, float height, int padding){
+		return ImGui::ImageButton((ImTextureID)texture->getID(), {width, height}, {0, 1}, {1, 0}, padding);
 	}
 
 

@@ -36,6 +36,7 @@
 // utils
 #include "src/utils/strings.h"
 #include "src/utils/files.h"
+#include "src/utils/bimap.h"
 
 // misc
 #include "src/naml/Serialize.h"

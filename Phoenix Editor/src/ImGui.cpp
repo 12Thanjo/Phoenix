@@ -41,6 +41,9 @@ namespace Phoenix{
 		}
 
 		set_dark_theme();
+
+		//////////////////////////////////////////////////////////////////////
+		// icons
 	}
 
 
@@ -53,6 +56,7 @@ namespace Phoenix{
 		_panels.push_back(static_cast<Panel*>(new SceneHierarchyPanel()));
 		_panels.push_back(static_cast<Panel*>(new AssetBrowserPanel()));
 		_panels.push_back(static_cast<Panel*>(new PerformancePanel()));
+
 
 
 		PH_INFO("ImGui Initialized");
@@ -174,7 +178,13 @@ namespace Phoenix{
 
 			// viewport
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
-				imgui_begin("viewport", "Viewport");
+				std::string veiwport_title;
+				if(_scene_state == SceneState::Edit){
+					veiwport_title = "Viewport";
+				}else{
+					veiwport_title = "Viewport (play)";
+				}
+				imgui_begin("viewport", veiwport_title);
 					// check if viewport resized
 					ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
 					if(content_region_avail.x != _viewport_size.x || content_region_avail.y != _viewport_size.y || _just_opened){
@@ -216,11 +226,14 @@ namespace Phoenix{
 
 						}
 
-						// ImGui::EndDragDropTarget();
+						// works without this, but I put it here just in case
+						ImGui::EndDragDropTarget();
 					}
 
+					_mouse_over_viewport = ImGui::IsWindowHovered();
 				ImGui::End();
 			ImGui::PopStyleVar();
+
 
 
 
@@ -231,6 +244,8 @@ namespace Phoenix{
 
 			// ImGui::ShowDemoWindow();
 
+
+			// automatically run
 			imgui_alert();
 
 
@@ -240,9 +255,6 @@ namespace Phoenix{
 
 
 	}
-
-
-
 
 
 	void RendererImGui::set_dark_theme(){
@@ -279,6 +291,36 @@ namespace Phoenix{
 
 
 
+	//////////////////////////////////////////////////////////////////////
+	// scenes
+
+
+	void RendererImGui::play_scene(){
+		_scene_state = SceneState::Play;
+		PH_LOG("Began Playing Scene");
+	}
+
+	void RendererImGui::stop_scene(){
+		_scene_state = SceneState::Edit;
+		PH_LOG("Stopped Playing Scene");
+	}
+
+
+	void RendererImGui::playEvent(){
+		if(_scene_state == SceneState::Edit){
+			play_scene();
+		}else{
+			stop_scene();
+		}
+	}
+
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// saving, loading, etc.
+
+
 	void RendererImGui::newScene(){
 		_editor->clearScene();
 		_open_scene = std::string();
@@ -302,9 +344,14 @@ namespace Phoenix{
 
 		if(!filepath.empty()){
 			std::string opened = open(filepath, project);
+
 			if(!opened.empty()){
 				return std::string();
 			}
+
+			open_scene(
+				project.getRelativePath() + project.scenes.getLeft(project.getStartupScene())
+			);
 		}
 
 		return filepath;
@@ -357,11 +404,19 @@ namespace Phoenix{
 		if(!_open_scene.empty()){
 			_editor->serialize(_open_scene);
 
-			PH_LOG("Saved Scene: " << _open_scene);
-		// }else{
-		// 	imgui_start_alert(std::string("Attempted to save a scene, but there is none currently open"));
-		// 	PH_WARNING("Attempted to save scene, but none open");
+			PH_LOG("Saved:" << 
+				"\n\tProject: " << static_cast<Editor*>(_editor)->project.path.string() << 
+				"\n\tScene:   " << _open_scene);
+
+#ifdef PH_DEBUG
+		}else{
+			PH_LOG("Saved:" << 
+				"\n\tProject: " << static_cast<Editor*>(_editor)->project.path.string() << 
+				"\n\tScene:   [none open]");
+#endif
 		}
+
+
 	}
 
 	void RendererImGui::save_as(){
