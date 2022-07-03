@@ -137,4 +137,11 @@ namespace Phoenix{
 		_config.captureMouse = capture;	
 	}
 
+
+
+
+	void Window::maximize(){
+		glfwMaximizeWindow(_window);
+	}
+
 }

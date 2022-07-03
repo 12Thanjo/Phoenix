@@ -55,6 +55,8 @@ namespace Phoenix{
 			// setting ////////////
 			void setVSync(bool use);
 			void captureMouse(bool capture);
+
+			void maximize();
 	};
 
 }

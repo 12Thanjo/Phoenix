@@ -52,10 +52,10 @@ namespace Phoenix{
 		ImGui_ImplOpenGL3_Init("#version 410");
 
 
-		_panels.push_back(static_cast<Panel*>(new ScenePanel()));
 		_panels.push_back(static_cast<Panel*>(new SceneHierarchyPanel()));
 		_panels.push_back(static_cast<Panel*>(new AssetBrowserPanel()));
 		_panels.push_back(static_cast<Panel*>(new PerformancePanel()));
+		_panels.push_back(static_cast<Panel*>(new ScenePanel()));
 
 
 

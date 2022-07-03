@@ -71,6 +71,7 @@ namespace Phoenix{
 			inline int windowHeight() { return _window->getHeight(); }
 
 			inline Window* getWindow() { return _window; }
+			inline void maximize(){ _window->maximize(); }
 			// void render();
 
 
