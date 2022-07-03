@@ -98,6 +98,21 @@ namespace Phoenix{
 
 			});
 
+
+			imgui_draw_collapsable_menu("Sunlight", [&](){
+
+				ImGui::ColorEdit3("Color", glm::value_ptr(scene->sunlight.color));
+
+				imgui_spacer();
+
+				imgui_draw_float_control("Strength", scene->sunlight.strength, 1.3f, 60, 0.05f);
+				
+				imgui_separator();
+
+				imgui_draw_vec3_control("Direction", scene->sunlight.direction, -1.0f, 60, 0.02f);
+
+			});
+
 		ImGui::End();
 
 	}

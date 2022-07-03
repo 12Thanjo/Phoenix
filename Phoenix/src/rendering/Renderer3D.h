@@ -2,8 +2,11 @@
 
 
 namespace Phoenix{
+	namespace Lights{
+		class Directional;
+	};
 	class AssetManager;
-	class Camera;
+	class PerspectiveCamera;
 
 	struct Renderer3DPerformanceMetrics{
 		unsigned int drawCalls = 0;
@@ -18,7 +21,7 @@ namespace Phoenix{
 		
 			void init();
 
-			void drawCube(glm::mat4& transform, glm::vec4& color, Camera& camera);
+			void drawCube(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight);
 
 			void resetPerfMetrics();
 

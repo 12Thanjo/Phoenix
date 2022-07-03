@@ -59,6 +59,26 @@ namespace Phoenix{
 			serialize_vec3(serializer, "focalPoint", editor_camera.getFocalPoint());
 		serializer.endGroup();
 
+
+		//////////////////////////////////////////////////////////////////////
+		// Sunlight
+
+		serializer.beginGroup("Sunlight");
+			Lights::Directional& sunlight = scene->sunlight;
+			serializer.beginList("direction");
+				serializer.addToList(sunlight.direction.x);
+				serializer.addToList(sunlight.direction.y);
+				serializer.addToList(sunlight.direction.z);
+			serializer.endList();
+			serializer.beginList("color");
+				serializer.addToList(sunlight.color.x);
+				serializer.addToList(sunlight.color.y);
+				serializer.addToList(sunlight.color.z);
+			serializer.endList();
+			serializer.keyValue("strength", sunlight.strength);
+		serializer.endGroup();
+
+
 		//////////////////////////////////////////////////////////////////////
 		// Serialize Entities
 
@@ -165,6 +185,17 @@ namespace Phoenix{
 
 			glm::vec3 coordinates = camera_node->get("coordinates")->value<glm::vec3>();
 			editor_camera.setCoordinates(coordinates.x, coordinates.y, coordinates.z);
+
+
+			//////////////////////////////////////////////////////////////////////
+			// Sunlight
+
+			Lights::Directional& sunlight = scene->sunlight;
+			NAML_Node* sunlight_node = naml.get()->get("Sunlight");
+			sunlight.color = sunlight_node->get("color")->value<glm::vec3>();
+			sunlight.direction = sunlight_node->get("direction")->value<glm::vec3>();
+			sunlight.strength = sunlight_node->get("strength")->value<float>();
+
 
 			//////////////////////////////////////////////////////////////////////
 			// Deserialize Entities

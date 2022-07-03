@@ -19,6 +19,7 @@ namespace Phoenix{
 		_serializer = new Serializer();
 
 		PH_INFO("Initialized: ECS Scene");
+		PH_WARNING("Shinyness not implemented");
 	}
 
 
@@ -115,7 +116,7 @@ namespace Phoenix{
 		for(auto entt_entity : cube_group){
 			auto [transform, cube] = cube_group.get<Component::Transform, Component::Cube>(entt_entity);
 			
-			renderer_3d->drawCube(transform.transform, cube.color, camera);
+			renderer_3d->drawCube(transform.transform, cube.color, static_cast<PerspectiveCamera&>(camera), sunlight);
 		}
 
 	}

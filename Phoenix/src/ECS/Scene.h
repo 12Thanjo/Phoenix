@@ -4,6 +4,7 @@
 #include <lib/EnTT/entt.hpp>
 #include "Serializer.h"
 #include "src/render objects/cameras.h"
+#include "src/render objects/lights.h"
 
 namespace Phoenix{
 
@@ -25,6 +26,7 @@ namespace Phoenix{
 			std::string name;
 			UUID uuid;
 			OrbitalCamera camera{};
+			Lights::Directional sunlight{};
 
 
 		public:

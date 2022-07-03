@@ -2,8 +2,9 @@
 #include "Renderer3D.h"
 
 #include "buffers.h"
-#include "../assets/AssetManager.h"
-#include "../render objects/cameras.h"
+#include "src/assets/AssetManager.h"
+#include "src/render objects/cameras.h"
+#include "src/render objects/lights.h"
 
 
 namespace Phoenix{
@@ -17,13 +18,21 @@ namespace Phoenix{
 	};
 
 
-	void Renderer3D::drawCube(glm::mat4& transform, glm::vec4& color, Camera& camera){
-		_asset_manager->bindShader(_basic_shader);	
+	void Renderer3D::drawCube(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight){
+		_asset_manager->bindShader(_basic_shader);
+
 
 
 		_asset_manager->uploadMat4(_basic_shader, "u_model", transform);
 		_asset_manager->uploadMat4(_basic_shader, "u_view_projection", camera.getViewProjection());
 		_asset_manager->uploadFloat4(_basic_shader, "u_color", color);
+		_asset_manager->uploadFloat3(_basic_shader, "u_camera_position", camera.getPosition());
+
+		sunlight.upload(_asset_manager, _basic_shader);
+
+
+
+		_asset_manager->uploadFloat(_basic_shader, "u_shininess", 32);
 
 
 		// vertex data, buffers, and attributes
