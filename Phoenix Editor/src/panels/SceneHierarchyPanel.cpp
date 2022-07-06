@@ -230,7 +230,8 @@ namespace Phoenix{
 
 			bool has_sprite = selection_context.hasComponent<Component::SpriteRenderer>();
 			bool has_cube = selection_context.hasComponent<Component::Cube>();
-			bool has_renderer = has_sprite || has_cube;
+			bool has_plane = selection_context.hasComponent<Component::Plane>();
+			bool has_renderer = has_sprite || has_cube || has_plane;
 
 			///////////////////////////////////////////////
 
@@ -293,6 +294,11 @@ namespace Phoenix{
 		    if(ImGui::BeginMenu("3D Render Objects", !has_renderer && !has_camera)){
 				if(ImGui::MenuItem("Cube")){
 					selection_context.addEmptyComponent<Component::Cube>();
+					if(!has_transform){
+						selection_context.addComponent<Component::Transform>();
+					}
+				}else if(ImGui::MenuItem("Plane")){
+					selection_context.addEmptyComponent<Component::Plane>();
 					if(!has_transform){
 						selection_context.addComponent<Component::Transform>();
 					}
@@ -386,6 +392,11 @@ namespace Phoenix{
 		});
 
 		draw_comonent<Component::Cube>("Cube", entity, [](auto& component){
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+		});
+
+
+		draw_comonent<Component::Plane>("Plane", entity, [](auto& component){
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 		});
 

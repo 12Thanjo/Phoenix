@@ -151,6 +151,10 @@ namespace Phoenix{
 					serialize_vec4(serializer, "Cube", entity.getComponent<Component::Cube>().color);
 				}
 
+				if(entity.hasComponent<Component::Plane>()){
+					serialize_vec4(serializer, "Plane", entity.getComponent<Component::Plane>().color);
+				}
+
 
 
 
@@ -285,6 +289,12 @@ namespace Phoenix{
 				if(node->has("Cube")){
 					entity.addComponent<Component::Cube>(
 						node->get("Cube")->value<glm::vec4>()
+					);
+				}
+
+				if(node->has("Plane")){
+					entity.addComponent<Component::Plane>(
+						node->get("Plane")->value<glm::vec4>()
 					);
 				}	
 

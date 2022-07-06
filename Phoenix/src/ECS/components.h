@@ -112,5 +112,14 @@ namespace Phoenix::Component{
 		Cube(const glm::vec4& _color)
 			: color(_color) {}
 	};
+
+
+	struct Plane{
+		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+
+		Plane() = default;
+		Plane(const glm::vec4& _color)
+			: color(_color) {}
+	};
 	
 }

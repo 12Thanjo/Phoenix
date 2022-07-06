@@ -62,8 +62,6 @@ namespace Phoenix{
 		_renderer_3d->init();
 		PH_INFO("Created Engine");
 
-		_scripting.run("console.log('testing testing 123');");
-
 
 		glEnable(GL_BLEND);
 		// glDepthFunc(GL_LEQUAL);

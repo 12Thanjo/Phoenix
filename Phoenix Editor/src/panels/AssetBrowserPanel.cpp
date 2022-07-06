@@ -39,7 +39,7 @@ namespace Phoenix{
 					_current_dir = _current_dir.parent_path();
 				}
 			}else{
-				ImGui::Button("-");
+				ImGui::Button("--");
 			}
 
 			ImGui::SameLine();

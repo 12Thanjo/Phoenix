@@ -21,3 +21,6 @@ Run `GENERATE_PROJECTS.bat` with your own build workflow (discussed above). In t
 
 ## Documentation:
 Documentation for Phoenix Engine can be found [here](https://12thanjo.github.io/Phoenix/Documentation/Documentation/index.html).
+
+### Updates:
+Update notes can be found in the [changelog](https://12thanjo.github.io/Phoenix/CHANGELOG.md). Each version cooresponds with a push.

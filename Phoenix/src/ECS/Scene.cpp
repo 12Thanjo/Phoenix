@@ -138,6 +138,14 @@ namespace Phoenix{
 			renderer_3d->drawCube(transform.transform, cube.color, static_cast<PerspectiveCamera&>(camera), sunlight);
 		}
 
+
+		auto plane_group = _registry.group<Component::Plane>(entt::get<Component::Transform>);
+		for(auto entt_entity : plane_group){
+			auto [transform, plane] = plane_group.get<Component::Transform, Component::Plane>(entt_entity);
+			
+			renderer_3d->drawPlane(transform.transform, plane.color, static_cast<PerspectiveCamera&>(camera), sunlight);
+		}
+
 	}
 
 	void Scene::runScripts(Scripting& scripting, Engine* engine){

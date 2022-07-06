@@ -51,8 +51,8 @@ namespace Phoenix{
 								renderer_ImGui.playEvent();
 							}
 							break;
-						case PH_KEY_F5:
-							{
+						case PH_KEY_R:
+							if(ctrl_down){
 								std::string runtime_path = Files::getFilePathUpDirectory(_path) + "\\Phoenix Runtime\\Phoenix Runtime.exe";
 								PH_ASSERT(Files::fileExists(runtime_path), "Incorrect File Path for runtime");
 
@@ -60,7 +60,11 @@ namespace Phoenix{
 								
 								renderer_ImGui.save();
 								Files::openInDefaultProgram(runtime_path);
+								_can_render = false;
 							}
+							break;
+						case PH_KEY_F5:
+							renderer_ImGui.playEvent();
 							break;
 					};
 					break;
@@ -129,10 +133,13 @@ namespace Phoenix{
 
 
 	void Editor::render(){
-		_running_counter += 1;
-		if(_running_counter > 150){
-			_can_render = !Files::isProcessRunning(Files::getFilePathUpDirectory(_path) + "/Phoenix Runtime/Phoenix Runtime.exe");
-			_running_counter = 0;
+		if(!_can_render){
+			_running_counter += 1;
+			if(_running_counter > 100){
+				_can_render = !Files::isProcessRunning(Files::getFilePathUpDirectory(_path) + "/Phoenix Runtime/Phoenix Runtime.exe");
+				PH_ERROR("CHECK OPEN");
+				_running_counter = 0;
+			}
 		}
 
 

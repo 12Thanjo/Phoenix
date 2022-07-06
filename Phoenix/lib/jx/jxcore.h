@@ -275,8 +275,6 @@ namespace jxcore{
 			"", &script_controller);
 
 
-		run("_script_manager.create_script('102885151', new _Script());");
-
 		// PH_LOG(std::string(path) + "/scripts/test.js");
 
 		// JXValue foo;

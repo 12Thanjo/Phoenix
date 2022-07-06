@@ -22,6 +22,7 @@ namespace Phoenix{
 			void init();
 
 			void drawCube(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight);
+			void drawPlane(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight);
 
 			void resetPerfMetrics();
 
