@@ -6,6 +6,8 @@
 
 #include "src/scripting/scripting.h"
 
+#include "src/assets/materials.h"
+
 
 namespace Phoenix::Component{
 
@@ -106,20 +108,20 @@ namespace Phoenix::Component{
 
 
 	struct Cube{
-		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+		BasicMaterial material;
 
 		Cube() = default;
-		Cube(const glm::vec4& _color)
-			: color(_color) {}
+		Cube(const BasicMaterial& _material)
+			: material(_material) {}
 	};
 
 
 	struct Plane{
-		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+		BasicMaterial material;
 
 		Plane() = default;
-		Plane(const glm::vec4& _color)
-			: color(_color) {}
+		Plane(const BasicMaterial& _material)
+			: material(_material) {}
 	};
 	
 }

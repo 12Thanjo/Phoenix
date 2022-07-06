@@ -2,7 +2,10 @@
 #include "Renderer3D.h"
 
 #include "buffers.h"
+
 #include "src/assets/AssetManager.h"
+#include "src/assets/materials.h"
+
 #include "src/render objects/cameras.h"
 #include "src/render objects/lights.h"
 
@@ -18,21 +21,21 @@ namespace Phoenix{
 	};
 
 
-	void Renderer3D::drawCube(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight){
+	void Renderer3D::drawCube(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
 		_asset_manager->bindShader(_basic_shader);
 
 
 
 		_asset_manager->uploadMat4(_basic_shader, "u_model", transform);
 		_asset_manager->uploadMat4(_basic_shader, "u_view_projection", camera.getViewProjection());
-		_asset_manager->uploadFloat4(_basic_shader, "u_color", color);
+		_asset_manager->uploadFloat4(_basic_shader, "u_color", material.color);
 		_asset_manager->uploadFloat3(_basic_shader, "u_camera_position", camera.getPosition());
 
 		sunlight.upload(_asset_manager, _basic_shader);
 
 
 
-		_asset_manager->uploadFloat(_basic_shader, "u_shininess", 32);
+		_asset_manager->uploadFloat(_basic_shader, "u_shininess", material.shinyness);
 
 
 		// vertex data, buffers, and attributes
@@ -112,21 +115,21 @@ namespace Phoenix{
 
 
 
-	void Renderer3D::drawPlane(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight){
+	void Renderer3D::drawPlane(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
 		_asset_manager->bindShader(_basic_shader);
 
 
 
 		_asset_manager->uploadMat4(_basic_shader, "u_model", transform);
 		_asset_manager->uploadMat4(_basic_shader, "u_view_projection", camera.getViewProjection());
-		_asset_manager->uploadFloat4(_basic_shader, "u_color", color);
+		_asset_manager->uploadFloat4(_basic_shader, "u_color", material.color);
 		_asset_manager->uploadFloat3(_basic_shader, "u_camera_position", camera.getPosition());
 
 		sunlight.upload(_asset_manager, _basic_shader);
 
 
 
-		_asset_manager->uploadFloat(_basic_shader, "u_shininess", 32);
+		_asset_manager->uploadFloat(_basic_shader, "u_shininess", material.shinyness);
 
 
 		// vertex data, buffers, and attributes

@@ -22,6 +22,7 @@
 // assets
 #include "src/assets/shaders.h"
 #include "src/assets/textures.h"
+#include "src/assets/materials.h"
 
 // render objects
 #include "src/render objects/cameras.h"

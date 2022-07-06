@@ -85,6 +85,7 @@ namespace Phoenix{
 
 
 
+
 	template<typename T, typename UIFuncton>
 	static void draw_comonent(const std::string& name, Entity entity, UIFuncton ui_function){
 		
@@ -189,6 +190,23 @@ namespace Phoenix{
 
 			imgui_spacer(0.0f, 10.0f);
 		}
+	}
+
+
+	template<typename T>
+	static void draw_material(T& component){
+		ImGui::ColorEdit4("Color", glm::value_ptr(component.material.color));
+
+		float shinyness = component.material.shinyness;
+		shinyness = sqrt(shinyness);
+		imgui_draw_float_control("shinyness", shinyness);
+
+		if(shinyness > 0){
+			component.material.shinyness = shinyness * shinyness;
+		}else{
+			component.material.shinyness = 0;
+		}
+
 	}
 
 
@@ -392,12 +410,12 @@ namespace Phoenix{
 		});
 
 		draw_comonent<Component::Cube>("Cube", entity, [](auto& component){
-			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+			draw_material<Component::Cube>(component);
 		});
 
 
 		draw_comonent<Component::Plane>("Plane", entity, [](auto& component){
-			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+			draw_material<Component::Plane>(component);
 		});
 
 

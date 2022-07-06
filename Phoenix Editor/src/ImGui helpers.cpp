@@ -68,7 +68,7 @@ namespace Phoenix{
 					ImGui::PopFont();
 
 					ImGui::SameLine();
-					ImGui::DragFloat("##X", &values.x, iteration_size, 0.0f, 0.0f, "%.2f");
+					ImGui::DragFloat("##X", &values.x, iteration_size, 0.0f, 0.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
 					ImGui::PopItemWidth();
 					ImGui::SameLine();
 				ImGui::PopStyleColor(3);
@@ -87,7 +87,7 @@ namespace Phoenix{
 					ImGui::PopFont();
 
 					ImGui::SameLine();
-					ImGui::DragFloat("##Y", &values.y, iteration_size, 0.0f, 0.0f, "%.2f");
+					ImGui::DragFloat("##Y", &values.y, iteration_size, 0.0f, 0.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
 					ImGui::PopItemWidth();
 					ImGui::SameLine();
 				ImGui::PopStyleColor(3);
@@ -106,7 +106,7 @@ namespace Phoenix{
 					ImGui::PopFont();
 
 					ImGui::SameLine();
-					ImGui::DragFloat("##Z", &values.z, iteration_size, 0.0f, 0.0f, "%.2f");
+					ImGui::DragFloat("##Z", &values.z, iteration_size, 0.0f, 0.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
 					ImGui::PopItemWidth();
 					ImGui::SameLine();
 				ImGui::PopStyleColor(3);
@@ -130,7 +130,7 @@ namespace Phoenix{
 
 
 			ImGui::PushMultiItemsWidths(1, ImGui::GetContentRegionAvail().x - 5.0f);
-				ImGui::DragFloat("##value", &value, iteration_size, 0.0f, 0.0f, "%.2f");
+				ImGui::DragFloat("##value", &value, iteration_size, 0.0f, FLT_MAX, "%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_AlwaysClamp);
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
 

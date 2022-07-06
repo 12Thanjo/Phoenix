@@ -37,6 +37,13 @@ namespace Phoenix{
 		serializer.endList();
 	}
 
+	static void serialize_basic_material(NAML_S& serializer, BasicMaterial& material){
+		serializer.beginGroup("Basic Material");
+			serialize_vec4(serializer, "color", material.color);
+			serializer.keyValue("shinyness", material.shinyness);
+		serializer.endGroup();
+	}
+
 
 
 	void Serializer::serialize(Scene* scene, const std::string& filepath){
@@ -72,16 +79,8 @@ namespace Phoenix{
 
 		serializer.beginGroup("Sunlight");
 			Lights::Directional& sunlight = scene->sunlight;
-			serializer.beginList("direction");
-				serializer.addToList(sunlight.direction.x);
-				serializer.addToList(sunlight.direction.y);
-				serializer.addToList(sunlight.direction.z);
-			serializer.endList();
-			serializer.beginList("color");
-				serializer.addToList(sunlight.color.x);
-				serializer.addToList(sunlight.color.y);
-				serializer.addToList(sunlight.color.z);
-			serializer.endList();
+			serialize_vec3(serializer, "direction", sunlight.direction);
+			serialize_vec3(serializer, "color", sunlight.color);
 			serializer.keyValue("strength", sunlight.strength);
 		serializer.endGroup();
 
@@ -148,11 +147,15 @@ namespace Phoenix{
 				}
 				
 				if(entity.hasComponent<Component::Cube>()){
-					serialize_vec4(serializer, "Cube", entity.getComponent<Component::Cube>().color);
+					serializer.beginGroup("Cube");
+						serialize_basic_material(serializer, entity.getComponent<Component::Cube>().material);
+					serializer.endGroup();
 				}
 
 				if(entity.hasComponent<Component::Plane>()){
-					serialize_vec4(serializer, "Plane", entity.getComponent<Component::Plane>().color);
+					serializer.beginGroup("Plane");
+						serialize_basic_material(serializer, entity.getComponent<Component::Plane>().material);
+					serializer.endGroup();
 				}
 
 
@@ -287,16 +290,26 @@ namespace Phoenix{
 				}
 
 				if(node->has("Cube")){
+					NAML_Node* material_node = node->get("Cube")->get("Basic Material");
+
 					entity.addComponent<Component::Cube>(
-						node->get("Cube")->value<glm::vec4>()
+						BasicMaterial(
+							material_node->get("color")->value<glm::vec4>(),
+							material_node->get("shinyness")->value<float>()
+						)
 					);
 				}
 
 				if(node->has("Plane")){
+					NAML_Node* material_node = node->get("Plane")->get("Basic Material");
+
 					entity.addComponent<Component::Plane>(
-						node->get("Plane")->value<glm::vec4>()
+						BasicMaterial(
+							material_node->get("color")->value<glm::vec4>(),
+							material_node->get("shinyness")->value<float>()
+						)
 					);
-				}	
+				}
 
 				// glm::vec3 position = node->get("Transform")->get("scale")->value<glm::vec3>();
 				// PH_LOG(position.x << ", " << position.y << ", " << position.z);

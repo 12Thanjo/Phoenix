@@ -117,10 +117,13 @@ vec3 calculate_directional_light(DirectionalLight light){
 
 
 	// specular
-	vec3 view_direction = normalize(u_camera_position - t_fragment_position);
-	vec3 reflect_direction = reflect(-light_direction, norm);
-	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_shininess);
-	vec3 specular = 1.5 * spec * light.color;
+	vec3 specular = vec3(0, 0, 0);
+	if(u_shininess > 1){
+		vec3 view_direction = normalize(u_camera_position - t_fragment_position);
+		vec3 reflect_direction = reflect(-light_direction, norm);
+		float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_shininess);
+		specular = 1.5 * spec * light.color;
+	}
 
 
 

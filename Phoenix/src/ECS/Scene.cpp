@@ -135,7 +135,7 @@ namespace Phoenix{
 		for(auto entt_entity : cube_group){
 			auto [transform, cube] = cube_group.get<Component::Transform, Component::Cube>(entt_entity);
 			
-			renderer_3d->drawCube(transform.transform, cube.color, static_cast<PerspectiveCamera&>(camera), sunlight);
+			renderer_3d->drawCube(transform.transform, cube.material, static_cast<PerspectiveCamera&>(camera), sunlight);
 		}
 
 
@@ -143,7 +143,7 @@ namespace Phoenix{
 		for(auto entt_entity : plane_group){
 			auto [transform, plane] = plane_group.get<Component::Transform, Component::Plane>(entt_entity);
 			
-			renderer_3d->drawPlane(transform.transform, plane.color, static_cast<PerspectiveCamera&>(camera), sunlight);
+			renderer_3d->drawPlane(transform.transform, plane.material, static_cast<PerspectiveCamera&>(camera), sunlight);
 		}
 
 	}

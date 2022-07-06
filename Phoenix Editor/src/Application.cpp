@@ -137,7 +137,6 @@ namespace Phoenix{
 			_running_counter += 1;
 			if(_running_counter > 100){
 				_can_render = !Files::isProcessRunning(Files::getFilePathUpDirectory(_path) + "/Phoenix Runtime/Phoenix Runtime.exe");
-				PH_ERROR("CHECK OPEN");
 				_running_counter = 0;
 			}
 		}

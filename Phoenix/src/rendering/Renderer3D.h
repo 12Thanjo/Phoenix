@@ -7,6 +7,7 @@ namespace Phoenix{
 	};
 	class AssetManager;
 	class PerspectiveCamera;
+	class BasicMaterial;
 
 	struct Renderer3DPerformanceMetrics{
 		unsigned int drawCalls = 0;
@@ -21,8 +22,8 @@ namespace Phoenix{
 		
 			void init();
 
-			void drawCube(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight);
-			void drawPlane(glm::mat4& transform, glm::vec4& color, PerspectiveCamera& camera, Lights::Directional& sunlight);
+			void drawCube(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);
+			void drawPlane(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);
 
 			void resetPerfMetrics();
 
