@@ -5,7 +5,7 @@
 #include "ECS/Scene.h"
 #include "ECS/Entity.h"
 #include "assets/AssetManager.h"
-
+#include "scripting/scripting.h"
 
 namespace Phoenix{
 	class FrameBuffer;
@@ -47,7 +47,7 @@ namespace Phoenix{
 
 	class Engine{
 		public:
-			Engine();
+			Engine(std::string path);
 			// Engine(EngineConfig config);
 			~Engine();
 
@@ -58,6 +58,10 @@ namespace Phoenix{
 			virtual void render(){};
 			void render3D();
 			void render2D();
+			void runScripts();
+
+
+			inline std::string getPath() const { return _path; };
 
 
 			// window data
@@ -83,7 +87,7 @@ namespace Phoenix{
 			inline void destroyEntity(Entity& entity){ _scene->destroyEntity(entity); };
 
 			inline void	serialize(const std::string& filepath) const { _scene->serialize(filepath); }
-			inline std::string deserialize(const std::string& filepath) const { return _scene->deserialize(filepath); }
+			inline std::string deserialize(const std::string& filepath) { return _scene->deserialize(filepath, _scripting); }
 
 
 			// rendering								
@@ -99,6 +103,7 @@ namespace Phoenix{
 			void setCamera(Entity camera);
 			inline bool usingCamera() const { return _camera; };
 			inline bool usingCamera(Entity camera) const { return camera == _camera; };
+			void resizeCameras(float width, float height);
 
 
 			// asset manager
@@ -110,6 +115,8 @@ namespace Phoenix{
 
 
 		private:
+			std::string _path;
+
 			// EngineConfig _config;
 			bool _running = true;
 
@@ -119,6 +126,8 @@ namespace Phoenix{
 			Renderer2D* _renderer_2d;
 			Renderer3D* _renderer_3d;
 			AssetManager* _asset_manager;
+			Scripting _scripting;
+
 
 		protected:
 			Scene* _scene;
@@ -131,6 +140,6 @@ namespace Phoenix{
 
 
 	// user initialization
-	Engine* init();
+	Engine* init(std::string path);
 	
 }

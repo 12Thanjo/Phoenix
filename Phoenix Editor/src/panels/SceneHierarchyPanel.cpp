@@ -17,7 +17,7 @@ namespace Phoenix{
 
 
 			if(ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()){
-				_selection_context = {};
+				selection_context = {};
 			}
 
 
@@ -34,8 +34,8 @@ namespace Phoenix{
 
 		// properties
 		imgui_begin("3", "Entity Properties");
-			if(_selection_context){
-				draw_components(editor, _selection_context);
+			if(selection_context){
+				draw_components(editor, selection_context);
 			}else{
 				ImGui::Text("No Entity Selected");
 			}
@@ -48,11 +48,11 @@ namespace Phoenix{
 		std::string& name = entity.getComponent<Component::Name>().name;
 
 		// ImGui::Text(name.c_str());
-		ImGuiTreeNodeFlags flags = ((_selection_context == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		ImGuiTreeNodeFlags flags = ((selection_context == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, name.c_str());
 		if(ImGui::IsItemClicked()){
-			_selection_context = entity;
+			selection_context = entity;
 		}
 
 
@@ -67,10 +67,15 @@ namespace Phoenix{
 		}
 
 
+		if(opened){
+			ImGui::TreePop();
+		}
+
+
 
 		if(entity_deleted){
-			if(_selection_context == entity){
-				_selection_context = {};
+			if(selection_context == entity){
+				selection_context = {};
 			}
 
 			editor->destroyEntity(entity);
@@ -216,15 +221,15 @@ namespace Phoenix{
 		// }
 
 		if(ImGui::BeginPopup("AddComponent") || ImGui::BeginPopupContextWindow(0, 1, false)){
-			bool has_transform = _selection_context.hasComponent<Component::Transform>();
-			bool has_script = _selection_context.hasComponent<Component::Script>();
+			bool has_transform = selection_context.hasComponent<Component::Transform>();
+			bool has_script = selection_context.hasComponent<Component::Script>();
 
-			bool has_perspective = _selection_context.hasComponent<Component::PerspectiveCamera>();
-			bool has_orbital = _selection_context.hasComponent<Component::OrbitalCamera>();
+			bool has_perspective = selection_context.hasComponent<Component::PerspectiveCamera>();
+			bool has_orbital = selection_context.hasComponent<Component::OrbitalCamera>();
 			bool has_camera = has_perspective || has_orbital;
 
-			bool has_sprite = _selection_context.hasComponent<Component::SpriteRenderer>();
-			bool has_cube = _selection_context.hasComponent<Component::Cube>();
+			bool has_sprite = selection_context.hasComponent<Component::SpriteRenderer>();
+			bool has_cube = selection_context.hasComponent<Component::Cube>();
 			bool has_renderer = has_sprite || has_cube;
 
 			///////////////////////////////////////////////
@@ -243,7 +248,7 @@ namespace Phoenix{
 
 			imgui_begin_disable_menu_item(has_transform, true);
 				if(ImGui::MenuItem("Transform")){
-					_selection_context.addComponent<Component::Transform>();
+					selection_context.addComponent<Component::Transform>();
 					ImGui::CloseCurrentPopup();
 				}
 			imgui_end_disable_menu_item();
@@ -251,7 +256,7 @@ namespace Phoenix{
 
 			imgui_begin_disable_menu_item(has_script, true);
 				if(ImGui::MenuItem("Script")){
-					_selection_context.addComponent<Component::Script>();
+					selection_context.addComponent<Component::Script>();
 					ImGui::CloseCurrentPopup();
 				}
 			imgui_end_disable_menu_item();
@@ -259,12 +264,12 @@ namespace Phoenix{
 	
 		    if(ImGui::BeginMenu("Cameras", !has_camera && !has_renderer)){
 				if(ImGui::MenuItem("Perspective Camera")){
-					_selection_context.addComponent<Component::PerspectiveCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+					selection_context.addComponent<Component::PerspectiveCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
 					if(!has_transform){
-						_selection_context.addComponent<Component::Transform>();
+						selection_context.addComponent<Component::Transform>();
 					}
 				}else if(ImGui::MenuItem("Orbital Camera", "", has_transform)){
-					_selection_context.addComponent<Component::OrbitalCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+					selection_context.addComponent<Component::OrbitalCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
 				}
 		        ImGui::EndMenu();
 		    }
@@ -275,9 +280,9 @@ namespace Phoenix{
 
 		    if(ImGui::BeginMenu("2D Render Objects", !has_renderer && !has_camera)){
 				if(ImGui::MenuItem("Sprite Renderer")){
-					_selection_context.addComponent<Component::SpriteRenderer>();
+					selection_context.addComponent<Component::SpriteRenderer>();
 					if(!has_transform){
-						_selection_context.addComponent<Component::Transform>(glm::vec3{0.0f, 0.0f, -1.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
+						selection_context.addComponent<Component::Transform>(glm::vec3{0.0f, 0.0f, -1.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
 					}
 				}
 
@@ -287,9 +292,9 @@ namespace Phoenix{
 
 		    if(ImGui::BeginMenu("3D Render Objects", !has_renderer && !has_camera)){
 				if(ImGui::MenuItem("Cube")){
-					_selection_context.addEmptyComponent<Component::Cube>();
+					selection_context.addEmptyComponent<Component::Cube>();
 					if(!has_transform){
-						_selection_context.addComponent<Component::Transform>();
+						selection_context.addComponent<Component::Transform>();
 					}
 				}
 
@@ -306,8 +311,15 @@ namespace Phoenix{
 		if(content_region_avail.x > 240){
 			// ImGui::SameLine(content_region_avail.x - 170);
 			ImGui::SameLine();
-			std::string uuid = "UUID: " + std::to_string((uint64_t)entity.getComponent<Component::UUID>().id);
-			ImGui::Text(uuid.c_str());
+			ImGui::Text("UUID:");
+			ImGui::SameLine();
+
+			std::string uuid = std::to_string((uint64_t)entity.getComponent<Component::UUID>().id);
+
+			if(ImGui::Button(uuid.c_str())){
+				PH_LOG("Copied to clipboard: " << uuid);
+				Files::toClipboard(uuid);
+			}
 
 		}
 
@@ -400,6 +412,17 @@ namespace Phoenix{
 
 
 			imgui_separator(); ////////////////////////////////////////////////////////////////
+
+			UUID& id = entity.getComponent<Component::UUID>().id;
+			Scene* scene = editor->getScene();
+
+			bool currently_startup_camera = scene->hasStartupCamera() && (scene->getStartupCamera() == id);
+			bool set_startup_camera = currently_startup_camera;
+			ImGui::Checkbox("Startup Camera", &set_startup_camera);
+
+			if(!currently_startup_camera && set_startup_camera){
+				scene->setStartupCamera(id);
+			}
 
 
 			bool currently_viewing = editor->usingCamera(entity);

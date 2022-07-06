@@ -231,13 +231,13 @@ namespace Phoenix{
 
 	void imgui_alert(){
 		if(open_alert){
-			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			// ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			// ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 			
 
 			ImGui::OpenPopup("Alert");
 			if(ImGui::BeginPopupModal("Alert", NULL)){
-				ImGui::SetWindowSize({320, 180});
+				ImGui::SetWindowSize({400, 225});
 			    ImGui::TextWrapped(alert_text.c_str());
 
 			    if(ImGui::Button("Close")){
@@ -265,8 +265,8 @@ namespace Phoenix{
 
 	void imgui_popup(std::string title, std::function<void()> draw_window){
 		if(!open_alert){
-			ImVec2 center = ImGui::GetMainViewport()->GetCenter();
-			ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			// ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+			// ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 			
 			ImGui::OpenPopup(title.c_str());
 			if(ImGui::BeginPopupModal(title.c_str(), NULL)){

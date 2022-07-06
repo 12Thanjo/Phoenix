@@ -4,8 +4,11 @@
 #include "Scene.h"
 #include "components.h"
 #include "Entity.h"
+
 #include "src/naml/Serialize.h"
 #include "src/naml/Deserialize.h"
+
+#include "src/scripting/scripting.h"
 
 
 #define DESERIALIZE_ERROR(msg) PH_WARNING(msg); \
@@ -41,6 +44,10 @@ namespace Phoenix{
 
 		serializer.keyValue("Scene", std::to_string(scene->uuid));
 		serializer.keyValue("Name", scene->name);
+
+		if(scene->hasStartupCamera()){
+			serializer.keyValue("Startup Camera", std::to_string(scene->getStartupCamera()) );
+		}
 
 
 		//////////////////////////////////////////////////////////////////////
@@ -161,8 +168,14 @@ namespace Phoenix{
 
 
 
-	std::string Serializer::deserialize(Scene* scene, const std::string& filepath){
+	std::string Serializer::deserialize(Scene* scene, const std::string& filepath, Scripting& scripting){
 		try{
+			// check file exists
+			if(!Files::fileExists(filepath, [&](std::string error){
+				throw error;
+			})){
+				throw std::string("Filepath does not exists");
+			}
 
 			//////////////////////////////////////////////////////////
 			// deserialize
@@ -170,6 +183,10 @@ namespace Phoenix{
 
 			scene->name = naml.get()->get("Name")->value<std::string>();
 			scene->uuid = { naml.get()->get("Scene")->value<UUID>()};
+
+			if(naml.get()->has("Startup Camera")){
+				scene->setStartupCamera( naml.get()->get("Startup Camera")->value<UUID>() );
+			}
 
 			//////////////////////////////////////////////////////////////////////
 			// Deserialize Editor Camera
@@ -215,7 +232,10 @@ namespace Phoenix{
 
 				if(node->has("Script")){
 					entity.addComponent<Component::Script>(
-						node->get("Script")->value<std::string>()
+						node->get("Script")->value<std::string>(),
+						Files::getFilePathUpDirectory(Files::getFilePath(filepath)) + "\\" + node->get("Script")->value<std::string>(),
+						scripting,
+						entity.getComponent<Component::UUID>().id
 					);
 				}
 

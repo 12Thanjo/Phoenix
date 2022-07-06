@@ -4,6 +4,8 @@
 #include "core/UUID.h"
 #include "Entity.h"
 
+#include "src/scripting/scripting.h"
+
 
 namespace Phoenix::Component{
 
@@ -44,6 +46,30 @@ namespace Phoenix::Component{
 		Script() = default;
 		Script(const std::string& script_path)
 			: path(script_path) {};
+		Script(const std::string& script_path, const std::string& full_path, Scripting& scripting, Phoenix::UUID uuid)
+			: path(script_path) {
+				
+			add_script(scripting, full_path, uuid);
+		};
+
+
+		private:
+			void add_script(Scripting& scripting, const std::string& full_path, Phoenix::UUID uuid){
+				std::string script = Files::readFile(full_path);
+
+				std::string script_path = path;
+				std::string from = "\\";
+				std::string to = "\\\\";
+				size_t start_pos = 0;
+				while((start_pos = script_path.find(from, start_pos)) != std::string::npos) {
+				    script_path.replace(start_pos, from.length(), to);
+				    start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+				}
+
+				script = "{var scene = new _Script();" + script + "\n_script_manager.create_script('" + script_path + "', scene);}";
+
+				scripting.run(script);
+			}
 	};
 
 

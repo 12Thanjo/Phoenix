@@ -38,6 +38,8 @@ namespace Files{
 	
 	std::string getFileCreationTime(FILE_PATH_REF);
 	void openInDefaultProgram(FILE_PATH_REF);
+	void toClipboard(const std::string &s);
+	bool isProcessRunning(std::string search_path);
 
 }
 

@@ -52,7 +52,9 @@ namespace Phoenix{
 		ImGui_ImplOpenGL3_Init("#version 410");
 
 
-		_panels.push_back(static_cast<Panel*>(new SceneHierarchyPanel()));
+		scene_hierarchy_panel = static_cast<Panel*>(new SceneHierarchyPanel());
+		_panels.push_back(scene_hierarchy_panel);
+		
 		_panels.push_back(static_cast<Panel*>(new AssetBrowserPanel()));
 		_panels.push_back(static_cast<Panel*>(new PerformancePanel()));
 		_panels.push_back(static_cast<Panel*>(new ScenePanel()));
@@ -219,7 +221,9 @@ namespace Phoenix{
 
 							std::filesystem::path filesystem_path(path);
 							if(filesystem_path.extension() == ".phoenix_scene"){
+								PH_LOG(filesystem_path.string());
 								open_scene(filesystem_path.string());
+								// open_scene(Files::getFilePath(static_cast<Editor*>(_editor)->project.path.string()) + "\\" + filesystem_path.string());
 							}else{
 								PH_WARNING("Attempted to drag & load a non-scene");
 							}
@@ -312,6 +316,10 @@ namespace Phoenix{
 		}else{
 			stop_scene();
 		}
+
+
+
+		Files::isProcessRunning("C:\\Program Files\\Waterfox\\waterfox.exe");
 	}
 
 
@@ -371,6 +379,7 @@ namespace Phoenix{
 	// 		newScene();
 	// 	}
 	// }
+	
 
 	std::string RendererImGui::open(const std::string& filepath, Project& project){
 		std::string deserialize = project.deserialize(filepath);
@@ -383,6 +392,7 @@ namespace Phoenix{
 
 	void RendererImGui::open_scene(const std::string& filepath){
 		_editor->clearScene();
+
 
 		std::string deserialize = _editor->deserialize(filepath);
 		if(deserialize.empty()){

@@ -59,6 +59,10 @@ namespace Phoenix{
 		// y: yaw
 		// z: pitch
 
+		rotation.x = fmod(rotation.x, 6.283185307179586f);
+		rotation.y = fmod(rotation.y, 6.283185307179586f);
+		rotation.z = fmod(rotation.z, 6.283185307179586f);
+
 		_rotation = rotation;
 
 		
@@ -125,8 +129,12 @@ namespace Phoenix{
 		// y: yaw
 		// z: pitch
 
-		_rotation = rotation;
 
+		rotation.x = fmod(rotation.x, 6.283185307179586f);
+		rotation.y = fmod(rotation.y, 6.283185307179586f);
+		rotation.z = fmod(rotation.z, 6.283185307179586f);
+
+		_rotation = rotation;
 		
 		_front = glm::normalize( glm::vec3(
 			cos(_rotation.y) * cos(_rotation.z),

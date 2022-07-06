@@ -8,6 +8,8 @@
 #include "../rendering/Renderer2D.h"
 #include "../rendering/Renderer3D.h"
 #include "../render objects/cameras.h"
+#include "src/scripting/scripting.h"
+#include "src/Engine.h"
 
 
 
@@ -38,7 +40,8 @@ namespace Phoenix{
 	}
 
 
-
+	//////////////////////////////////////////////////////////////////////
+	// entities
 
 	Entity Scene::createEntity(const std::string& name){
 		performanceMetrics.entities += 1;
@@ -73,17 +76,33 @@ namespace Phoenix{
 		});
 	}
 
+	Entity Scene::getEntityByUUID(UUID uuid){
+		Entity output;
 
+		_registry.each([&](entt::entity entt_entity){
+			Entity entity{entt_entity, this};
+			if(entity.getComponent<Component::UUID>().id == uuid){
+				output = entity;
+			}
+		});
+
+		return output;
+	}
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// systems
 
 	void Scene::update(){
-		_registry.view<Component::Transform>().each([&](entt::entity entity_id, auto& tc){
-			tc.transform = glm::translate(glm::mat4(1.0f), tc.position);
+		_registry.view<Component::Transform>().each([&](entt::entity entity_id, auto& component){
+			component.transform = glm::translate(glm::mat4(1.0f), component.position);
 
-			tc.transform = glm::rotate(tc.transform, tc.rotation.x, {1, 0, 0});
-			tc.transform = glm::rotate(tc.transform, tc.rotation.y, {0, 1, 0});
-			tc.transform = glm::rotate(tc.transform, tc.rotation.z, {0, 0, 1});
+			component.transform = glm::rotate(component.transform, component.rotation.x, {1, 0, 0});
+			component.transform = glm::rotate(component.transform, component.rotation.y, {0, 1, 0});
+			component.transform = glm::rotate(component.transform, component.rotation.z, {0, 0, 1});
 
-			tc.transform = glm::scale(tc.transform, tc.scale);
+			component.transform = glm::scale(component.transform, component.scale);
 		});
 
 
@@ -121,7 +140,17 @@ namespace Phoenix{
 
 	}
 
+	void Scene::runScripts(Scripting& scripting, Engine* engine){
+		_registry.view<Component::Script>().each([&](entt::entity entity_id, auto& component){
+			Entity entity {entity_id, this};
+			// scripting.run("console.log('test from entity run script');");
+			scripting.scriptControllerUpdate(component.path, entity, engine);
+		});
+	}
 
+
+	//////////////////////////////////////////////////////////////////////
+	// misc
 
 	void Scene::forEach(std::function<void(Entity)> func){
 		_registry.each([&](entt::entity entt_entity){
@@ -136,8 +165,25 @@ namespace Phoenix{
 		_serializer->serialize(this, filepath);
 	}
 
-	std::string Scene::deserialize(const std::string& filepath){
-		return _serializer->deserialize(this, filepath);
+	std::string Scene::deserialize(const std::string& filepath, Scripting& scripting){
+		return _serializer->deserialize(this, filepath, scripting);
+	}
+
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// startup camera
+
+
+	UUID Scene::getStartupCamera() const {
+		PH_ASSERT(_has_startup_camera, "Startup Camera has not been set");
+		return _startup_camera;
+	}
+
+	void Scene::setStartupCamera(UUID camera){
+		_startup_camera = camera;
+		_has_startup_camera = true;
 	}
 
 }

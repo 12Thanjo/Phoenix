@@ -91,7 +91,7 @@ namespace Phoenix{
 									if(ImGui::BeginDragDropSource()){
 										const wchar_t* item_path = dir_path.c_str();
 										ImGui::SetDragDropPayload("Asset Browser Item", item_path, (wcslen(item_path) + 1) * sizeof(wchar_t));
-										ImGui::Text(dir_path.string().c_str());
+										ImGui::Text(relative_path.string().c_str());
 
 										ImGui::EndDragDropSource();
 									}

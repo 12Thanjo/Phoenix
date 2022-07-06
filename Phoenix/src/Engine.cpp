@@ -9,17 +9,24 @@
 
 
 
+
+
 #define PERF_START(name) Timer _timer_##name
 #define PERF_END(name) performanceMetrics.name = (float)_timer_##name.stop()
 
 
 namespace Phoenix{
 	
-	Engine::Engine(){
+	Engine::Engine(std::string path) 
+		: _path(Files::getFilePath(path)){
+			
 		_scene = new Scene();
 		_asset_manager = new AssetManager();
 		_renderer_2d = new Renderer2D(_asset_manager);
 		_renderer_3d = new Renderer3D(_asset_manager);
+
+		_scripting = Scripting();
+		_scripting.init(Files::getFilePath(path));
 		// _window = new Window();
 	}
 
@@ -30,6 +37,8 @@ namespace Phoenix{
 
 
 	Engine::~Engine(){
+	   	_scripting.close();
+
 	   	delete _window;
 
 	   	glfwTerminate();
@@ -38,6 +47,8 @@ namespace Phoenix{
 	   	delete _renderer_2d;
 	   	delete _renderer_3d;
 	   	delete _asset_manager;
+
+
 	};
 
 
@@ -50,6 +61,8 @@ namespace Phoenix{
 		_renderer_2d->init();
 		_renderer_3d->init();
 		PH_INFO("Created Engine");
+
+		_scripting.run("console.log('testing testing 123');");
 
 
 		glEnable(GL_BLEND);
@@ -123,6 +136,10 @@ namespace Phoenix{
 		// PERF_END(renderECS);
 	}
 
+	void Engine::runScripts(){
+		_scene->runScripts(_scripting, this);
+	}
+
 
 
 	void Engine::createWindow(WindowConfig config){
@@ -183,7 +200,27 @@ namespace Phoenix{
 		_camera = camera;
 	}
 
+	void Engine::resizeCameras(float width, float height){
+		float aspect_ratio = width / height;
 
+		_scene->each<Component::PerspectiveCamera>([&](Entity entity, Component::PerspectiveCamera& component){
+			component.camera.setProjection(
+				component.camera.getFOV(),
+				aspect_ratio,
+				component.camera.getNear(),
+				component.camera.getFar()
+			);
+		});
+
+		_scene->each<Component::OrbitalCamera>([&](Entity entity, Component::OrbitalCamera& component){
+			component.camera.setProjection(
+				component.camera.getFOV(),
+				aspect_ratio,
+				component.camera.getNear(),
+				component.camera.getFar()
+			);
+		});
+	}
 
 	//////////////////////////////////////////////////////////////////////
 	// perf metrics

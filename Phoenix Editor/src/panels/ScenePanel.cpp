@@ -4,6 +4,7 @@
 #include <Phoenix.h>
 #include "../ImGui helpers.h"
 #include "../Application.h"
+#include "SceneHierarchyPanel.h"
 
 namespace Phoenix{
 
@@ -38,6 +39,9 @@ namespace Phoenix{
 			imgui_draw_collapsable_menu("General", [&](){
 				Project& project = static_cast<Editor*>(editor)->project;
 
+				//////////////////////////////////////////////////////////////////////
+				// starutp scene
+
 				bool is_startup_scene = false;
 				if(project.hasStartupScene()){
 					is_startup_scene = project.getStartupScene() == scene->uuid;
@@ -48,6 +52,28 @@ namespace Phoenix{
 
 				if(!is_startup_scene && checkbox_val){
 					project.setStartupScene(scene->uuid);
+				}
+
+				//////////////////////////////////////////////////////////////////////
+				// startup camera
+
+				std::string startup_camera;
+				if(scene->hasStartupCamera()){
+					startup_camera = std::to_string(scene->getStartupCamera());
+				}else{
+					startup_camera = "None Set";
+				}
+
+				// startup_camera = "Startup Camera: " + startup_camera;
+				// ImGui::Text(startup_camera.c_str());
+
+				ImGui::Text("Startup Camera");
+				ImGui::SameLine();
+				if(imgui_button(startup_camera) && scene->hasStartupCamera()){
+					// set selected entity to the startup camera
+					static_cast<SceneHierarchyPanel*>(
+						static_cast<Editor*>(editor)->renderer_ImGui.scene_hierarchy_panel
+					)->selection_context = scene->getEntityByUUID( scene->getStartupCamera() );
 				}
 
 			});

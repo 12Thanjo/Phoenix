@@ -11,14 +11,14 @@
 namespace Phoenix{
 	
 	class SceneHierarchyPanel : public Panel{
-		private:
-			Entity _selection_context;
-	
 		public:
 			SceneHierarchyPanel() = default;
 			~SceneHierarchyPanel() = default;
 
 			void render(Engine* editor) override;
+
+		public:
+			Entity selection_context;
 
 		private:
 			void draw_entity_node(Engine* editor, Entity& entity);

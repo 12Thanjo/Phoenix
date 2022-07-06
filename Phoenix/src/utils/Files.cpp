@@ -3,7 +3,9 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include "Shlwapi.h"
+#include <Shlwapi.h>
+#include <tlhelp32.h>
+
 
 #define FILE_PATH_REF 	   const std::string& path
 #define ERROR_CALLBACK std::function<void(std::string)> error_callback
@@ -159,8 +161,9 @@ namespace Files{
 		    if(last_char == '/' || last_char == '\\'){
 		        path = path.substr(0, path.length()-1);      
 		    }
-		    path = path.substr(0, path.find_last_of("/"));
+		    path = path.substr(0, path.find_last_of('\\'));
 		}
+
 
 		return path;
 	}
@@ -219,7 +222,108 @@ namespace Files{
 
 
 	void openInDefaultProgram(FILE_PATH_REF){
-		ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+		ShellExecuteA(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWDEFAULT);
+		// std::string command = "cd \"" + Files::getFilePathUpDirectory(path) + "\\Phoenix Runtime\"";
+		// system(command.c_str());
+  //       Sleep(1000);
+  //       system("start \"./Phoenix Runtime.exe\"");
+
+		// PH_LOG(command);
+		// system(command.c_str());
+  //       Sleep(1000);
+  //       system("start PR.exe");
+	}
+
+	void toClipboard(const std::string &s){
+		OpenClipboard(0);
+		EmptyClipboard();	
+		HGLOBAL hg=GlobalAlloc(GMEM_MOVEABLE,s.size()+1);
+		if (!hg){
+			CloseClipboard();
+			return;
+		}
+		memcpy(GlobalLock(hg),s.c_str(),s.size()+1);
+		GlobalUnlock(hg);
+		SetClipboardData(CF_TEXT,hg);
+		CloseClipboard();
+		GlobalFree(hg);
+	}
+
+
+
+	
+
+
+
+	// adapted from: https://stackoverflow.com/a/5303889/13544487
+	bool isProcessRunning(std::string search_path){
+		search_path = Files::normalize(search_path);
+
+	    HINSTANCE module_handle = LoadLibraryA("PSAPI.DLL");
+		if(module_handle == NULL){
+			PH_FATAL("Unable to get process list");
+			return false;
+		}
+
+	    // PSAPI Function Pointers.
+		BOOL  (WINAPI *lpfEnumProcesses)      (DWORD*, DWORD cb, DWORD*);
+		BOOL  (WINAPI *lpfEnumProcessModules) (HANDLE, HMODULE*, DWORD, LPDWORD);
+		DWORD (WINAPI *GetModuleFileNameExA)  (HANDLE, HMODULE, LPTSTR, DWORD);
+		// Get procedure addresses.
+		lpfEnumProcesses = 		( BOOL(WINAPI*)  (DWORD*,DWORD,DWORD*)              ) GetProcAddress(module_handle, "EnumProcesses");
+		lpfEnumProcessModules = ( BOOL(WINAPI*)  (HANDLE, HMODULE*, DWORD, LPDWORD) ) GetProcAddress(module_handle, "EnumProcessModules");
+		GetModuleFileNameExA =	( DWORD(WINAPI*) (HANDLE, HMODULE, LPTSTR, DWORD )  ) GetProcAddress(module_handle, "GetModuleFileNameExA");
+
+		// if(lpfEnumProcesses == NULL || lpfEnumProcessModules == NULL || GetModuleFileNameExA == NULL){
+		// 	PH_FATAL("Unable to get process list");
+		// 	FreeLibrary(module_handle);
+		// 	return false;
+		// }
+		PH_ASSERT(!(lpfEnumProcesses == NULL || lpfEnumProcessModules == NULL || GetModuleFileNameExA == NULL), "Unable to get process list - encountered unsupported function");
+
+
+	    DWORD PIDs[3000];
+	    DWORD sizeof_PIDs;
+        if(!lpfEnumProcesses(PIDs, 3000, &sizeof_PIDs)){
+            // Unable to get process list, EnumProcesses failed
+            PH_FATAL("Unable to get process list");
+            FreeLibrary(module_handle);
+            return false;
+        }
+
+        DWORD num_processes = sizeof_PIDs / sizeof(DWORD);
+
+	    HMODULE module_handles;
+        char process_path[MAX_PATH];
+        HANDLE process_handle;
+        for(DWORD i=0; i<num_processes; i++){
+            // strcpy(process_path,"Unknown");
+
+            process_handle = OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ, FALSE, PIDs[i]);
+
+            // get process path
+            if(process_handle){
+				if(lpfEnumProcessModules(process_handle, &module_handles, sizeof(module_handles), &sizeof_PIDs)){
+					GetModuleFileNameExA(process_handle, module_handles, (LPTSTR)process_path, MAX_PATH);
+				}
+            }
+            CloseHandle(process_handle);
+
+            // PH_LOG(process_path);
+            // PH_INFO("search_path: " << search_path);
+            // PH_LOG("--------------------------");
+            // found process
+            if(std::string(process_path) == search_path){
+                FreeLibrary(module_handle);
+                return true;
+            }
+        }
+
+
+
+	    FreeLibrary(module_handle);
+	    return false;
+
 	}
 
 

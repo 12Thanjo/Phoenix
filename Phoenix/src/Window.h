@@ -57,6 +57,7 @@ namespace Phoenix{
 			void captureMouse(bool capture);
 
 			void maximize();
+			void fullscreen();
 	};
 
 }

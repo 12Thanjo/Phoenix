@@ -144,4 +144,10 @@ namespace Phoenix{
 		glfwMaximizeWindow(_window);
 	}
 
+	void Window::fullscreen(){
+		glfwSetWindowAttrib(_window, GLFW_DECORATED, GLFW_FALSE);
+		glfwSetWindowPos(_window, 0, 0);
+		glfwSetWindowSize(_window, _config.width, _config.height);
+	}
+
 }

@@ -4,6 +4,7 @@
 
 namespace Phoenix{
 	class Scene;
+	class Scripting;
 	
 	class Serializer{
 		public:
@@ -13,7 +14,7 @@ namespace Phoenix{
 
 			void serialize(Scene* scene, const std::string& filepath);
 			
-			std::string deserialize(Scene* scene, const std::string& filepath);
+			std::string deserialize(Scene* scene, const std::string& filepath, Scripting& scripting);
 	};
 
 }

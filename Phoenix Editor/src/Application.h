@@ -10,7 +10,8 @@ namespace Phoenix{
 	
 	class Editor : public Engine{
 		public:
-			Editor();
+			Editor(std::string path) : 
+				Engine(path), renderer_ImGui(dynamic_cast<Engine*>(this)), project(), _path(Files::getFilePath(path)) {};
 			~Editor();
 			
 			void create() override;
@@ -28,12 +29,16 @@ namespace Phoenix{
 			void place_camera();
 			void use_editor_camera();
 
-
 		private:
+			std::string _path;
+
 			FrameBuffer* _output_buffer;
 
 			float _mouse_x = 0;
 			float _mouse_y = 0;
+
+			int _running_counter = 0;
+			bool _can_render = true;
 			
 	};
 

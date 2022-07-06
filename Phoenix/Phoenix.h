@@ -30,3 +30,6 @@
 // ECS
 #include "src/ECS/components.h"
 
+
+
+#include "src/scripting/scripting.h"

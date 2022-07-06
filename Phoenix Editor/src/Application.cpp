@@ -7,7 +7,7 @@
 
 namespace Phoenix{
 
-	Editor::Editor() : renderer_ImGui(dynamic_cast<Engine*>(this)), project() {};
+	
 	Editor::~Editor(){
 		delete _output_buffer;
 	};
@@ -47,7 +47,19 @@ namespace Phoenix{
 							break;
 						case PH_KEY_P:
 							if(ctrl_down){
+								PH_WARNING("I don't do much yet");
 								renderer_ImGui.playEvent();
+							}
+							break;
+						case PH_KEY_F5:
+							{
+								std::string runtime_path = Files::getFilePathUpDirectory(_path) + "\\Phoenix Runtime\\Phoenix Runtime.exe";
+								PH_ASSERT(Files::fileExists(runtime_path), "Incorrect File Path for runtime");
+
+								Files::writeFile(Files::getFilePath(runtime_path) + "\\project.phoenix_runtime_config", project.path.string());
+								
+								renderer_ImGui.save();
+								Files::openInDefaultProgram(runtime_path);
 							}
 							break;
 					};
@@ -117,17 +129,26 @@ namespace Phoenix{
 
 
 	void Editor::render(){
-		_output_buffer->bind();
-		clearColorDepth();
+		_running_counter += 1;
+		if(_running_counter > 150){
+			_can_render = !Files::isProcessRunning(Files::getFilePathUpDirectory(_path) + "/Phoenix Runtime/Phoenix Runtime.exe");
+			_running_counter = 0;
+		}
 
-		render3D();
-		render2D();
 
-		_output_buffer->unbind();
-		
-		renderer_ImGui.begin();
-		renderer_ImGui.render(_output_buffer);
-		renderer_ImGui.end();
+		if(_can_render){
+			_output_buffer->bind();
+			clearColorDepth();
+
+			render3D();
+			render2D();
+
+			_output_buffer->unbind();
+			
+			renderer_ImGui.begin();
+			renderer_ImGui.render(_output_buffer);
+			renderer_ImGui.end();
+		}
 	}
 
 
@@ -164,8 +185,8 @@ namespace Phoenix{
 
 		camera.setCoordinates(
 			camera.getRho(),
-			camera.getTheta() + (dx * 0.00685f),
-			camera.getPhi() - (dy * 0.00685f)
+			fmod(camera.getTheta(), 6.283185307179586f) + (dx * 0.00685f),
+			fmod(camera.getPhi(), 6.283185307179586f) - (dy * 0.00685f)
 		);
 	}
 
@@ -191,11 +212,11 @@ namespace Phoenix{
 
 
 
-	Engine* init(){
+	Engine* init(std::string path){
 		// EngineConfig config;
 			// config.name = "Phoenix Engine Editor";
 
-		return new Editor();
+		return new Editor(path);
 	}
 	
 }

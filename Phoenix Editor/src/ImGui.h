@@ -33,6 +33,9 @@ namespace Phoenix{
 
 			inline bool getMouseOverViewport() const { return _mouse_over_viewport; };
 
+		public:
+			Panel* scene_hierarchy_panel;
+		
 
 		private:
 			void play_scene();

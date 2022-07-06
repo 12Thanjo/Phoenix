@@ -1,4 +1,4 @@
-# Phoenix Engine (Pre-Alpha)
+# Phoenix Engine (Alpha)
 ![Phoenix Logo](logo.png)
 
 
@@ -16,31 +16,6 @@ Download Phoenix engine from [Github](https://github.com/12Thanjo/Phoenix).
 Phoenix has premake scripts. The default is uses Visual Studio 2022, but this can be changed. In `GENERATE_PROJECTS.bat`, you can change the default `vs2022` with any of the options found [here](https://premake.github.io/docs/Using-Premake).
 
 Run `GENERATE_PROJECTS.bat` with your own build workflow (discussed above). In the default example, the script will create the Visual Studio 2022 solution.
-
-
-
-### Example Usage:
-
-```c++
-#include <Phoenix.h>
-#include <core/init.h>
-
-class Game : public Phoenix::Engine{
-	public:
-		void create() override{
-
-		}
-
-		void render() override{
-
-		}
-};
-
-
-Phoenix::Engine* Phoenix::initialize(){
-	return new Game();
-}
-```
 
 
 

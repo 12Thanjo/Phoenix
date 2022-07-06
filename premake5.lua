@@ -121,6 +121,72 @@ project "Phoenix"
 	filter { "system:windows", "configurations:Release" }
 	   buildoptions "/MT"
 
+--------------------------------------------------------------------------------------------
+
+project "Phoenix Runtime"
+	location "Phoenix Runtime"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++20"
+	staticruntime "on"
+
+
+	targetdir ("bin/bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin/intermediates/" .. outputdir .. "/%{prj.name}")
+
+
+	files{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp",
+	}
+
+	includedirs{
+		"Phoenix",
+		"Phoenix/src",
+		-- "%{IncludeDirs.EnTT}",
+		"%{IncludeDirs.jx}",
+		"%{IncludeDirs.ImGui}",
+		"%{IncludeDirs.Glad}",
+		"%{IncludeDirs.GLFW}",
+		-- "%{IncludeDirs.lemon}",
+	}
+
+
+	links{
+		"Phoenix",
+		"ImGui",
+		"GLFW",
+		"Glad",
+		-- "lemon",
+		-- "NodeJS",
+	}
+
+
+	filter "system:windows"
+		systemversion "latest"
+
+		defines {
+			"PH_PLATFORM_WINDOWS"
+		}
+
+		postbuildcommands {
+			-- ('echo -------------$(SolutionDir)bin/bin/' .. outputdir .. '/%{prj.name}'),
+			('{COPYDIR} "$(SolutionDir)/Phoenix/lib/jx/x64" "$(SolutionDir)bin/bin/' .. outputdir .. '/%{prj.name}"')
+		}
+
+	filter "configurations:Debug"
+		defines "PH_DEBUG"
+		-- buildoptions "/MDd"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "PH_RELEASE"
+		-- buildoptions "/MD"
+		optimize "on"
+
+	filter { "system:windows", "configurations:Release" }
+	   buildoptions "/MT"
+
 
 --------------------------------------------------------------------------------------------
 
@@ -172,7 +238,8 @@ project "Phoenix Editor"
 		}
 
 		postbuildcommands {
-			('{COPYDIR} "$(SolutionDir)/Phoenix/lib/jx/x64" "$(SolutionDir)%{cfg.targetdir.relpath}"')
+			-- ('echo -------------$(SolutionDir)%{cfg.targetdir.relpath}'),
+			('{COPYDIR} "$(SolutionDir)/Phoenix/lib/jx/x64" "$(SolutionDir)bin/bin/' .. outputdir .. '/%{prj.name}"')
 		}
 
 	filter "configurations:Debug"
