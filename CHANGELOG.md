@@ -1,10 +1,13 @@
 # Changelog
 
+### 0.2.8
+- fixed readibility of CHANGELOG
+
 ### 0.2.7
 - textures
 - added dropdown UI
 - improved color picking UI
-
+<br/><br/>
 - improved usability of UI collumns
 - more unified UI formatting
 - made Component::Cube and Component::Plane children of Component::Material
