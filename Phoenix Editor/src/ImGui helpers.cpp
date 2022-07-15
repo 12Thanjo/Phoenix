@@ -2,6 +2,22 @@
 
 
 namespace Phoenix{
+
+	//////////////////////////////////////////////////////////////////////
+	// internal state settings
+
+	static float collumn_width = 60.0f;
+	void imgui_set_collumn_width(float width){
+		collumn_width = width;
+	}
+	void imgui_set_collumn_width_default(){
+		collumn_width = 60.0f;
+	}
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// general
 	
 	void imgui_begin(std::string id, std::string name){
 		std::string imgui_id = name + "###" + id;
@@ -36,7 +52,33 @@ namespace Phoenix{
 	}
 
 
-	void imgui_draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value, float collumn_width, float iteration_size){
+
+
+	void imgui_labled_item(const std::string& label, std::function<void()> draw_func){
+		ImGui::PushID(label.c_str());
+
+			imgui_columns(2);
+
+			ImGui::SetColumnWidth(0, collumn_width);
+			ImGui::Text(label.c_str());
+			ImGui::NextColumn();
+
+
+			ImGui::PushMultiItemsWidths(1, imgui_get_line_width());
+				draw_func();
+			ImGui::PopItemWidth();
+
+
+			imgui_columns(1);
+
+		ImGui::PopID();
+	}
+
+	//////////////////////////////////////////////////////////////////////
+	// controls
+
+
+	void imgui_draw_vec3_control(const std::string& label, glm::vec3& values, float iteration_size, float reset_value){
 
 		ImGuiIO& io = ImGui::GetIO();
 		auto bold_font = io.Fonts->Fonts[1];
@@ -50,12 +92,12 @@ namespace Phoenix{
 			ImGui::NextColumn();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{0, 0});
-				ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
 
-				float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+				float line_height = imgui_get_line_height();
 				ImVec2 button_size = {line_height, line_height};
 
 
+				ImGui::PushMultiItemsWidths(3, imgui_get_line_width() - (line_height * 3) + 8.0f );
 
 				// x input
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{PH_RED_700});
@@ -119,25 +161,85 @@ namespace Phoenix{
 		ImGui::PopID();
 	}
 
-	void imgui_draw_float_control(const std::string& label, float& value, float reset_value, float collumn_width, float iteration_size){
-		ImGui::PushID(label.c_str());
+	void imgui_draw_float_control(const std::string& label, float& value, float iteration_size){
 
-			imgui_columns(2);
+		imgui_labled_item(label, [&](){
+			ImGui::DragFloat("##value", &value, iteration_size, 0.0f, FLT_MAX, "%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_AlwaysClamp);
+		});
 
-			ImGui::SetColumnWidth(0, collumn_width);
-			ImGui::Text(label.c_str());
-			ImGui::NextColumn();
-
-
-			ImGui::PushMultiItemsWidths(1, ImGui::GetContentRegionAvail().x - 5.0f);
-				ImGui::DragFloat("##value", &value, iteration_size, 0.0f, FLT_MAX, "%.2f", ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_AlwaysClamp);
-			ImGui::PopItemWidth();
-			ImGui::SameLine();
+	}
 
 
-			imgui_columns(1);
+	void imgui_draw_color_picker(const std::string& label, glm::vec4& color){
+		imgui_labled_item(label, [&](){
+			const ImVec4 button_color = {color.r, color.g, color.b, color.a};
+			static ImVec4 original_color = button_color;
+			if(ImGui::ColorButton("##Color", button_color, ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_NoBorder | ImGuiColorEditFlags_NoTooltip, ImVec2{imgui_get_line_width(), imgui_get_line_height()} )){
+				ImGui::OpenPopup("##picker");
+				original_color = button_color;
+			}
+			if(ImGui::BeginPopup("##picker")){
+				ImGui::ColorPicker4("##color", glm::value_ptr(color), 
+					ImGuiColorEditFlags_AlphaPreviewHalf | ImGuiColorEditFlags_AlphaBar |
+					ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview |
+					ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex
+				);
 
-		ImGui::PopID();
+				ImGui::SameLine();
+
+				ImGui::BeginGroup(); // Lock X position
+					ImGui::Text("Current:");
+					ImGui::ColorButton("##current", button_color, ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf, ImVec2(60, 40));
+
+					ImGui::Text("Original:");
+					if(ImGui::ColorButton("##original", original_color, ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_AlphaPreviewHalf, ImVec2(60, 40))){
+					    color.r = original_color.x;
+					    color.g = original_color.y;
+					    color.b = original_color.z;
+					    color.a = original_color.w;
+					}
+				ImGui::EndGroup();
+
+
+				ImGui::EndPopup();
+			}
+		});
+	}
+
+
+	// no alpha
+	void imgui_draw_color_picker(const std::string& label, glm::vec3& color){
+		imgui_labled_item(label, [&](){
+			const ImVec4 button_color = {color.r, color.g, color.b, 1.0f};
+			static ImVec4 original_button_color = button_color;
+			if(ImGui::ColorButton("##Color", button_color,  ImGuiColorEditFlags_NoBorder | ImGuiColorEditFlags_NoTooltip, ImVec2{imgui_get_line_width(), imgui_get_line_height()} )){
+				ImGui::OpenPopup("##picker");
+				original_button_color = button_color;
+			}
+			if(ImGui::BeginPopup("##picker")){
+				ImGui::ColorPicker3("##color", glm::value_ptr(color), 
+					ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview |
+					ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_DisplayHex
+				);
+
+				ImGui::SameLine();
+
+				ImGui::BeginGroup(); // Lock X position
+					ImGui::Text("Current:");
+					ImGui::ColorButton("##current", button_color, ImGuiColorEditFlags_NoPicker, ImVec2(60, 40));
+
+					ImGui::Text("Original:");
+					if(ImGui::ColorButton("##original", original_button_color, ImGuiColorEditFlags_NoPicker, ImVec2(60, 40))){
+					    color.r = original_button_color.x;
+					    color.g = original_button_color.y;
+					    color.b = original_button_color.z;
+					}
+				ImGui::EndGroup();
+
+
+				ImGui::EndPopup();
+			}
+		});
 	}
 
 
@@ -147,16 +249,15 @@ namespace Phoenix{
 
 	bool imgui_button(std::string label){
 		return ImGui::Button(label.c_str(), ImVec2{
-			ImGui::GetContentRegionAvail().x,
-			GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f
+			imgui_get_line_width(),
+			imgui_get_line_height()
 		});
 	}
-
 
 	bool imgui_button(std::string label, float width){
 		return ImGui::Button(label.c_str(), ImVec2{
 			width,
-			GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f
+			imgui_get_line_height()
 		});
 	}
 
@@ -179,6 +280,8 @@ namespace Phoenix{
 	// menus
 
 	void imgui_draw_collapsable_menu(const std::string& label, std::function<void()> ui_function){
+		imgui_set_collumn_width_default();
+
 		const ImGuiTreeNodeFlags tree_node_flags = 
 			ImGuiTreeNodeFlags_DefaultOpen |
 			ImGuiTreeNodeFlags_Framed |
@@ -199,9 +302,10 @@ namespace Phoenix{
 			ui_function();
 			
 			ImGui::TreePop();
+			
+			imgui_spacer(0.0f, 10.0f);
 		}
 
-		imgui_spacer(0.0f, 10.0f);
 	}
 
 
@@ -219,6 +323,16 @@ namespace Phoenix{
 	void imgui_end_disable_menu_item(){
 		ImGui::PopItemFlag();
 		ImGui::PopStyleVar();
+	}
+
+
+
+	void imgui_dropdown(const std::string& label, int& item, const char* items[], int num_items){
+
+		imgui_labled_item(label, [&](){
+			ImGui::Combo("##value", &item, items, num_items);
+		});
+
 	}
 
 
@@ -254,6 +368,7 @@ namespace Phoenix{
 		alert_text = text;
 		open_alert = true;
 		// imgui_alert();
+		PH_WARNING("Alert: " << text);
 	}
 
 	bool imugi_will_draw_alert(){
@@ -282,6 +397,9 @@ namespace Phoenix{
 	//////////////////////////////////////////////////////////////////////
 	// helpers
 
+	float imgui_get_line_width(){
+		return ImGui::GetContentRegionAvail().x - 5.0f;
+	}
 
 	float imgui_get_line_height(){
 		return GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;

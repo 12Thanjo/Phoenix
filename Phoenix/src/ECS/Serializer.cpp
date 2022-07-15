@@ -39,8 +39,11 @@ namespace Phoenix{
 
 	static void serialize_basic_material(NAML_S& serializer, BasicMaterial& material){
 		serializer.beginGroup("Basic Material");
+			if(material.usingTexture()){
+				serializer.keyValue("texture", material.getTexture());
+			}
 			serialize_vec4(serializer, "color", material.color);
-			serializer.keyValue("shinyness", material.shinyness);
+			serializer.keyValue("shininess", material.shininess);
 		serializer.endGroup();
 	}
 
@@ -49,11 +52,11 @@ namespace Phoenix{
 	void Serializer::serialize(Scene* scene, const std::string& filepath){
 		NAML_S serializer{};
 
-		serializer.keyValue("Scene", std::to_string(scene->uuid));
+		serializer.keyValue("Scene", scene->uuid);
 		serializer.keyValue("Name", scene->name);
 
 		if(scene->hasStartupCamera()){
-			serializer.keyValue("Startup Camera", std::to_string(scene->getStartupCamera()) );
+			serializer.keyValue("Startup Camera", scene->getStartupCamera());
 		}
 
 
@@ -174,6 +177,26 @@ namespace Phoenix{
 	}
 
 
+	//////////////////////////////////////////////////////////////////////
+	// deserializing
+
+	template<typename T>
+	static void deserialize_basic_material(NAML_Node* material_node, Entity& entity){
+
+		T& component = entity.addComponent<T>(
+			BasicMaterial(
+				material_node->get("color")->value<glm::vec4>(),
+				material_node->get("shininess")->value<float>()
+			)
+		);
+
+		if(material_node->has("texture")){
+			component.material.setTexture(material_node->get("texture")->value<UUID>());
+			component.using_texture = true;
+		}
+	}
+
+
 
 	std::string Serializer::deserialize(Scene* scene, const std::string& filepath, Scripting& scripting){
 		try{
@@ -290,25 +313,11 @@ namespace Phoenix{
 				}
 
 				if(node->has("Cube")){
-					NAML_Node* material_node = node->get("Cube")->get("Basic Material");
-
-					entity.addComponent<Component::Cube>(
-						BasicMaterial(
-							material_node->get("color")->value<glm::vec4>(),
-							material_node->get("shinyness")->value<float>()
-						)
-					);
+					deserialize_basic_material<Component::Cube>(node->get("Cube")->get("Basic Material"), entity);
 				}
 
 				if(node->has("Plane")){
-					NAML_Node* material_node = node->get("Plane")->get("Basic Material");
-
-					entity.addComponent<Component::Plane>(
-						BasicMaterial(
-							material_node->get("color")->value<glm::vec4>(),
-							material_node->get("shinyness")->value<float>()
-						)
-					);
+					deserialize_basic_material<Component::Plane>(node->get("Plane")->get("Basic Material"), entity);
 				}
 
 				// glm::vec3 position = node->get("Transform")->get("scale")->value<glm::vec3>();

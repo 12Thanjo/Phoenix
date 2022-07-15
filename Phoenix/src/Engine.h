@@ -60,10 +60,11 @@ namespace Phoenix{
 			void render2D();
 			void runScripts();
 
-
+			// filepath to this program (not including filename)
 			inline std::string getPath() const { return _path; };
 
 
+			//////////////////////////////////////////////////////////////////////
 			// window data
 			void createWindow(WindowConfig config);
 			// bool bindWindow(winID id);
@@ -79,6 +80,7 @@ namespace Phoenix{
 			// void render();
 
 
+			//////////////////////////////////////////////////////////////////////
 			// ECS
 			inline Scene* getScene() const { return _scene; }
 			void clearScene();
@@ -90,7 +92,8 @@ namespace Phoenix{
 			inline std::string deserialize(const std::string& filepath) { return _scene->deserialize(filepath, _scripting); }
 
 
-			// rendering								
+			//////////////////////////////////////////////////////////////////////
+			// rendering
 			inline void clearColor(){ 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); glClear(GL_COLOR_BUFFER_BIT); }
 			inline void clearDepth(){ 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); glClear(GL_DEPTH_BUFFER_BIT); }
 			inline void clearColorDepth(){ 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
@@ -106,9 +109,14 @@ namespace Phoenix{
 			void resizeCameras(float width, float height);
 
 
+			//////////////////////////////////////////////////////////////////////
 			// asset manager
 			inline UUID loadShader(std::string filepath){ return _asset_manager->loadShader(filepath); };
 			inline void bindShader(UUID& uuid){ _asset_manager->bindShader(uuid); };
+
+			inline void loadTexture(std::string filepath){ _asset_manager->loadTexture(filepath); };
+			inline void loadTexture(std::string filepath, UUID uuid){ _asset_manager->loadTexture(filepath, uuid); };
+			// inline void bindTexture(UUID& uuid){ _asset_manager->bindTexture(uuid); };
 
 		public:
 			EnginePerformanceMetrics performanceMetrics;

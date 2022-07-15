@@ -5,7 +5,7 @@ layout (location = 0) in vec3 a_position;
 layout (location = 1) in vec2 a_texture_coordinates;
 layout (location = 2) in vec3 a_normal;
 
-// out vec2 t_texture_coordinates;
+out vec2 t_texture_coordinates;
 out vec3 t_fragment_position;
 out vec3 t_normal;
 
@@ -17,7 +17,7 @@ uniform mat4 u_view_projection;
 // uniform mat4 u_projection;
 
 void main(){
-	// t_texture_coordinates = a_texture_coordinates;
+	t_texture_coordinates = a_texture_coordinates;
 	t_fragment_position = vec3(u_model * vec4(a_position, 1.0));
 	t_normal = inverse(transpose(mat3(u_model))) * a_normal;
 	
@@ -54,13 +54,14 @@ struct DirectionalLight{
 
 out vec4 frag_color;
 
-// in vec2 t_texture_coordinates;
+in vec2 t_texture_coordinates;
 in vec3 t_fragment_position;
 in vec3 t_normal;
 
 
 uniform vec4 u_color;
-// uniform sampler2D u_texture;
+uniform sampler2D u_texture;
+uniform int u_using_texture;
 uniform float u_shininess;
 uniform vec3 u_camera_position;
 
@@ -144,7 +145,9 @@ void main(){
 
 
 
-	
-	// frag_color = vec4(result, 1.0) * texture(u_texture, t_texture_coordinates);
-	frag_color = vec4(result, 1.0) * u_color;
+	if(u_using_texture == 1){
+		frag_color = vec4(result, 1.0) * texture(u_texture, t_texture_coordinates);
+	}else{
+		frag_color = vec4(result, 1.0) * u_color;
+	}
 }

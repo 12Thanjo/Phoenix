@@ -3,7 +3,7 @@
 #include <Phoenix.h>
 #include "../ImGui helpers.h"
 
-
+#include "../Application.h"
 
 
 namespace Phoenix{
@@ -90,6 +90,7 @@ namespace Phoenix{
 	static void draw_comonent(const std::string& name, Entity entity, UIFuncton ui_function){
 		
 		if(entity.hasComponent<T>()){
+			imgui_set_collumn_width_default();
 
 			const ImGuiTreeNodeFlags tree_node_flags = 
 				ImGuiTreeNodeFlags_DefaultOpen |
@@ -103,7 +104,7 @@ namespace Phoenix{
 			ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{4, 4});
-				float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+				float line_height = imgui_get_line_height();
 				bool open = ImGui::TreeNodeEx(name.c_str(), tree_node_flags, name.c_str());
 			ImGui::PopStyleVar();
 
@@ -122,12 +123,11 @@ namespace Phoenix{
 			}
 
 			if(open){
-				// auto& color = entity.getComponent<T>().color;
-				// ImGui::ColorEdit4("Color", glm::value_ptr(color));
-
 				ui_function(component);
 				
 				ImGui::TreePop();
+
+				imgui_spacer(0.0f, 10.0f);
 			}
 
 
@@ -135,7 +135,6 @@ namespace Phoenix{
 				entity.removeComponent<T>();
 			}
 
-			imgui_spacer(0.0f, 10.0f);
 		}
 	}
 
@@ -194,17 +193,75 @@ namespace Phoenix{
 
 
 	template<typename T>
-	static void draw_material(T& component){
-		ImGui::ColorEdit4("Color", glm::value_ptr(component.material.color));
+	static void draw_material(T& component, Engine* editor){
+		const char* list[] = { "None", "Image Texture" };
+		int using_texture = component.using_texture;
+		imgui_dropdown("Texture", using_texture, list, 2);
 
-		float shinyness = component.material.shinyness;
-		shinyness = sqrt(shinyness);
-		imgui_draw_float_control("shinyness", shinyness);
+		//////////////////////////////////////////////////////////////////////
+		// texture dropdown on-change
+		if(using_texture == 1 && !component.using_texture){
+			component.using_texture = true;
 
-		if(shinyness > 0){
-			component.material.shinyness = shinyness * shinyness;
+			if(!component.material.usingTexture()){
+				component.material.setTexture(component.material.getTexture());
+			}
+
+		}else if(using_texture == 0 && component.using_texture){
+			component.using_texture = false;
+			component.material.useColor();
+		}
+
+		//////////////////////////////////////////////////////////////////////
+		// texture button
+		if(using_texture == 1){
+			// texture drag UI
+			imgui_labled_item("Image", [&, editor](){
+				std::string texture;
+
+				if(component.material.usingTexture()){
+					texture = Files::relative(
+						static_cast<Editor*>(editor)->project.textures.getLeft(component.material.getTexture()),
+						"\\textures\\"
+					);
+				}else{
+					texture = "[Drag Image...]";
+				}
+
+
+				if(imgui_button(texture)){/*do nothing right now*/}
+				if(ImGui::BeginDragDropTarget()){
+					if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset Browser Item")){
+						const wchar_t* path = (const wchar_t*)payload->Data;
+
+						std::filesystem::path filesystem_path(path);
+						if(filesystem_path.extension() == ".png"){
+							component.material.setTexture(
+								static_cast<Editor*>(editor)->project.textures.getRight(
+									Files::relative(filesystem_path.string(), static_cast<Editor*>(editor)->project.getRelativePath())
+								)
+							);
+						}else{
+							PH_WARNING("Attempted to drag & load a non-texture");
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+			});
+		}
+
+		imgui_separator(0.0f);
+
+		imgui_draw_color_picker("Color", component.material.color);
+
+		float shininess = component.material.shininess;
+		shininess = sqrt(shininess);
+		imgui_draw_float_control("Shininess", shininess, 0.2f);
+
+		if(shininess > 0){
+			component.material.shininess = shininess * shininess;
 		}else{
-			component.material.shinyness = 0;
+			component.material.shininess = 0;
 		}
 
 	}
@@ -332,7 +389,7 @@ namespace Phoenix{
 
 
 		ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
-		if(content_region_avail.x > 240){
+		if(content_region_avail.x > 245){
 			// ImGui::SameLine(content_region_avail.x - 170);
 			ImGui::SameLine();
 			ImGui::Text("UUID:");
@@ -351,26 +408,27 @@ namespace Phoenix{
 		imgui_separator(0.0f);
 
 		draw_comonent<Component::Transform>("Transform", entity, [&entity](auto& component){
-			imgui_draw_vec3_control("Position", component.position, 0.0f, 60.0f, 0.01f);
+			imgui_set_collumn_width_default();
 
+			imgui_draw_vec3_control("Position", component.position, 0.01f, 0.0f);
 
 			imgui_spacer();
 
 			glm::vec3 rotation = glm::degrees(component.rotation);
-			imgui_draw_vec3_control("Rotation", rotation, 0.0f, 60.0f, 0.5f);
+			imgui_draw_vec3_control("Rotation", rotation, 0.5f, 0.0f);
 			component.rotation = glm::radians(rotation);
 
 
 			if(!entity.hasComponent<Component::PerspectiveCamera>()){
 				imgui_spacer();
-				imgui_draw_vec3_control("Scale", component.scale, 0.5f, 60.0f, 0.01f);
+				imgui_draw_vec3_control("Scale", component.scale, 0.01f, 0.5f);
 			}
 
 		});
 
 
 		draw_comonent<Component::Script>("Script", entity, [&entity](auto& component){
-			float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			float line_height = imgui_get_line_height();
 
 			// ImGui::Columns(2, 0, false);
 			ImGui::Text("Script:");
@@ -380,11 +438,11 @@ namespace Phoenix{
 			if(!component.path.empty()){
 				button_label = Files::getFileName(component.path);
 			}else{
-				button_label = "Add Script...";
+				button_label = "[Drag Script...]";
 			};
 
 
-			if(imgui_button(button_label, ImGui::GetContentRegionAvail().x, line_height) && !component.path.empty()){
+			if(imgui_button(button_label, imgui_get_line_width() - 4.0f) && !component.path.empty()){
 				// Do nothing when clicked (at least for now)
 			}
 
@@ -409,13 +467,13 @@ namespace Phoenix{
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 		});
 
-		draw_comonent<Component::Cube>("Cube", entity, [](auto& component){
-			draw_material<Component::Cube>(component);
+		draw_comonent<Component::Cube>("Cube", entity, [&](auto& component){
+			draw_material<Component::Cube>(component, editor);
 		});
 
 
-		draw_comonent<Component::Plane>("Plane", entity, [](auto& component){
-			draw_material<Component::Plane>(component);
+		draw_comonent<Component::Plane>("Plane", entity, [&](auto& component){
+			draw_material<Component::Plane>(component, editor);
 		});
 
 
@@ -423,18 +481,16 @@ namespace Phoenix{
 		// Cameras
 
 		draw_comonent<Component::PerspectiveCamera>("Perspective Camera", entity, [&entity, editor](auto& component){
-			float fov = glm::degrees(component.camera.getFOV());
-			imgui_draw_float_control("FOV", fov, 65.0f, 40.0f, 0.5f);
+			imgui_set_collumn_width(40.0f);
 
-			imgui_spacer();
+			float fov = glm::degrees(component.camera.getFOV());
+			imgui_draw_float_control("FOV", fov, 0.5f);
 
 			float near = component.camera.getNear();
-			imgui_draw_float_control("Near", near, 0.1f, 40.0f, 0.1f);
-
-			imgui_spacer();
+			imgui_draw_float_control("Near", near, 0.1f);
 
 			float far = component.camera.getFar();
-			imgui_draw_float_control("Far", far, 100.0f, 40.0f, 1.0f);
+			imgui_draw_float_control("Far", far, 1.0f);
 
 
 			component.camera.setProjection(glm::radians(fov), component.camera.getAspectRatio(), near, far);
@@ -469,45 +525,40 @@ namespace Phoenix{
 
 
 		draw_comonent<Component::OrbitalCamera>("Orbital Camera", entity, [&entity, editor](auto& component){
+			imgui_set_collumn_width(70.0f);
 
 			glm::vec3 focal_point = component.camera.getFocalPoint();
-			imgui_draw_vec3_control("Focal Point", focal_point, 0.0f, 70.0f, 0.5f);
+			imgui_draw_vec3_control("Focal Point", focal_point, 0.0f, 0.5f);
 			component.camera.setFocalPoint(focal_point);
 
 			imgui_separator(); ////////////////////////////////////////////////////////////////
 
+			imgui_set_collumn_width(40.0f);
 
 			float rho = component.camera.getRho();
-			imgui_draw_float_control("Rho", rho, 10.0f, 40.0f, 0.5f);
-
-			imgui_spacer();
+			imgui_draw_float_control("Rho", rho, 0.5f);
 
 			float theta = glm::degrees(component.camera.getTheta());
-			imgui_draw_float_control("Theta", theta, 1.5f, 40.0f, 0.5f);
-
-			imgui_spacer();
+			imgui_draw_float_control("Theta", theta, 0.5f);
 
 			float phi = glm::degrees(component.camera.getPhi());
-			imgui_draw_float_control("Phi", phi, 1.5f, 40.0f, 0.5f);
+			imgui_draw_float_control("Phi", phi, 0.5f);
 
 			component.camera.setCoordinates(rho, glm::radians(theta), glm::radians(phi));
 
 
 			imgui_separator(); ////////////////////////////////////////////////////////////////
 
+			imgui_set_collumn_width(40.0f);
 
 			float fov = glm::degrees(component.camera.getFOV());
-			imgui_draw_float_control("FOV", fov, 65.0f, 40.0f, 0.5f);
-
-			imgui_spacer();
+			imgui_draw_float_control("FOV", fov, 0.5f);
 
 			float near = component.camera.getNear();
-			imgui_draw_float_control("Near", near, 0.1f, 40.0f, 0.1f);
-
-			imgui_spacer();
+			imgui_draw_float_control("Near", near, 0.1f);
 
 			float far = component.camera.getFar();
-			imgui_draw_float_control("Far", far, 100.0f, 40.0f, 1.0f);
+			imgui_draw_float_control("Far", far, 1.0f);
 
 
 			component.camera.setProjection(glm::radians(fov), component.camera.getAspectRatio(), near, far);

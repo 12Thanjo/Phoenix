@@ -21,22 +21,46 @@ namespace Phoenix{
 	};
 
 
-	void Renderer3D::drawCube(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
+
+	void Renderer3D::basicMaterialUpload(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
 		_asset_manager->bindShader(_basic_shader);
 
 
 
 		_asset_manager->uploadMat4(_basic_shader, "u_model", transform);
 		_asset_manager->uploadMat4(_basic_shader, "u_view_projection", camera.getViewProjection());
-		_asset_manager->uploadFloat4(_basic_shader, "u_color", material.color);
 		_asset_manager->uploadFloat3(_basic_shader, "u_camera_position", camera.getPosition());
+
+		if(material.usingTexture()){
+			if(_asset_manager->hasTexture(material.getTexture())){
+				// use texture
+				_asset_manager->bindTexture(material.getTexture());
+				_asset_manager->uploadInt(_basic_shader, "u_texture", 3);
+				_asset_manager->uploadInt(_basic_shader, "u_using_texture", 1);
+				_asset_manager->uploadFloat4(_basic_shader, "u_color", material.color);
+			}else{
+				// texture not found
+				_asset_manager->uploadInt(_basic_shader, "u_using_texture", 0);
+				_asset_manager->uploadFloat4(_basic_shader, "u_color", {1, 0, 1, 1});
+			}
+		}else{
+			// just color
+			_asset_manager->uploadInt(_basic_shader, "u_using_texture", 0);
+			_asset_manager->uploadFloat4(_basic_shader, "u_color", material.color);
+		}
+
 
 		sunlight.upload(_asset_manager, _basic_shader);
 
 
 
-		_asset_manager->uploadFloat(_basic_shader, "u_shininess", material.shinyness);
+		_asset_manager->uploadFloat(_basic_shader, "u_shininess", material.shininess);
+	}
 
+
+	void Renderer3D::drawCube(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
+		
+		basicMaterialUpload(transform, material, camera, sunlight);
 
 		// vertex data, buffers, and attributes
 		float verticies[] = {
@@ -63,15 +87,15 @@ namespace Phoenix{
 
 
 
-			 0.5f,  0.5f,  0.5f,		1.0f, 1.0f,    0.0f,  0.0f,  1.0f,
-			 0.5f, -0.5f,  0.5f,        1.0f, 0.0f,    0.0f,  0.0f,  1.0f,
-			-0.5f,  0.5f,  0.5f,		0.0f, 1.0f,    0.0f,  0.0f,  1.0f,
-			-0.5f, -0.5f,  0.5f,        0.0f, 0.0f,    0.0f,  0.0f,  1.0f,
+			 0.5f,  0.5f,  0.5f,		1.0f, 1.0f,      0.0f,  0.0f,  1.0f,
+			 0.5f, -0.5f,  0.5f,        1.0f, 0.0f,      0.0f,  0.0f,  1.0f,
+			-0.5f,  0.5f,  0.5f,		0.0f, 1.0f,      0.0f,  0.0f,  1.0f,
+			-0.5f, -0.5f,  0.5f,        0.0f, 0.0f,      0.0f,  0.0f,  1.0f,
 
-			 0.5f,  0.5f, -0.5f,		0.0f, 1.0f,    0.0f,  0.0f, -1.0f,
-			 0.5f, -0.5f, -0.5f,        0.0f, 0.0f,    0.0f,  0.0f, -1.0f,
-			-0.5f,  0.5f, -0.5f,		1.0f, 1.0f,    0.0f,  0.0f, -1.0f,
-			-0.5f, -0.5f, -0.5f,        1.0f, 0.0f,    0.0f,  0.0f, -1.0f,
+			 0.5f,  0.5f, -0.5f,		0.0f, 1.0f,      0.0f,  0.0f, -1.0f,
+			 0.5f, -0.5f, -0.5f,        0.0f, 0.0f,      0.0f,  0.0f, -1.0f,
+			-0.5f,  0.5f, -0.5f,		1.0f, 1.0f,      0.0f,  0.0f, -1.0f,
+			-0.5f, -0.5f, -0.5f,        1.0f, 0.0f,      0.0f,  0.0f, -1.0f,
 
 		};
 
@@ -116,20 +140,7 @@ namespace Phoenix{
 
 
 	void Renderer3D::drawPlane(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
-		_asset_manager->bindShader(_basic_shader);
-
-
-
-		_asset_manager->uploadMat4(_basic_shader, "u_model", transform);
-		_asset_manager->uploadMat4(_basic_shader, "u_view_projection", camera.getViewProjection());
-		_asset_manager->uploadFloat4(_basic_shader, "u_color", material.color);
-		_asset_manager->uploadFloat3(_basic_shader, "u_camera_position", camera.getPosition());
-
-		sunlight.upload(_asset_manager, _basic_shader);
-
-
-
-		_asset_manager->uploadFloat(_basic_shader, "u_shininess", material.shinyness);
+		basicMaterialUpload(transform, material, camera, sunlight);
 
 
 		// vertex data, buffers, and attributes

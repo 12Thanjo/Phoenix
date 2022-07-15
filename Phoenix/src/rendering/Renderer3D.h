@@ -31,8 +31,11 @@ namespace Phoenix{
 			Renderer3DPerformanceMetrics performanceMetrics;
 
 		private:
+			void basicMaterialUpload(glm::mat4& transform,  BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);
+
+		private:
 			UUID _basic_shader;
-			AssetManager* _asset_manager;		
+			AssetManager* _asset_manager;	
 	};
 
 }

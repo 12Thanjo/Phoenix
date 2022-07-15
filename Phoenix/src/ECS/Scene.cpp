@@ -21,7 +21,6 @@ namespace Phoenix{
 		_serializer = new Serializer();
 
 		PH_INFO("Initialized: ECS Scene");
-		PH_WARNING("Shinyness not implemented");
 	}
 
 

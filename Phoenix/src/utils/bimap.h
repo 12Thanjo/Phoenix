@@ -10,7 +10,7 @@ namespace Phoenix::Utils{
 			Bimap() = default;
 			~Bimap() = default;
 
-			void insert(const A& a, const B& b){
+			void insert(const A a, const B b){
 				_map.insert({a, b});
 			};
 	
@@ -20,7 +20,7 @@ namespace Phoenix::Utils{
 			A getLeft(const B& index){
 				for(auto& pair : _map){
 					if(pair.second == index){
-						return pair.first;
+						return std::get<0>(pair);
 					}
 				}
 			}
@@ -32,7 +32,7 @@ namespace Phoenix::Utils{
 			//////////////////////////////////////////////////////////////////////
 			// right
 			
-			B getRight(const A& index){
+			B& getRight(const A& index){
 				return _map[index];
 			}
 

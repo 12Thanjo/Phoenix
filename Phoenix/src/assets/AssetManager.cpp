@@ -2,6 +2,7 @@
 #include "AssetManager.h"
 
 #include "shaders.h"
+#include "textures.h"
 #include "src/utils/Files.h"
 
 namespace Phoenix{
@@ -11,22 +12,23 @@ namespace Phoenix{
 	       delete itr->second;
 	   	}
 
-	   	for(std::unordered_map<UUID, UUID*>::iterator itr = _uuids.begin(); itr != _uuids.end(); itr++){
+	   	for(std::unordered_map<UUID, Texture*>::iterator itr = _textures.begin(); itr != _textures.end(); itr++){
 	       delete itr->second;
 	   	}
 	}
 
 
+	//////////////////////////////////////////////////////////////////////
+	// shaders
+
 	UUID AssetManager::loadShader(std::string filepath){
 		UUID* uuid = new UUID();
 		
-		_uuids[*uuid] = uuid;
 		_shaders[*uuid] = new Shader(filepath);
 		
-		PH_LOG("Compiled and Loaded Shader:"
+		PH_LOG("Loaded and compiled Shader:"
 			"\n\tfilepath: " << filepath << 
 			"\n\tUUID:     " << uuid);
-
 
 		return *uuid;
 	}
@@ -46,4 +48,40 @@ namespace Phoenix{
 	void AssetManager::uploadFloat4 (UUID& id, const std::string& name, const glm::vec4& values){ _shaders[id]->uploadFloat4(name, values); }; 
 	void AssetManager::uploadMat4   (UUID& id, const std::string& name, const glm::mat4& matrix){ _shaders[id]->uploadMat4(name, matrix);   }; 
 	void AssetManager::uploadInt    (UUID& id, const std::string& name, const int& value){ 		  _shaders[id]->uploadInt(name, value);     };
+
+
+	//////////////////////////////////////////////////////////////////////
+	// textures
+
+	UUID AssetManager::loadTexture(std::string filepath){
+		UUID* uuid = new UUID();
+		
+		_textures[*uuid] = new Texture(filepath);
+		
+		PH_LOG("Loaded Texture:"
+			"\n\tfilepath: " << filepath << 
+			"\n\tUUID:     " << uuid);
+
+
+		return *uuid;
+	}
+
+	void AssetManager::loadTexture(std::string filepath, UUID& uuid){
+		_textures[uuid] = new Texture(filepath);
+		
+		PH_LOG("Loaded Texture:"
+			"\n\tfilepath: " << filepath << 
+			"\n\tUUID:     " << uuid);
+	}
+
+	void AssetManager::bindTexture(UUID& id){
+		if(_textures[id]){
+			_textures[id]->bind(3);
+		}
+	}
+
+	bool AssetManager::hasTexture(UUID& id){
+		return _textures[id];
+	}
+
 }

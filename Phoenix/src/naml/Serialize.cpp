@@ -44,6 +44,11 @@ namespace Phoenix{
 		_text << "-" << key << ": " << value;
 	}
 
+	void NAML_S::keyValue(std::string key, const UUID& value){
+		begin();
+		_text << "-" << key << ": " << std::to_string(value);
+	}
+
 	/////////////////////////////////////////////////////////
 	// group
 	void NAML_S::beginGroup(std::string key){

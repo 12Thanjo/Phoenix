@@ -1,5 +1,18 @@
 # Changelog
 
+### 0.2.7
+- textures
+- added dropdown UI
+- improved color picking UI
+
+- improved usability of UI collumns
+- more unified UI formatting
+- made Component::Cube and Component::Plane children of Component::Material
+- removed "Shinyness not implemented" warning
+- fixed startup popup (had incorrect title)
+- fix UUID showing and hiding when resizing Scene Hierarchy Panel
+- removed separate holding of UUIDs in asset manager
+
 ### 0.1.11
 - removed logging to console when the editor checks if the runtime is running
 - tidied up the code in the scene serializer

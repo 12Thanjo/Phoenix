@@ -9,6 +9,17 @@
 
 
 namespace Phoenix{
+
+
+	//////////////////////////////////////////////////////////////////////
+	// internal state settings
+
+	void imgui_set_collumn_width(float width);
+	void imgui_set_collumn_width_default();
+
+
+	//////////////////////////////////////////////////////////////////////
+	// general
 	
 	void imgui_begin(std::string id, std::string name);
 
@@ -20,12 +31,16 @@ namespace Phoenix{
 
 	void imgui_columns(int collumns);
 
+	void imgui_labled_item(const std::string& label, std::function<void()> draw_func);
+
 	//////////////////////////////////////////////////////////////////////
 	// controls
 
-	void imgui_draw_float_control(const std::string& label, float& value, float reset_value = 0.0f, float collumn_width = 60.0f, float iteration_size = 1.0f);
-	void imgui_draw_vec3_control(const std::string& label, glm::vec3& values, float reset_value = 0.0f, float collumn_width = 60.0f, float iteration_size = 1.0f);
+	void imgui_draw_float_control(const std::string& label, float& value, float iteration_size = 1.0f);
+	void imgui_draw_vec3_control(const std::string& label, glm::vec3& values, float iteration_size = 1.0f, float reset_value = 0.0f);
 
+	void imgui_draw_color_picker(const std::string & label, glm::vec4& color);
+	void imgui_draw_color_picker(const std::string & label, glm::vec3& color);
 
 	//////////////////////////////////////////////////////////////////////
 	// buttons
@@ -48,6 +63,9 @@ namespace Phoenix{
 	void imgui_end_disable_menu_item();
 
 
+	void imgui_dropdown(const std::string& label, int& item, const char* items[], int num_items);
+
+
 	//////////////////////////////////////////////////////////////////////
 	// popups
 
@@ -62,6 +80,7 @@ namespace Phoenix{
 	// helpers
 
 	float imgui_get_line_height();
+	float imgui_get_line_width();
 
 
 }

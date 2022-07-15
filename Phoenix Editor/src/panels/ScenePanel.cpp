@@ -79,26 +79,26 @@ namespace Phoenix{
 			});
 
 			imgui_draw_collapsable_menu("Editor Camera", [&](){
+				imgui_set_collumn_width(70.0f);
 
 				glm::vec3 focal_point = scene->camera.getFocalPoint();
-				imgui_draw_vec3_control("Focal Point", focal_point, 0.0f, 70.0f, 0.5f);
+				imgui_draw_vec3_control("Focal Point", focal_point, 0.0f, 0.5f);
 				scene->camera.setFocalPoint(focal_point);
 
 				imgui_separator(); ////////////////////////////////////////////////////////////////
 
+				imgui_set_collumn_width(40.0f);
 
 				float rho = scene->camera.getRho();
-				imgui_draw_float_control("Rho", rho, 10.0f, 40.0f, 0.5f);
+				imgui_draw_float_control("Rho", rho, 0.5f);
 
-				imgui_spacer();
 
 				float theta = glm::degrees(scene->camera.getTheta());
-				imgui_draw_float_control("Theta", theta, 1.5f, 40.0f, 0.5f);
+				imgui_draw_float_control("Theta", theta, 0.5f);
 
-				imgui_spacer();
 
 				float phi = glm::degrees(scene->camera.getPhi());
-				imgui_draw_float_control("Phi", phi, 1.5f, 40.0f, 0.5f);
+				imgui_draw_float_control("Phi", phi, 0.5f);
 
 				scene->camera.setCoordinates(rho, glm::radians(theta), glm::radians(phi));
 
@@ -107,17 +107,15 @@ namespace Phoenix{
 
 
 				float fov = glm::degrees(scene->camera.getFOV());
-				imgui_draw_float_control("FOV", fov, 65.0f, 40.0f, 0.5f);
+				imgui_draw_float_control("FOV", fov, 0.5f);
 
-				imgui_spacer();
 
 				float near = scene->camera.getNear();
-				imgui_draw_float_control("Near", near, 0.1f, 40.0f, 0.1f);
+				imgui_draw_float_control("Near", near, 0.1f);
 
-				imgui_spacer();
 
 				float far = scene->camera.getFar();
-				imgui_draw_float_control("Far", far, 100.0f, 40.0f, 1.0f);
+				imgui_draw_float_control("Far", far, 1.0f);
 
 
 				scene->camera.setProjection(glm::radians(fov), scene->camera.getAspectRatio(), near, far);
@@ -126,16 +124,13 @@ namespace Phoenix{
 
 
 			imgui_draw_collapsable_menu("Sunlight", [&](){
+				imgui_draw_color_picker("Color", scene->sunlight.color);
 
-				ImGui::ColorEdit3("Color", glm::value_ptr(scene->sunlight.color));
-
-				imgui_spacer();
-
-				imgui_draw_float_control("Strength", scene->sunlight.strength, 1.3f, 60, 0.05f);
+				imgui_draw_float_control("Strength", scene->sunlight.strength, 0.05f);
 				
 				imgui_separator();
 
-				imgui_draw_vec3_control("Direction", scene->sunlight.direction, -1.0f, 60, 0.02f);
+				imgui_draw_vec3_control("Direction", scene->sunlight.direction, -1.0f, 0.02f);
 
 			});
 

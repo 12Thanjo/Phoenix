@@ -382,7 +382,7 @@ namespace Phoenix{
 	
 
 	std::string RendererImGui::open(const std::string& filepath, Project& project){
-		std::string deserialize = project.deserialize(filepath);
+		std::string deserialize = project.deserialize(filepath, _editor);
 		if(!deserialize.empty()){
 			imgui_start_alert(deserialize);
 		}

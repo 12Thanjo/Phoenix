@@ -70,7 +70,7 @@ namespace Phoenix{
 		project_path = project_path.substr(0, project_path.length()-1);
 
 
-		project.deserialize(project_path);
+		project.deserialize(project_path, this);
 		deserialize(Files::getFilePath(project_path) + project.scenes.getLeft(project.getStartupScene()));
 
 

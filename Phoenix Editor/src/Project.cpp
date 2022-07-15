@@ -27,15 +27,23 @@ namespace Phoenix{
 
 
 					serializer.beginGroup("Assets");
-
+						// scenes
 						serializer.beginGroup("Scenes");
 							scenes.forEach([&](std::string key, UUID val){
 								serializer.keyValue(key, (std::string)val);
 							});
 						serializer.endGroup();
 
+						// scripts
 						serializer.beginGroup("Scripts");
 							scripts.forEach([&](std::string key, UUID val){
+								serializer.keyValue(key, (std::string)val);
+							});
+						serializer.endGroup();
+
+						// textures
+						serializer.beginGroup("Textures");
+							textures.forEach([&](std::string key, UUID val){
 								serializer.keyValue(key, (std::string)val);
 							});
 						serializer.endGroup();
@@ -45,10 +53,10 @@ namespace Phoenix{
 				serializer.endGroup();
 
 				Files::writeFile(path.string(), serializer.output());
-#ifdef PH_DEBUG
+			#ifdef PH_DEBUG
 			}else{
 				PH_ERROR("Project Index Failed");
-#endif
+			#endif
 			}
 
 		}else{
@@ -56,17 +64,17 @@ namespace Phoenix{
 		}
 	}
 
-	std::string Project::deserialize(std::string filepath){
+	std::string Project::deserialize(std::string filepath, Engine* engine){
 		path = filepath;
-		return deserialize_functionality();
+		return deserialize_functionality(engine);
 	}
 
-	std::string Project::deserialize(std::filesystem::path filepath){
+	std::string Project::deserialize(std::filesystem::path filepath, Engine* engine){
 		path = filepath;
-		return deserialize_functionality();
+		return deserialize_functionality(engine);
 	}
 
-	std::string Project::deserialize_functionality(){
+	std::string Project::deserialize_functionality(Engine* engine){
 		try{
 			NAML_DE naml{Files::readFile(path.string())};
 
@@ -74,17 +82,23 @@ namespace Phoenix{
 			
 			setStartupScene(proj->get("Startup Scene")->value<UUID>());
 
+			// scenes
 			proj->get("Assets")->get("Scenes")->forEach([&](std::string key, NAML_Node* value){
 				scenes.insert(key, value->value<UUID>());
 			});
 
+			// scripts
 			proj->get("Assets")->get("Scripts")->forEach([&](std::string key, NAML_Node* value){
 				scripts.insert(key, value->value<UUID>());
 			});
 
+			// textures
+			proj->get("Assets")->get("Textures")->forEach([&](std::string filepath, NAML_Node* value){
+				textures.insert(filepath, value->value<UUID>());
+				engine->loadTexture(getRelativePath() + "\\" + filepath, value->value<UUID>());
+			});
 
-
-			return std::string();
+			return std::string(); 
 
 		}catch(const std::runtime_error& e){
 			DESERIALIZE_ERROR("Failed to deserialize (" << path.string() << ")\n\t" << e.what());
@@ -121,23 +135,26 @@ namespace Phoenix{
 
 		bool has_scenes = false;
 		bool has_scripts = false;
+		bool has_textures = false;
 		Files::directoryIterator(relative_path, [&](const std::string& path, bool is_dir){
 			if(is_dir){
 				std::string folder_name = Files::getFileName(path);
 
-					 if(folder_name == "scenes") { has_scenes  = true; }
-				else if(folder_name == "scripts"){ has_scripts = true; }
+					 if(folder_name == "scenes")   { has_scenes   = true; }
+				else if(folder_name == "scripts")  { has_scripts  = true; }
+				else if(folder_name == "textures") { has_textures = true; }
 
 			}
 		});
 
-		#define PH_PROJECT_INDEX_CHECK_EXISTS(folder) if(!has_scripts){ \
+		#define PH_PROJECT_INDEX_CHECK_EXISTS(folder) if(!has_##folder){ \
 				imgui_start_alert("Project Directory is missing the "#folder" folder.\nPlease add one and try to save again."); \
 				return false; \
 			}
 
 			PH_PROJECT_INDEX_CHECK_EXISTS(scenes);
 			PH_PROJECT_INDEX_CHECK_EXISTS(scripts);
+			PH_PROJECT_INDEX_CHECK_EXISTS(textures);
 
 		#undef PH_PROJECT_INDEX_CHECK_EXISTS
 
@@ -148,7 +165,7 @@ namespace Phoenix{
 		Files::directoryIterator(relative_path + "\\scenes", [&](const std::string& path, bool is_dir){
 			std::string relative_filepath = Files::relative(path, relative_path);
 
-			if(!scenes.hasLeft(relative_filepath)){
+			if(Files::getFileExtention(relative_filepath) == "phoenix_scene" && !scenes.hasLeft(relative_filepath)){
 				scenes.insert(
 					relative_filepath,
 					{ std::stoull(
@@ -163,7 +180,7 @@ namespace Phoenix{
 		Files::directoryIterator(relative_path + "\\scripts", [&](const std::string& path, bool is_dir){
 			std::string relative_filepath = Files::relative(path, relative_path);
 
-			if(!scripts.hasLeft(relative_filepath)){
+			if(Files::getFileExtention(relative_filepath) == "js" && !scripts.hasLeft(relative_filepath)){
 				scripts.insert(
 					relative_filepath,
 					UUID() // if new script found, generate new UUID
@@ -171,6 +188,18 @@ namespace Phoenix{
 			}
 		});
 
+
+		// textures
+		Files::directoryIterator(relative_path + "\\textures", [&](const std::string& path, bool is_dir){
+			std::string relative_filepath = Files::relative(path, relative_path);
+
+			if(Files::getFileExtention(relative_filepath) == "png" && !textures.hasLeft(relative_filepath)){
+				textures.insert(
+					relative_filepath,
+					UUID() // if new texture found, generate new UUID
+				);
+			}
+		});
 
 
 		PH_WARNING("Unimplemented: removing deleted files from index");

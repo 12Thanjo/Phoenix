@@ -111,7 +111,7 @@ namespace Phoenix{
 			// if(!imugi_will_draw_alert()){
 			ImGui::Text("Open Project...");
 			imgui_popup("Getting Started", [&](){
-				ImGui::Text("Foundry Engine");
+				ImGui::Text("Phoenix Engine");
 
 				imgui_separator(0.0f);
 
@@ -129,6 +129,7 @@ namespace Phoenix{
 
 						Files::createDirectory(new_project_path + "\\scripts", error_callback);
 						Files::createDirectory(new_project_path + "\\scenes", error_callback);
+						Files::createDirectory(new_project_path + "\\textures", error_callback);
 						Files::writeFile(new_project_path + "\\" + Files::getFileName(new_project_path) + ".phoenix", project_name);
 
 						PH_LOG("Created a new Project (" << project_name << ")");

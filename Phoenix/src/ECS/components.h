@@ -107,21 +107,20 @@ namespace Phoenix::Component{
 	};
 
 
-	struct Cube{
+
+	struct Material{
 		BasicMaterial material;
 
-		Cube() = default;
-		Cube(const BasicMaterial& _material)
+		// this is just for the editor
+		bool using_texture = false;
+
+		Material() = default;
+		Material(const BasicMaterial& _material)
 			: material(_material) {}
 	};
 
 
-	struct Plane{
-		BasicMaterial material;
-
-		Plane() = default;
-		Plane(const BasicMaterial& _material)
-			: material(_material) {}
-	};
+	struct Cube : public Material{};
+	struct Plane : public Material{};
 	
 }
