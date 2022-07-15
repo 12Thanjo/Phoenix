@@ -32,7 +32,7 @@ namespace Phoenix::Utils{
 			//////////////////////////////////////////////////////////////////////
 			// right
 			
-			B& getRight(const A& index){
+			B getRight(const A& index){
 				return _map[index];
 			}
 

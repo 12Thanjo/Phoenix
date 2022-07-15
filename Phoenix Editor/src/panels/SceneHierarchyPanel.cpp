@@ -203,8 +203,8 @@ namespace Phoenix{
 		if(using_texture == 1 && !component.using_texture){
 			component.using_texture = true;
 
-			if(!component.material.usingTexture()){
-				component.material.setTexture(component.material.getTexture());
+			if(component.has_save_texture){
+				component.material.setTexture(component.save_texture);
 			}
 
 		}else if(using_texture == 0 && component.using_texture){
@@ -224,6 +224,8 @@ namespace Phoenix{
 						static_cast<Editor*>(editor)->project.textures.getLeft(component.material.getTexture()),
 						"\\textures\\"
 					);
+					// texture = static_cast<Editor*>(editor)->project.textures.getLeft(component.material.getTexture());
+					// texture = std::to_string(component.material.getTexture());
 				}else{
 					texture = "[Drag Image...]";
 				}
@@ -236,11 +238,14 @@ namespace Phoenix{
 
 						std::filesystem::path filesystem_path(path);
 						if(filesystem_path.extension() == ".png"){
-							component.material.setTexture(
-								static_cast<Editor*>(editor)->project.textures.getRight(
-									Files::relative(filesystem_path.string(), static_cast<Editor*>(editor)->project.getRelativePath())
-								)
+							UUID texture_id = static_cast<Editor*>(editor)->project.textures.getRight(
+								Files::relative(filesystem_path.string(), static_cast<Editor*>(editor)->project.getRelativePath())
 							);
+
+							component.material.setTexture(texture_id);
+
+							component.save_texture = texture_id;
+							component.has_save_texture = true;
 						}else{
 							PH_WARNING("Attempted to drag & load a non-texture");
 						}

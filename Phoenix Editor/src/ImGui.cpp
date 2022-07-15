@@ -246,7 +246,7 @@ namespace Phoenix{
 				panel->render(_editor);
 			}
 
-			// ImGui::ShowDemoWindow();
+			ImGui::ShowDemoWindow();
 
 
 			// automatically run

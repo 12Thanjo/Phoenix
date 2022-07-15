@@ -1,5 +1,9 @@
 # Changelog
 
+### 0.2.10
+- fixed bug causing crash when changing texture type to image texture
+- fixed reset values in Scene panel
+
 ### 0.2.8
 - fixed readibility of CHANGELOG
 
@@ -13,7 +17,7 @@
 - made Component::Cube and Component::Plane children of Component::Material
 - removed "Shinyness not implemented" warning
 - fixed startup popup (had incorrect title)
-- fix UUID showing and hiding when resizing Scene Hierarchy Panel
+- fix UUID showing and hiding when resizing Entity Properties Panel
 - removed separate holding of UUIDs in asset manager
 
 ### 0.1.11

@@ -113,6 +113,8 @@ namespace Phoenix::Component{
 
 		// this is just for the editor
 		bool using_texture = false;
+		bool has_save_texture = false;
+		Phoenix::UUID save_texture;
 
 		Material() = default;
 		Material(const BasicMaterial& _material)

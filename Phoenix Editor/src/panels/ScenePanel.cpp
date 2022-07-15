@@ -82,7 +82,7 @@ namespace Phoenix{
 				imgui_set_collumn_width(70.0f);
 
 				glm::vec3 focal_point = scene->camera.getFocalPoint();
-				imgui_draw_vec3_control("Focal Point", focal_point, 0.0f, 0.5f);
+				imgui_draw_vec3_control("Focal Point", focal_point, 0.5f, 0.0f);
 				scene->camera.setFocalPoint(focal_point);
 
 				imgui_separator(); ////////////////////////////////////////////////////////////////
@@ -130,7 +130,7 @@ namespace Phoenix{
 				
 				imgui_separator();
 
-				imgui_draw_vec3_control("Direction", scene->sunlight.direction, -1.0f, 0.02f);
+				imgui_draw_vec3_control("Direction", scene->sunlight.direction, 0.02f, -1.0f);
 
 			});
 
