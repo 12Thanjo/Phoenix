@@ -8,7 +8,6 @@
 #include "backends/imgui_impl_glfw.h"
 
 namespace Phoenix{
-	class MyGui;
 	
 	class Panel{
 		private:
@@ -18,6 +17,7 @@ namespace Phoenix{
 			~Panel() = default;
 
 			virtual void render(Engine* editor) = 0;
+			virtual void onEvent(Event& e, Engine* editor){};
 			
 	};
 

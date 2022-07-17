@@ -8,6 +8,9 @@
 
 namespace Phoenix{
 	
+	//////////////////////////////////////////////////////////////////////
+	// panel
+
 	void SceneHierarchyPanel::render(Engine* editor){
 		// Scene Hierarchy Panel
 		imgui_begin("2", "Scene Hierarchy");
@@ -43,6 +46,34 @@ namespace Phoenix{
 
 	}
 
+
+	void SceneHierarchyPanel::onEvent(Event& e, Engine* editor){
+		EventType type = e.getType();
+
+
+		switch(type){
+			case PH_MOUSE_DOWN_EVENT:
+				if(static_cast<MouseDownEvent&>(e).getButton() == PH_MOUSE_LEFT){
+					if(static_cast<Editor*>(editor)->renderer_ImGui.getMouseOverViewport()){
+						selection_context = {(entt::entity)static_cast<Editor*>(editor)->renderer_ImGui.getEntityIdMouseOver(), editor->getScene()};
+					}
+				}
+				break;
+			case PH_KEY_DOWN_EVENT:
+				switch(static_cast<KeyDownEvent&>(e).getKeycode()){
+					case PH_KEY_ESCAPE:
+						selection_context = {};		
+						break;
+				};
+				break;
+		};
+	}
+
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// helpers
 
 	void SceneHierarchyPanel::draw_entity_node(Engine* editor, Entity& entity){
 		std::string& name = entity.getComponent<Component::Name>().name;

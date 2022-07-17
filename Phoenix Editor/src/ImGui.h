@@ -17,6 +17,7 @@ namespace Phoenix{
 			void begin();
 			void end();
 			void render(FrameBuffer* render_buffer);
+			void onEvent(Event& e);
 
 			void set_dark_theme();
 
@@ -31,7 +32,9 @@ namespace Phoenix{
 			void playEvent();
 
 
-			inline bool getMouseOverViewport() const { return _mouse_over_viewport; };
+			inline bool getMouseOverViewport() const { return _mouse_over_viewport;  };
+			inline int  getEntityIdMouseOver() const { return _mouse_over_entity_id; };
+
 
 		public:
 			Panel* scene_hierarchy_panel;
@@ -43,7 +46,6 @@ namespace Phoenix{
 			
 		private:
 			Engine* _editor;
-			glm::vec2 _viewport_size;
 
 			std::vector<Panel*> _panels;
 
@@ -51,6 +53,9 @@ namespace Phoenix{
 			bool _just_opened = true;
 
 			bool _mouse_over_viewport = false;
+			glm::vec2 _viewport_size;
+			glm::vec2 _viewport_bounds[2];
+			int _mouse_over_entity_id = -1;
 
 			enum class SceneState{
 				Edit = 0,

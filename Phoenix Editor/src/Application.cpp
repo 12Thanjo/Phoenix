@@ -17,6 +17,7 @@ namespace Phoenix{
 		// onEvent callback
 		std::function<void(Event&)> event_callback = [&](Event& e){
 			EventType type = e.getType();
+			bool captured = false;
 
 
 			bool ctrl_down = keyDown(PH_KEY_LEFT_CONTROL) || keyDown(PH_KEY_RIGHT_CONTROL);
@@ -39,18 +40,21 @@ namespace Phoenix{
 							}else if(ctrl_down){
 								renderer_ImGui.save();
 							}
-							break;
+
+							captured = true; break;
 						case PH_KEY_N:
 							if(ctrl_down){
 								renderer_ImGui.newScene();
 							}
-							break;
+
+							captured = true; break;
 						case PH_KEY_P:
 							if(ctrl_down){
 								PH_WARNING("I don't do much yet");
 								renderer_ImGui.playEvent();
 							}
-							break;
+
+							captured = true; break;
 						case PH_KEY_R:
 							if(ctrl_down){
 								std::string runtime_path = Files::getFilePathUpDirectory(_path) + "\\Phoenix Runtime\\Phoenix Runtime.exe";
@@ -62,10 +66,12 @@ namespace Phoenix{
 								Files::openInDefaultProgram(runtime_path);
 								_can_render = false;
 							}
-							break;
+
+							captured = true; break;
 						case PH_KEY_F5:
 							renderer_ImGui.playEvent();
-							break;
+
+							captured = true; break;
 					};
 					break;
 				case PH_MOUSE_MOVE_EVENT:
@@ -84,6 +90,7 @@ namespace Phoenix{
 							}else{
 								rotate_camera(dx, dy);
 							}
+							captured = true;
 						}
 
 						_mouse_x = current_mouse_x;
@@ -93,8 +100,13 @@ namespace Phoenix{
 				case PH_MOUSE_SCROLL_EVENT:
 					if(renderer_ImGui.getMouseOverViewport()){
 						zoom_camera(static_cast<MouseScrollEvent&>(e).getY() * -0.1f);
+						captured = true;
 					}
 					break;
+			}
+
+			if(!captured){
+				renderer_ImGui.onEvent(e);	
 			}
 
 
@@ -118,7 +130,7 @@ namespace Phoenix{
 
 
 		FrameBufferConfig output_config;
-			output_config.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
+			output_config.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
 			output_config.width = WINDOW_WIDTH;
 			output_config.height = WINDOW_HEIGHT;
 			// output_config.samples = 4;
@@ -145,11 +157,13 @@ namespace Phoenix{
 		if(_can_render){
 			_output_buffer->bind();
 			clearColorDepth();
+			_output_buffer->clearAttachment(1, -1);
 
 			render3D();
 			render2D();
 
 			_output_buffer->unbind();
+
 			
 			renderer_ImGui.begin();
 			renderer_ImGui.render(_output_buffer);

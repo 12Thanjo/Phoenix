@@ -16,6 +16,7 @@ namespace Phoenix{
 			~SceneHierarchyPanel() = default;
 
 			void render(Engine* editor) override;
+			void onEvent(Event& e, Engine* editor) override;
 
 		public:
 			Entity selection_context;

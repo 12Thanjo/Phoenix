@@ -1,5 +1,8 @@
 # Changelog
 
+### 0.2.11
+- mouse left click entity in editor viewport to select (clicking nothing unselects)
+
 ### 0.2.10
 - fixed bug causing crash when changing texture type to image texture
 - fixed reset values in Scene panel

@@ -22,9 +22,8 @@ namespace Phoenix{
 
 
 
-	void Renderer3D::basicMaterialUpload(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
+	void Renderer3D::basicMaterialUpload(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
 		_asset_manager->bindShader(_basic_shader);
-
 
 
 		_asset_manager->uploadMat4(_basic_shader, "u_model", transform);
@@ -49,6 +48,8 @@ namespace Phoenix{
 			_asset_manager->uploadFloat4(_basic_shader, "u_color", material.color);
 		}
 
+		_asset_manager->uploadInt(_basic_shader, "u_entity_id", entt_id);
+
 
 		sunlight.upload(_asset_manager, _basic_shader);
 
@@ -58,9 +59,9 @@ namespace Phoenix{
 	}
 
 
-	void Renderer3D::drawCube(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
+	void Renderer3D::drawCube(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
 		
-		basicMaterialUpload(transform, material, camera, sunlight);
+		basicMaterialUpload(entt_id, transform, material, camera, sunlight);
 
 		// vertex data, buffers, and attributes
 		float verticies[] = {
@@ -139,8 +140,8 @@ namespace Phoenix{
 
 
 
-	void Renderer3D::drawPlane(glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
-		basicMaterialUpload(transform, material, camera, sunlight);
+	void Renderer3D::drawPlane(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
+		basicMaterialUpload(entt_id, transform, material, camera, sunlight);
 
 
 		// vertex data, buffers, and attributes

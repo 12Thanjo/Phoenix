@@ -208,11 +208,11 @@ namespace Phoenix{
 	// }
 
 
-	void FrameBuffer::clearAttachment(glID attachment_index, int value){
-		PH_ASSERT(attachment_index < _color_attachments.size(), "invalid attachment index");
+	void FrameBuffer::clearAttachment(int i, int value){
+		PH_ASSERT(i < _color_attachments.size() && i > 0, "Color attachment (" << i << ") is invalid for this frame buffer");
 
-		auto& config = _color_attachment_configs[attachment_index];
-		glClearTexImage(_color_attachments[attachment_index], 0, convert_texture_format(config.textureFormat), GL_INT, &value);
+		auto& config = _color_attachment_configs[i];
+		glClearTexImage(_color_attachments[i], 0, convert_texture_format(config.textureFormat), GL_INT, &value);
 	}
 
 
@@ -225,5 +225,19 @@ namespace Phoenix{
 		_config.height = height;
 		_rebuild();
 	}
+
+
+
+	int FrameBuffer::readPixel(int i, int x, int y){
+		PH_ASSERT(i < _color_attachments.size() && i > 0, "Color attachment (" << i << ") is invalid for this frame buffer");
+		bind();
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
+
+		int output;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &output);
+		unbind();
+		return output;
+	}
+
 	
 }

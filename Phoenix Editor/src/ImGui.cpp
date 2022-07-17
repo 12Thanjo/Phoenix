@@ -235,6 +235,18 @@ namespace Phoenix{
 					}
 
 					_mouse_over_viewport = ImGui::IsWindowHovered();
+
+					ImVec2 viewport_size = ImGui::GetWindowSize();
+					ImVec2 viewport_pos = ImGui::GetWindowPos();
+					ImVec2 mouse_pos = ImGui::GetMousePos();
+
+					int mouse_x = (int)(mouse_pos.x - viewport_pos.x);
+					int mouse_y = (int)(mouse_pos.y - viewport_pos.y - (viewport_size.y - _viewport_size.y));
+
+
+					_mouse_over_entity_id = render_buffer->readPixel(1, mouse_x, _viewport_size.y - mouse_y);
+					
+
 				ImGui::End();
 			ImGui::PopStyleVar();
 
@@ -246,7 +258,7 @@ namespace Phoenix{
 				panel->render(_editor);
 			}
 
-			ImGui::ShowDemoWindow();
+			// ImGui::ShowDemoWindow();
 
 
 			// automatically run
@@ -256,9 +268,20 @@ namespace Phoenix{
 			ImGui::End();
 		}
 
-
-
 	}
+
+
+	void RendererImGui::onEvent(Event& e){
+		for(auto panel : _panels){
+			panel->onEvent(e, _editor);
+		}
+	}
+
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// misc
 
 
 	void RendererImGui::set_dark_theme(){
@@ -297,7 +320,6 @@ namespace Phoenix{
 
 	//////////////////////////////////////////////////////////////////////
 	// scenes
-
 
 	void RendererImGui::play_scene(){
 		_scene_state = SceneState::Play;

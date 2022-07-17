@@ -7,11 +7,7 @@
 
 namespace Phoenix{
 
-	class Entity{
-		private:
-			entt::entity _id{ entt::null };
-			Scene* _scene = nullptr;
-	
+	class Entity{	
 		public:
 			Entity() = default;
 			Entity(entt::entity id, Scene* environment) : _id(id), _scene(environment) {};
@@ -48,6 +44,8 @@ namespace Phoenix{
 				_scene->_registry.remove<T>(_id);
 			}
 
+			inline uint32_t getID() const { return (uint32_t)_id; };
+
 
 			operator bool() const { return (_id != entt::null) && (_scene->_valid_entity(_id)); };
 			operator entt::entity() const { return _id; };
@@ -58,6 +56,11 @@ namespace Phoenix{
 			bool operator !=(const Entity& other) const {
 				return !(*this == other);
 			};
+
+		private:
+			entt::entity _id{ entt::null };
+			Scene* _scene = nullptr;
+
 	};
 	
 }

@@ -86,7 +86,7 @@ namespace Phoenix{
 			// void textureBind();
 			// void textureBind(int i);
 
-			void clearAttachment(glID attachment_index, int value);
+			void clearAttachment(int i, int value);
 
 			void unbind();
 
@@ -97,6 +97,8 @@ namespace Phoenix{
 			inline glID getDepthAttachment(){ return _depth_attachment; }
 			inline unsigned int getWidth() const { return _config.width; }
 			inline unsigned int getHeight() const { return _config.height; }
+
+			int readPixel(int i, int x, int y);
 
 		private:
 			void _rebuild();
