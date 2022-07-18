@@ -152,6 +152,12 @@ namespace Phoenix{
 
 
 			if(ImGui::BeginMenuBar()){
+				bool menu_item;
+				#define HOVER_MENU_ITEM(title, msg, action) menu_item = ImGui::MenuItem(title, "..."); \
+					imgui_hover(msg);\
+					if(menu_item)action
+				#define MENU_ITEM(title, command, action) if(ImGui::MenuItem(title, command))action
+
 			    if(ImGui::BeginMenu("File")){
 			    	if(ImGui::MenuItem("New", "Ctrl+N")){
 			    		PH_FATAL("This is an unsupported feature");
@@ -172,6 +178,23 @@ namespace Phoenix{
 			    	ImGui::EndMenu();
 			    }
 
+
+			    if(ImGui::BeginMenu("Project")){
+
+			    	HOVER_MENU_ITEM("New Empty Entity", "Right Click in Scene Hierarchy Panel", {
+			    		_editor->createEntity("Empty Entity");
+			    	});
+
+			    	imgui_separator();
+
+			    	MENU_ITEM("Run", "Ctrl+R", {
+			    		static_cast<Editor*>(_editor)->runProject();
+			    	});
+			    	
+			    	ImGui::EndMenu();
+			    }
+
+
 			    if(ImGui::BeginMenu("View")){
 			    	if(ImGui::MenuItem("Camera Top View", "NUM7")){
 			    		OrbitalCamera& camera = _editor->getScene()->camera;
@@ -186,7 +209,54 @@ namespace Phoenix{
 			    		OrbitalCamera& camera = _editor->getScene()->camera;
 			    		camera.setCoordinates(camera.getRho(), 3.1416f, 1.5708f);
 			    	}
+
 			    	ImGui::EndMenu();
+			    }
+
+			    if(ImGui::MenuItem("Help")){
+			    	imgui_start_alert("Commands and Controls",
+R"(File:
+	New Scene:                Ctrl+N
+	Save Project and Scene:   Ctrl+S
+	Save Scene as:            Ctrl+Shift+S
+
+Project:
+	Create New Empty Entity:  Right Click in Entity Panel
+	Select Entity:            Click on Entity in the Viewport or
+                                  in the Scene Hierarchy Panel
+	Delete Entity:            Right Click in Scene Hierarchy
+                                  Panel on specific entity
+	Load Scene:               Drag from Asset Browser Panel
+	                              into Viewport
+	Run Project:              Ctrl+R
+
+View:
+	Camera Top View:          Numpad 7
+	Camera Bottom View:       Numpad 9
+	Camera Front View:        Numpad 1
+	Camera Side View:         Numpad 3
+	
+Editor:
+	Rotate Camera:            Middle Mouse
+	Pan Camera:               Shift+Middle Mouse
+	Zoom Camera:              Ctrl+Middle Mouse or Scroll Wheel
+
+	Grab:                     G
+	Rotate:                   R
+	Scale:                    S
+
+	Delimit X-axis:           X
+	Deliminate X-axis:        Shift+X
+	Delimit Y-axis:           Y
+	Deliminate Y-axis:        Shift+Y
+	Delimit Z-axis:           Z
+	Deliminate Z-axis:        Shift+Z
+
+
+Some UI buttons will show functionality details when the mouse
+cursor is hovered over them.
+
+)");			
 			    }
 
 
@@ -473,10 +543,12 @@ namespace Phoenix{
 		std::string filepath = FileDialogs::save(*_editor->getWindow(), {
 			.filters = {
 				{"Phoenix Scene (*.phoenix_scene)", "*.phoenix_scene"}
-			}
+			},
+			.filepath = static_cast<Editor*>(_editor)->project.getRelativePath() + "\\scenes"
 		});
 
 		if(!filepath.empty()){
+			_editor->getScene()->uuid = UUID();
 			_open_scene = filepath;
 			save();
 		}

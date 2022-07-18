@@ -1,10 +1,15 @@
 # Changelog
 
+### 0.2.18
+- `Project`, `View`, and `Help` tabs in the menu bar
+- `Commands and Controls` panel, shown in the `Help` tab in the menu bar
+- UI show some descriptions on hover over
+- SaveAs now automatically opens to the scenes folder
 
 ### 0.2.14
-- when entity selected, click G (grab), R (rotate) or S (scale) to adjust component with mouse
-- Press X, Y, or Z to delimit mouse control to that axis (with SHIFT it delimits to the other two axis)
-- Press Numpad 7, 9, 1, or 3 to snap camera to specific direction (can be found in the the "View" tab of the menu bar)
+- when entity selected, click `G` (grab), `R` (rotate) or `S` (scale) to adjust component with mouse
+- Press `X`, `Y`, or `Z` to delimit mouse control to that axis (with `SHIFT` it delimits to the other two axis)
+- Press Numpad `7`, `9`, `1`, or `3` to snap camera to specific direction (can be found in the the `View` tab of the menu bar)
 
 ### 0.2.11
 - mouse left click entity in editor viewport to select (clicking nothing unselects)

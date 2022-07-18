@@ -8,6 +8,7 @@ namespace Phoenix{
 	struct FileDialogsConfig{
 		const char* title;
 		std::map<std::string, std::string> filters = {{"All Files (*.*)", ""}};
+		std::string filepath = "";
 	};
 	
 	class FileDialogs{

@@ -61,27 +61,14 @@ namespace Phoenix{
 							}
 
 							BREAK_CAPTURE();
-						case PH_KEY_P:
-							if(ctrl_down){
-								PH_WARNING("I don't do much yet");
-								renderer_ImGui.playEvent();
-							}
-
-							BREAK_CAPTURE();
 						case PH_KEY_F5:
+							PH_WARNING("I don't do much yet");
 							renderer_ImGui.playEvent();
 
 							BREAK_CAPTURE();
 						case PH_KEY_R:
 							if(ctrl_down){
-								std::string runtime_path = Files::getFilePathUpDirectory(_path) + "\\Phoenix Runtime\\Phoenix Runtime.exe";
-								PH_ASSERT(Files::fileExists(runtime_path), "Incorrect File Path for runtime");
-
-								Files::writeFile(Files::getFilePath(runtime_path) + "\\project.phoenix_runtime_config", project.path.string());
-								
-								renderer_ImGui.save();
-								Files::openInDefaultProgram(runtime_path);
-								_can_render = false;
+								runProject();
 
 								CAPTURE();
 							}else{
@@ -227,6 +214,21 @@ namespace Phoenix{
 
 
 
+	void Editor::runProject(){
+		std::string runtime_path = Files::getFilePathUpDirectory(_path) + "\\Phoenix Runtime\\Phoenix Runtime.exe";
+		PH_ASSERT(Files::fileExists(runtime_path), "Incorrect File Path for runtime");
+
+		Files::writeFile(Files::getFilePath(runtime_path) + "\\project.phoenix_runtime_config", project.path.string());
+		
+		renderer_ImGui.save();
+		Files::openInDefaultProgram(runtime_path);
+		_can_render = false;
+	}
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// camera controls
 
 	void Editor::pan_camera(float dx, float dy){
 		use_editor_camera();

@@ -38,8 +38,10 @@ namespace Phoenix{
 				if(ImGui::Button("<-")){
 					_current_dir = _current_dir.parent_path();
 				}
+				imgui_hover("Go up a directory");
 			}else{
 				ImGui::Button("--");
+				imgui_hover("At top directory");
 			}
 
 			ImGui::SameLine();
@@ -50,8 +52,9 @@ namespace Phoenix{
 				if(imgui_image_button(_folder_icon->getID(), size, size)){
 					std::string command = "cd \"" + _current_dir.string() + "\" && start .";
 					system(command.c_str());
-					PH_LOG("Opened File Explorer to: " << _current_dir.string())
+					PH_LOG("Opened File Explorer to: " << _current_dir.string());
 				}
+				imgui_hover("Open File Explorer to this filepath");
 			ImGui::PopStyleColor();
 
 			// write out current file path

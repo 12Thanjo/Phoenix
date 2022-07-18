@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <Phoenix.h>
@@ -16,6 +17,9 @@ namespace Phoenix{
 			
 			void create() override;
 			void render() override;
+
+
+			void runProject();
 
 		public:
 			RendererImGui renderer_ImGui;

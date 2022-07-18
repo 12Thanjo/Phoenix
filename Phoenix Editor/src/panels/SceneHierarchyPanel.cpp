@@ -660,6 +660,8 @@ namespace Phoenix{
 				Files::toClipboard(uuid);
 			}
 
+			imgui_hover("Click to copy UUID to clipboard");
+
 		}
 
 

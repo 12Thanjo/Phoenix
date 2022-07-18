@@ -29,6 +29,7 @@ namespace Phoenix{
 			std::string uuid = "UUID: " + std::to_string(scene->uuid);
 			ImGui::Text(uuid.c_str());
 
+
 			imgui_separator();
 
 
@@ -75,6 +76,8 @@ namespace Phoenix{
 						static_cast<Editor*>(editor)->renderer_ImGui.scene_hierarchy_panel
 					)->selection_context = scene->getEntityByUUID( scene->getStartupCamera() );
 				}
+
+				imgui_hover("Click to select camera");
 
 			});
 

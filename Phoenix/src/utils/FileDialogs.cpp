@@ -28,14 +28,19 @@ namespace Phoenix{
 
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
-		CHAR currentDir[256] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
 		ofn.hwndOwner = glfwGetWin32Window(window.getWindowContext());
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		if(GetCurrentDirectoryA(256, currentDir)){
-			ofn.lpstrInitialDir = currentDir;
+
+		if(config.filepath.empty()){
+			CHAR currentDir[256] = { 0 };
+			if(GetCurrentDirectoryA(256, currentDir)){
+				ofn.lpstrInitialDir = currentDir;
+			}
+		}else{
+			ofn.lpstrInitialDir = config.filepath.c_str();
 		}
 
 		ofn.lpstrFilter = filter_str.c_str();
@@ -58,14 +63,19 @@ namespace Phoenix{
 
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
-		CHAR currentDir[256] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
 		ofn.hwndOwner = glfwGetWin32Window(window.getWindowContext());
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		if(GetCurrentDirectoryA(256, currentDir)){
-			ofn.lpstrInitialDir = currentDir;
+
+		if(config.filepath.empty()){
+			CHAR currentDir[256] = { 0 };
+			if(GetCurrentDirectoryA(256, currentDir)){
+				ofn.lpstrInitialDir = currentDir;
+			}
+		}else{
+			ofn.lpstrInitialDir = config.filepath.c_str();
 		}
 
 		ofn.lpstrFilter = filter_str.c_str();

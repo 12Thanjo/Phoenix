@@ -342,6 +342,7 @@ namespace Phoenix{
 
 	static bool open_alert = false;
 	static std::string alert_text = "Alert Text...";
+	static std::string alert_title = "Alert";
 
 	void imgui_alert(){
 		if(open_alert){
@@ -349,10 +350,13 @@ namespace Phoenix{
 			// ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 			
 
-			ImGui::OpenPopup("Alert");
-			if(ImGui::BeginPopupModal("Alert", NULL)){
+			ImGui::OpenPopup(alert_title.c_str());
+			if(ImGui::BeginPopupModal(alert_title.c_str(), NULL)){
 				ImGui::SetWindowSize({400, 225});
-			    ImGui::TextWrapped(alert_text.c_str());
+
+				ImGui::BeginChild("Scroll", {385, 168});
+			    	ImGui::TextWrapped(alert_text.c_str());
+			    ImGui::EndChild();
 
 			    if(ImGui::Button("Close")){
 			        ImGui::CloseCurrentPopup();
@@ -367,8 +371,14 @@ namespace Phoenix{
 	void imgui_start_alert(std::string text){
 		alert_text = text;
 		open_alert = true;
-		// imgui_alert();
+		alert_title = "Alert";
 		PH_WARNING("Alert: " << text);
+	}
+
+	void imgui_start_alert(std::string title, std::string text){
+		alert_text = text;
+		open_alert = true;
+		alert_title = title;
 	}
 
 	bool imugi_will_draw_alert(){
@@ -389,6 +399,18 @@ namespace Phoenix{
 			   	draw_window();
 			    ImGui::EndPopup();
 			}
+		}
+	}
+
+
+
+	void imgui_hover(std::string message){
+		if(ImGui::IsItemHovered()){
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+			ImGui::TextUnformatted(message.c_str());
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
 		}
 	}
 
