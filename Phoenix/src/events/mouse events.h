@@ -5,9 +5,6 @@
 namespace Phoenix{
 	
 	class MouseDownEvent : public Event{
-		private:
-			unsigned int button;
-
 		public:
 			MouseDownEvent(unsigned int p_button)
 				: button(p_button) {
@@ -22,13 +19,14 @@ namespace Phoenix{
 				ss << "{ MouseDownEvent (" << button << ") }";
 				return ss.str();
 			}
+
+		private:
+			unsigned int button;
+
 	};
 
 
 	class MouseUpEvent : public Event{
-		private:
-			unsigned int button;
-
 		public:
 			MouseUpEvent(unsigned int p_button)
 				: button(p_button) {
@@ -43,13 +41,14 @@ namespace Phoenix{
 				ss << "{ MouseUpEvent (" << button << ") }";
 				return ss.str();
 			}
+
+		private:
+			unsigned int button;
+
 	};
 
 
 	class MouseMoveEvent : public Event{
-		private:
-			float x, y;
-
 		public:
 			MouseMoveEvent(float p_x, float p_y)
 				: x(p_x), y(p_y) {
@@ -66,13 +65,13 @@ namespace Phoenix{
 				return ss.str();
 			}
 
+		private:
+			float x, y;
+
 	};
 
 
 	class MouseScrollEvent : public Event{
-		private:
-			float x, y;
-
 		public:
 			MouseScrollEvent(float p_x, float p_y)
 				: x(p_x), y(p_y) {
@@ -88,6 +87,9 @@ namespace Phoenix{
 				ss << "{ MouseScrollEvent (" << x << ", " << y << ") }";
 				return ss.str();
 			}
+
+		private:
+			float x, y;
 
 	};
 

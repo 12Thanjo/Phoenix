@@ -185,8 +185,8 @@ namespace Phoenix{
 
 
 	void OrbitalCamera::place(){
-		if(_phi < 0.01f){
-			_phi = 0.01f;
+		if(_phi < 0.0f){
+			_phi = 0.0f;
 		}else if(_phi > 3.14f - 0.01f){
 			_phi = 3.14f - 0.01f;
 		};

@@ -1,9 +1,10 @@
 #include "SceneHierarchyPanel.h"
 
 #include <Phoenix.h>
-#include "../ImGui helpers.h"
 
+#include "../ImGui helpers.h"
 #include "../Application.h"
+#include "../editor events.h"
 
 
 namespace Phoenix{
@@ -43,30 +44,251 @@ namespace Phoenix{
 				ImGui::Text("No Entity Selected");
 			}
 		ImGui::End();
-
 	}
 
 
 	void SceneHierarchyPanel::onEvent(Event& e, Engine* editor){
 		EventType type = e.getType();
 
+		bool ctrl_down = editor->keyDown(PH_KEY_LEFT_CONTROL) || editor->keyDown(PH_KEY_RIGHT_CONTROL);
+		bool shift_down = editor->keyDown(PH_KEY_LEFT_SHIFT) || editor->keyDown(PH_KEY_RIGHT_SHIFT);
 
 		switch(type){
 			case PH_MOUSE_DOWN_EVENT:
 				if(static_cast<MouseDownEvent&>(e).getButton() == PH_MOUSE_LEFT){
 					if(static_cast<Editor*>(editor)->renderer_ImGui.getMouseOverViewport()){
-						selection_context = {(entt::entity)static_cast<Editor*>(editor)->renderer_ImGui.getEntityIdMouseOver(), editor->getScene()};
+						if(current_state == SHP_State::None){
+							selection_context = {(entt::entity)static_cast<Editor*>(editor)->renderer_ImGui.getEntityIdMouseOver(), editor->getScene()};
+							if(!selection_context){
+								current_state = SHP_State::None;
+							}
+						}else if(current_state == SHP_State::Grab){
+							finish_tool();
+						}else if(current_state == SHP_State::Rotate){
+							finish_tool();
+						}else if(current_state == SHP_State::Scale){
+							finish_tool();
+						}
+
 					}
 				}
 				break;
 			case PH_KEY_DOWN_EVENT:
 				switch(static_cast<KeyDownEvent&>(e).getKeycode()){
 					case PH_KEY_ESCAPE:
-						selection_context = {};		
+						reset_property();
+						finish_tool();
+						selection_context = {};
+						break;
+
+					//////////////////////////////////////////////////////////////////////
+					// property delimiters
+					case PH_KEY_X:
+						if(current_state == SHP_State::Grab || current_state == SHP_State::Rotate || current_state == SHP_State::Scale){
+							reset_property();
+							if(!shift_down){
+								_can_adjust_x = true;
+								_can_adjust_y = false;
+								_can_adjust_z = false;
+							}else{
+								_can_adjust_x = false;
+								_can_adjust_y = true;
+								_can_adjust_z = true;
+							}
+						}
+						break;
+					case PH_KEY_Y:
+						if(current_state == SHP_State::Grab || current_state == SHP_State::Rotate || current_state == SHP_State::Scale){
+							reset_property();
+							if(!shift_down){
+								_can_adjust_x = false;
+								_can_adjust_y = true;
+								_can_adjust_z = false;
+							}else{
+								_can_adjust_x = true;
+								_can_adjust_y = false;
+								_can_adjust_z = true;
+							}
+						}
+						break;
+					case PH_KEY_Z:
+						if(current_state == SHP_State::Grab || current_state == SHP_State::Rotate || current_state == SHP_State::Scale){
+							reset_property();
+							if(!shift_down){
+								_can_adjust_x = false;
+								_can_adjust_y = false;
+								_can_adjust_z = true;
+							}else{
+								_can_adjust_x = true;
+								_can_adjust_y = true;
+								_can_adjust_z = false;
+							}
+						}
 						break;
 				};
 				break;
+			case PH_MOUSE_MOVE_EVENT:
+				{
+					float current_mouse_x = editor->mouseX();
+					float current_mouse_y = editor->mouseY();
+
+					//////////////////////////////////////////////////////////////////////
+					// grab
+					if(current_state == SHP_State::Grab){
+						float dx = current_mouse_x - _mouse_x;
+						float dy = current_mouse_y - _mouse_y;
+
+						OrbitalCamera& camera = editor->getScene()->camera;
+						glm::vec3 camera_rotation = camera.getRotation();
+						glm::vec3 camera_position = camera.getPosition();
+
+						glm::vec3& position = selection_context.getComponent<Component::Transform>().position;
+
+						glm::vec3 position_dif = abs(camera_position - position);
+
+
+						float ammount = sqrt(
+							(position_dif.x * position_dif.x) + 
+							(position_dif.y * position_dif.y) + 
+							(position_dif.z * position_dif.z)
+						) * 0.0015f;
+
+
+						position.z += dx * ammount * cos(camera_rotation.y) 							* _can_adjust_z;
+						position.x -= dx * ammount * sin(camera_rotation.y) 							* _can_adjust_x;
+
+						position.y -= dy * ammount * cos(camera_rotation.z) 							* _can_adjust_y;
+						position.x += dy * ammount * sin(camera_rotation.z) * cos(camera_rotation.y) 	* _can_adjust_x;
+						position.z += dy * ammount * sin(camera_rotation.z) * sin(camera_rotation.y) 	* _can_adjust_z;
+
+					//////////////////////////////////////////////////////////////////////
+					// rotate
+					}else if(current_state == SHP_State::Rotate){
+						float dx = current_mouse_x - _mouse_x;
+						float dy = current_mouse_y - _mouse_y;
+
+						OrbitalCamera& camera = editor->getScene()->camera;
+						glm::vec3 camera_rotation = camera.getRotation();
+						glm::vec3 camera_position = camera.getPosition();
+
+						glm::vec3 position = selection_context.getComponent<Component::Transform>().position;
+						glm::vec3& rotation = selection_context.getComponent<Component::Transform>().rotation;
+
+						glm::vec3 position_dif = abs(camera_position - position);
+
+
+						float ammount = sqrt(
+							(position_dif.x * position_dif.x) + 
+							(position_dif.y * position_dif.y) + 
+							(position_dif.z * position_dif.z)
+						) * 0.0015f;
+
+
+
+						rotation.x -= dx * ammount * cos(camera_rotation.y) 	* _can_adjust_x;
+						rotation.y += dx * ammount * cos(camera_rotation.z) 	* _can_adjust_y;
+
+
+						rotation.z += dy * ammount * cos(camera_rotation.y) 	* _can_adjust_z;
+						// rotation.y += dy * ammount * cos(camera_rotation.y) 	* _can_adjust_y;
+						// rotation.x -= dy * ammount * sin(camera_rotation.y) 	* _can_adjust_x;
+
+					}
+					//////////////////////////////////////////////////////////////////////
+					// scale
+					if(current_state == SHP_State::Scale){
+						float dx = current_mouse_x - _mouse_x;
+						float dy = current_mouse_y - _mouse_y;
+
+						OrbitalCamera& camera = editor->getScene()->camera;
+						glm::vec3 camera_rotation = camera.getRotation();
+						glm::vec3 camera_position = camera.getPosition();
+
+						glm::vec3 position = selection_context.getComponent<Component::Transform>().position;
+						glm::vec3& scale = selection_context.getComponent<Component::Transform>().scale;
+
+						glm::vec3 position_dif = abs(camera_position - position);
+
+
+						float ammount = sqrt(
+							(position_dif.x * position_dif.x) + 
+							(position_dif.y * position_dif.y) + 
+							(position_dif.z * position_dif.z)
+						) * 0.0015f;
+
+
+						scale.z += dx * ammount * cos(camera_rotation.y) 							* _can_adjust_z;
+						scale.x -= dx * ammount * sin(camera_rotation.y) 							* _can_adjust_x;
+
+						scale.y -= dy * ammount * cos(camera_rotation.z) 							* _can_adjust_y;
+						scale.x += dy * ammount * sin(camera_rotation.z) * cos(camera_rotation.y) 	* _can_adjust_x;
+						scale.z += dy * ammount * sin(camera_rotation.z) * sin(camera_rotation.y) 	* _can_adjust_z;
+
+					//////////////////////////////////////////////////////////////////////
+					// rotate
+					}
+
+
+					_mouse_x = current_mouse_x;
+					_mouse_y = current_mouse_y;
+				}
+				break;
+			case GRAB_EVENT:
+				if(selection_context){
+					if(current_state == SHP_State::Grab){
+						finish_tool();
+					}else{
+						reset_property();
+						_original_vec3 = selection_context.getComponent<Component::Transform>().position;
+						current_state = SHP_State::Grab;
+					}
+				}
+				break;
+			case ROTATE_EVENT:
+				if(selection_context){
+					if(current_state == SHP_State::Rotate){
+						finish_tool();
+					}else{
+						reset_property();
+						_original_vec3 = selection_context.getComponent<Component::Transform>().rotation;
+						current_state = SHP_State::Rotate;
+					}
+				}
+				break;
+			case SCALE_EVENT:
+				if(selection_context){
+					if(current_state == SHP_State::Scale){
+						finish_tool();
+					}else{
+						reset_property();
+						_original_vec3 = selection_context.getComponent<Component::Transform>().scale;
+						current_state = SHP_State::Scale;
+					}
+				}
+				break;
 		};
+	}
+
+
+
+	void SceneHierarchyPanel::reset_property(){
+		if(current_state == SHP_State::Grab){
+			selection_context.getComponent<Component::Transform>().position = _original_vec3;
+		}else if(current_state == SHP_State::Rotate){
+			selection_context.getComponent<Component::Transform>().rotation = _original_vec3;
+		}else if(current_state == SHP_State::Scale){
+			selection_context.getComponent<Component::Transform>().scale = _original_vec3;
+		}
+	}
+
+
+
+	void SceneHierarchyPanel::finish_tool(){
+		current_state = SHP_State::None;
+		_can_adjust_x = true;
+		_can_adjust_y = true;
+		_can_adjust_z = true;
+
 	}
 
 

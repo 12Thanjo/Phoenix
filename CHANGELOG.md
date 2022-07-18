@@ -1,5 +1,11 @@
 # Changelog
 
+
+### 0.2.14
+- when entity selected, click G (grab), R (rotate) or S (scale) to adjust component with mouse
+- Press X, Y, or Z to delimit mouse control to that axis (with SHIFT it delimits to the other two axis)
+- Press Numpad 7, 9, 1, or 3 to snap camera to specific direction (can be found in the the "View" tab of the menu bar)
+
 ### 0.2.11
 - mouse left click entity in editor viewport to select (clicking nothing unselects)
 

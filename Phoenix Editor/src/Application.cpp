@@ -1,6 +1,6 @@
 #include "Application.h"
 
-
+#include "editor events.h"
 
 #define WINDOW_WIDTH 1920
 #define WINDOW_HEIGHT 1080
@@ -18,10 +18,17 @@ namespace Phoenix{
 		std::function<void(Event&)> event_callback = [&](Event& e){
 			EventType type = e.getType();
 			bool captured = false;
+			bool send_event = false;
+			Event* event_to_send;
 
 
 			bool ctrl_down = keyDown(PH_KEY_LEFT_CONTROL) || keyDown(PH_KEY_RIGHT_CONTROL);
 			bool shift_down = keyDown(PH_KEY_LEFT_SHIFT) || keyDown(PH_KEY_RIGHT_SHIFT);
+
+
+#define SEND_EVENT(x) event_to_send = new x(); send_event = true;
+#define BREAK_CAPTURE() captured = true; break;
+#define CAPTURE() captured = true;
 
 			switch(type){
 				case PH_WINDOW_CLOSE_EVENT:
@@ -37,24 +44,34 @@ namespace Phoenix{
 						case PH_KEY_S:
 							if(ctrl_down && shift_down){
 								renderer_ImGui.save_as();
+								CAPTURE();
 							}else if(ctrl_down){
 								renderer_ImGui.save();
+								CAPTURE();
+							}else{
+								if(renderer_ImGui.getMouseOverViewport()){
+									SEND_EVENT(ScaleEvent);
+								}
 							}
 
-							captured = true; break;
+							break;
 						case PH_KEY_N:
 							if(ctrl_down){
 								renderer_ImGui.newScene();
 							}
 
-							captured = true; break;
+							BREAK_CAPTURE();
 						case PH_KEY_P:
 							if(ctrl_down){
 								PH_WARNING("I don't do much yet");
 								renderer_ImGui.playEvent();
 							}
 
-							captured = true; break;
+							BREAK_CAPTURE();
+						case PH_KEY_F5:
+							renderer_ImGui.playEvent();
+
+							BREAK_CAPTURE();
 						case PH_KEY_R:
 							if(ctrl_down){
 								std::string runtime_path = Files::getFilePathUpDirectory(_path) + "\\Phoenix Runtime\\Phoenix Runtime.exe";
@@ -65,13 +82,46 @@ namespace Phoenix{
 								renderer_ImGui.save();
 								Files::openInDefaultProgram(runtime_path);
 								_can_render = false;
+
+								CAPTURE();
+							}else{
+								if(renderer_ImGui.getMouseOverViewport()){
+									SEND_EVENT(RotateEvent);
+								}
 							}
+							break;
+						case PH_KEY_G:
+							if(renderer_ImGui.getMouseOverViewport()){
+								SEND_EVENT(GrabEvent);
+							}
+							break;
 
-							captured = true; break;
-						case PH_KEY_F5:
-							renderer_ImGui.playEvent();
-
-							captured = true; break;
+						//////////////////////////////////////////////////////////////////////
+						// camera position
+						case PH_KEY_NUMPAD_7:
+							if(renderer_ImGui.getMouseOverViewport()){
+								OrbitalCamera& camera = _scene->camera;
+								camera.setCoordinates(camera.getRho(), 1.5708f, 0);
+							}
+							break;
+						case PH_KEY_NUMPAD_9:
+							if(renderer_ImGui.getMouseOverViewport()){
+								OrbitalCamera& camera = _scene->camera;
+								camera.setCoordinates(camera.getRho(), 1.5708f, 3.1416f);
+							}
+							break;
+						case PH_KEY_NUMPAD_1:
+							if(renderer_ImGui.getMouseOverViewport()){
+								OrbitalCamera& camera = _scene->camera;
+								camera.setCoordinates(camera.getRho(), 1.5708f, 1.5708f);
+							}
+							break;
+						case PH_KEY_NUMPAD_3:
+							if(renderer_ImGui.getMouseOverViewport()){
+								OrbitalCamera& camera = _scene->camera;
+								camera.setCoordinates(camera.getRho(), 3.1416f, 1.5708f);
+							}
+							break;
 					};
 					break;
 				case PH_MOUSE_MOVE_EVENT:
@@ -90,7 +140,7 @@ namespace Phoenix{
 							}else{
 								rotate_camera(dx, dy);
 							}
-							captured = true;
+							CAPTURE();
 						}
 
 						_mouse_x = current_mouse_x;
@@ -100,13 +150,16 @@ namespace Phoenix{
 				case PH_MOUSE_SCROLL_EVENT:
 					if(renderer_ImGui.getMouseOverViewport()){
 						zoom_camera(static_cast<MouseScrollEvent&>(e).getY() * -0.1f);
-						captured = true;
+						CAPTURE();
 					}
 					break;
 			}
 
-			if(!captured){
-				renderer_ImGui.onEvent(e);	
+
+			if(send_event){
+				renderer_ImGui.onEvent(*event_to_send);
+			}else if(!captured){
+				renderer_ImGui.onEvent(e);
 			}
 
 

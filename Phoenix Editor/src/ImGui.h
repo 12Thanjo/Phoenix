@@ -57,7 +57,7 @@ namespace Phoenix{
 			glm::vec2 _viewport_bounds[2];
 			int _mouse_over_entity_id = -1;
 
-			enum class SceneState{
+			enum struct SceneState{
 				Edit = 0,
 				Play = 1
 			};

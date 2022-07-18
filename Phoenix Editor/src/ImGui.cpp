@@ -169,8 +169,26 @@ namespace Phoenix{
 			        	_editor->exit();
 			        }
 
-			        ImGui::EndMenu();
+			    	ImGui::EndMenu();
 			    }
+
+			    if(ImGui::BeginMenu("View")){
+			    	if(ImGui::MenuItem("Camera Top View", "NUM7")){
+			    		OrbitalCamera& camera = _editor->getScene()->camera;
+			    		camera.setCoordinates(camera.getRho(), 1.5708f, 0);
+			    	}else if(ImGui::MenuItem("Camera Bottom View", "NUM9")){
+			    		OrbitalCamera& camera = _editor->getScene()->camera;
+			    		camera.setCoordinates(camera.getRho(), 1.5708f, 3.1416f);
+			    	}else if(ImGui::MenuItem("Camera Front View", "NUM1")){
+			    		OrbitalCamera& camera = _editor->getScene()->camera;
+			    		camera.setCoordinates(camera.getRho(), 1.5708f, 1.5708f);
+			    	}else if(ImGui::MenuItem("Camera Side View", "NUM3")){
+			    		OrbitalCamera& camera = _editor->getScene()->camera;
+			    		camera.setCoordinates(camera.getRho(), 3.1416f, 1.5708f);
+			    	}
+			    	ImGui::EndMenu();
+			    }
+
 
 
 			    ImGui::EndMenuBar();
