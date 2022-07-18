@@ -1,5 +1,11 @@
 # Changelog
 
+### 0.2.22
+- allowed for editor camera movement with spacebar in addtion to the middle mouse button
+- Pressing `Escape` while using an editor tool no longer diselects the entity
+- created config file in appdata
+- uses config file to automatically open file explorer to last opened project (when opening project)
+
 ### 0.2.18
 - `Project`, `View`, and `Help` tabs in the menu bar
 - `Commands and Controls` panel, shown in the `Help` tab in the menu bar
@@ -8,7 +14,7 @@
 
 ### 0.2.14
 - when entity selected, click `G` (grab), `R` (rotate) or `S` (scale) to adjust component with mouse
-- Press `X`, `Y`, or `Z` to delimit mouse control to that axis (with `SHIFT` it delimits to the other two axis)
+- Press `X`, `Y`, or `Z` to delimit mouse control to that axis (adding `SHIFT` deliminates the axis)
 - Press Numpad `7`, `9`, `1`, or `3` to snap camera to specific direction (can be found in the the `View` tab of the menu bar)
 
 ### 0.2.11

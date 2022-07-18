@@ -237,9 +237,10 @@ View:
 	Camera Side View:         Numpad 3
 	
 Editor:
-	Rotate Camera:            Middle Mouse
-	Pan Camera:               Shift+Middle Mouse
-	Zoom Camera:              Ctrl+Middle Mouse or Scroll Wheel
+	Rotate Camera:            Middle Mouse or Space
+	Pan Camera:               Shift+(Middle Mouse or Space)
+	Zoom Camera:              Ctrl+(Middle Mouse or Space)
+							      or Scroll Wheel
 
 	Grab:                     G
 	Rotate:                   R
@@ -454,11 +455,18 @@ cursor is hovered over them.
 	}
 
 	std::string RendererImGui::open(Project& project){
-		std::string filepath = FileDialogs::open(*_editor->getWindow(), {
-			.filters = {
-				{"Phoenix Project (*.phoenix)", "*.phoenix"}
-			}
-		});
+
+		FileDialogsConfig config;
+		config.filters = {
+			{"Phoenix Project (*.phoenix)", "*.phoenix"}
+		};
+
+		if(!static_cast<Editor*>(_editor)->config.last_opened_project.empty()){
+			config.filepath = static_cast<Editor*>(_editor)->config.last_opened_project;
+		}
+		
+
+		std::string filepath = FileDialogs::open(*_editor->getWindow(), config);
 
 		if(!filepath.empty()){
 			std::string opened = open(filepath, project);

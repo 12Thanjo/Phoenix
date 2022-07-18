@@ -76,15 +76,18 @@ namespace Phoenix{
 			case PH_KEY_DOWN_EVENT:
 				switch(static_cast<KeyDownEvent&>(e).getKeycode()){
 					case PH_KEY_ESCAPE:
-						reset_property();
-						finish_tool();
-						selection_context = {};
+						if(is_using_tool()){
+							reset_property();
+							finish_tool();
+						}else if(current_state == SHP_State::None){
+							selection_context = {};
+						}
 						break;
 
 					//////////////////////////////////////////////////////////////////////
 					// property delimiters
 					case PH_KEY_X:
-						if(current_state == SHP_State::Grab || current_state == SHP_State::Rotate || current_state == SHP_State::Scale){
+						if(is_using_tool()){
 							reset_property();
 							if(!shift_down){
 								_can_adjust_x = true;
@@ -98,7 +101,7 @@ namespace Phoenix{
 						}
 						break;
 					case PH_KEY_Y:
-						if(current_state == SHP_State::Grab || current_state == SHP_State::Rotate || current_state == SHP_State::Scale){
+						if(is_using_tool()){
 							reset_property();
 							if(!shift_down){
 								_can_adjust_x = false;
@@ -112,7 +115,7 @@ namespace Phoenix{
 						}
 						break;
 					case PH_KEY_Z:
-						if(current_state == SHP_State::Grab || current_state == SHP_State::Rotate || current_state == SHP_State::Scale){
+						if(is_using_tool()){
 							reset_property();
 							if(!shift_down){
 								_can_adjust_x = false;
@@ -285,11 +288,19 @@ namespace Phoenix{
 
 	void SceneHierarchyPanel::finish_tool(){
 		current_state = SHP_State::None;
+
 		_can_adjust_x = true;
 		_can_adjust_y = true;
 		_can_adjust_z = true;
-
 	}
+
+	bool SceneHierarchyPanel::is_using_tool(){
+		return current_state == SHP_State::Grab || 
+			current_state == SHP_State::Rotate || 
+			current_state == SHP_State::Scale;
+	}
+
+
 
 
 

@@ -146,11 +146,14 @@ namespace Phoenix{
 				if(imgui_button("Open", 40)){
 					std::string opened_project_path = static_cast<Editor*>(editor)->renderer_ImGui.open(static_cast<Editor*>(editor)->project);
 					if(!opened_project_path.empty()){
-						// PH_LOG("Not empty: " << opened_project_path);
 						static_cast<Editor*>(editor)->project.path = opened_project_path;
+
+						static_cast<Editor*>(editor)->config.last_opened_project = Files::getFilePath(opened_project_path);
+						static_cast<Editor*>(editor)->saveConfig();
 
 						project_path = Files::getFilePath(opened_project_path);
 						_current_dir = project_path;
+
 					}
 				}
 

@@ -14,7 +14,41 @@ namespace Phoenix{
 
 
 	void Editor::create(){
+		//////////////////////////////////////////////////////////////////////
+		// config file
+
+		std::string appdata = Files::getEnvVar("APPDATA");
+		PH_ASSERT(!appdata.empty(), "Error retrieving appdata directory");
+		
+		std::string config_file_string;
+
+		appdata += "\\Phoenix Engine";
+
+		if(!Files::directoryExists(appdata)){
+			Files::createDirectory(appdata, [&](std::string e){
+				PH_FATAL(e);
+			});
+
+			PH_LOG("Created APPDATA folder");
+
+			config_file_string = saveConfig();
+		}else if(!Files::fileExists(appdata + "\\config.naml")){
+			config_file_string = saveConfig();
+		}else{
+			config_file_string = Files::readFile(appdata + "\\config.naml");
+		}
+
+		
+		NAML_DE naml{config_file_string};
+		config.VSync = naml.get()->get("VSync")->value<bool>();
+		if(naml.get()->has("Last Opened Project")){
+			config.last_opened_project = naml.get()->get("Last Opened Project")->value<std::string>();
+		}
+
+
+		//////////////////////////////////////////////////////////////////////
 		// onEvent callback
+
 		std::function<void(Event&)> event_callback = [&](Event& e){
 			EventType type = e.getType();
 			bool captured = false;
@@ -24,11 +58,12 @@ namespace Phoenix{
 
 			bool ctrl_down = keyDown(PH_KEY_LEFT_CONTROL) || keyDown(PH_KEY_RIGHT_CONTROL);
 			bool shift_down = keyDown(PH_KEY_LEFT_SHIFT) || keyDown(PH_KEY_RIGHT_SHIFT);
+			bool alt_down = keyDown(PH_KEY_LEFT_ALT) || keyDown(PH_KEY_RIGHT_ALT);
 
 
-#define SEND_EVENT(x) event_to_send = new x(); send_event = true;
-#define BREAK_CAPTURE() captured = true; break;
-#define CAPTURE() captured = true;
+			#define SEND_EVENT(x) event_to_send = new x(); send_event = true;
+			#define BREAK_CAPTURE() captured = true; break;
+			#define CAPTURE() captured = true;
 
 			switch(type){
 				case PH_WINDOW_CLOSE_EVENT:
@@ -116,7 +151,7 @@ namespace Phoenix{
 						float current_mouse_x = mouseX();
 						float current_mouse_y = mouseY();
 
-						if(mouseButtonDown(PH_MOUSE_MIDDLE)){
+						if(mouseButtonDown(PH_MOUSE_MIDDLE) || keyDown(PH_KEY_SPACE)){
 							float dx = current_mouse_x - _mouse_x;
 							float dy = current_mouse_y - _mouse_y;
 
@@ -148,26 +183,24 @@ namespace Phoenix{
 			}else if(!captured){
 				renderer_ImGui.onEvent(e);
 			}
-
-
 		};
 
 
-		WindowConfig config;
-			config.width = WINDOW_WIDTH;
-			config.height = WINDOW_HEIGHT;
-			config.name = "Phoenix Engine Editor";
-			config.eventCallback = event_callback;
-		createWindow(config);
+
+		//////////////////////////////////////////////////////////////////////
+		// window and frame buffer
+
+
+		WindowConfig win_config;
+			win_config.width = WINDOW_WIDTH;
+			win_config.height = WINDOW_HEIGHT;
+			win_config.name = "Phoenix Engine Editor";
+			win_config.eventCallback = event_callback;
+			win_config.VSync = config.VSync;
+		createWindow(win_config);
 
 
 		maximize();
-
-
-
-		///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 		FrameBufferConfig output_config;
 			output_config.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
@@ -177,7 +210,10 @@ namespace Phoenix{
 		_output_buffer = new FrameBuffer(output_config);
 
 
+		
 
+		//////////////////////////////////////////////////////////////////////
+		// imgui
 
 		renderer_ImGui.init();
 	}
@@ -282,6 +318,29 @@ namespace Phoenix{
 		if(_camera){
 			_camera = {};
 		}
+	}
+
+
+	std::string Editor::saveConfig(){
+		std::string appdata = Files::getEnvVar("APPDATA");
+		PH_ASSERT(!appdata.empty(), "Error retrieving appdata directory");
+
+		appdata += "\\Phoenix Engine";
+
+		NAML_S serializer{};
+		serializer.keyValue("VSync", config.VSync);
+
+		if(!config.last_opened_project.empty()){
+			serializer.keyValue("Last Opened Project", config.last_opened_project);
+		}
+
+		std::string config_file_string = serializer.output();
+
+		Files::writeFile(appdata + "\\config.naml", config_file_string.c_str());
+
+		PH_LOG("Created Editor Config File");
+
+		return config_file_string;
 	}
 
 

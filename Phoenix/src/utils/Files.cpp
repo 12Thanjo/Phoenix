@@ -327,6 +327,20 @@ namespace Files{
 	}
 
 
+	std::string Files::getEnvVar(std::string env_var){
+		std::string output;
+
+		char* buf = nullptr;
+		size_t sz = 0;
+		if(_dupenv_s(&buf, &sz, env_var.c_str()) == 0 && buf != nullptr){
+			output = std::string(buf);
+		    free(buf);
+		}
+
+		return output;
+	}
+
+
 }
 
 

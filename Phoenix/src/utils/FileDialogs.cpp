@@ -34,6 +34,7 @@ namespace Phoenix{
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
 
+		
 		if(config.filepath.empty()){
 			CHAR currentDir[256] = { 0 };
 			if(GetCurrentDirectoryA(256, currentDir)){

@@ -36,6 +36,7 @@ namespace Phoenix{
 
 			void reset_property();
 			void finish_tool();
+			bool is_using_tool();
 
 		private:
 			float _mouse_x = 0;

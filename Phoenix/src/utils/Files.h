@@ -41,6 +41,8 @@ namespace Files{
 	void toClipboard(const std::string &s);
 	bool isProcessRunning(std::string search_path);
 
+	std::string getEnvVar(std::string env_var);
+
 }
 
 #undef FILE_PATH_REF
