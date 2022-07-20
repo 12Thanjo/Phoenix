@@ -49,6 +49,7 @@ namespace Phoenix{
 			void update();
 			void render2D(Renderer2D* renderer_2d, Camera& camera);
 			void render3D(Renderer3D* renderer_3d, Camera& camera);
+			void runCreateScripts(Scripting& scripting, Engine* engine);
 			void runScripts(Scripting& scripting, Engine* engine);
 
 

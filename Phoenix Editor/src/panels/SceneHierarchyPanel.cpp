@@ -698,7 +698,7 @@ namespace Phoenix{
 		});
 
 
-		draw_comonent<Component::Script>("Script", entity, [&entity](auto& component){
+		draw_comonent<Component::Script>("Script", entity, [&entity, editor](auto& component){
 			float line_height = imgui_get_line_height();
 
 			// ImGui::Columns(2, 0, false);
@@ -723,8 +723,7 @@ namespace Phoenix{
 
 					std::filesystem::path filesystem_path(path);
 					if(filesystem_path.extension() == ".js"){
-						std::string path_string = filesystem_path.string();
-						component.path = path_string;
+						component.path = Files::relative(filesystem_path.string(), static_cast<Editor*>(editor)->project.getRelativePath());
 					}else{
 						PH_WARNING("Attempted to drag & load a non-script");
 					}

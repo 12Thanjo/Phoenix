@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.3.1
+- completely overhauled scripting
+<br/><br/>
+- fixed bug adding scripts in editor
+
 ### 0.2.22
 - allowed for editor camera movement with spacebar in addtion to the middle mouse button
 - Pressing `Escape` while using an editor tool no longer diselects the entity

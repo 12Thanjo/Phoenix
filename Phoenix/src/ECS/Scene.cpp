@@ -147,10 +147,17 @@ namespace Phoenix{
 
 	}
 
+
+	void Scene::runCreateScripts(Scripting& scripting, Engine* engine){
+		_registry.view<Component::Script>().each([&](entt::entity entity_id, auto& component){
+			Entity entity {entity_id, this};
+			scripting.scriptControllerCreate(component.path, entity, engine);
+		});
+	}
+
 	void Scene::runScripts(Scripting& scripting, Engine* engine){
 		_registry.view<Component::Script>().each([&](entt::entity entity_id, auto& component){
 			Entity entity {entity_id, this};
-			// scripting.run("console.log('test from entity run script');");
 			scripting.scriptControllerUpdate(component.path, entity, engine);
 		});
 	}

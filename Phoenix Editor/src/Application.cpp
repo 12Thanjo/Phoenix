@@ -200,7 +200,7 @@ namespace Phoenix{
 		createWindow(win_config);
 
 
-		maximize();
+		getWindow()->maximize();
 
 		FrameBufferConfig output_config;
 			output_config.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };

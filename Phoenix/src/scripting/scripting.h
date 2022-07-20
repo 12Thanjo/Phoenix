@@ -19,34 +19,38 @@ namespace Phoenix{
 
 			void run(std::string code);
 
-
+			void createScript(std::string script, std::string script_path);
+			void scriptControllerCreate(std::string script_id, Entity entity, Engine* engine);
 			void scriptControllerUpdate(std::string script_id, Entity entity, Engine* engine);
 
 			//////////////////////////////////////////////////////////////////////
 			// methods for running by JX
 
-			void setId(std::string uuid);
-			void restoreId();
+			// void setId(std::string uuid);
+			// void restoreId();
 
 			//////////////////////////////////////////////////////////////////////
 			// transform
-			double getX();
-			void setX(double x);
+			double getX(uint32_t id);
+			void setX(uint32_t id, double x);
 
-			double getY();
-			void setY(double y);
+			// double getY();
+			// void setY(double y);
 
-			double getZ();
-			void setZ(double z);
+			// double getZ();
+			// void setZ(double z);
 
 
 			//////////////////////////////////////////////////////////////////////
 			// inputs
 			bool keyDown(int key);
 
+
+			//////////////////////////////////////////////////////////////////////
+			// engine
+			double frameTime();
+
 		private:
-			Entity _entity;
-			Entity _entity_save;
 			Engine* _engine;
 
 	};
