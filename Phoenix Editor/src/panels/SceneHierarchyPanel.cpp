@@ -702,7 +702,7 @@ namespace Phoenix{
 			float line_height = imgui_get_line_height();
 
 			// ImGui::Columns(2, 0, false);
-			ImGui::Text("Script:");
+			ImGui::Text("Script");
 			ImGui::SameLine();
 			std::string button_label;
 

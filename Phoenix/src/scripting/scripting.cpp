@@ -6,50 +6,44 @@
 #include "src/ECS/components.h"
 #include "src/Engine.h"
 
+
+
+// makes writing code for integrating with JX easier
+#define DOUBLE(i) jxcore::getDouble(&results[i])
+#define INT(i) (uint32_t)jxcore::getInt(&results[0])
+
+#define RETURN_DOUBLE(val) jxcore::setDouble(&results[argc], val);
+#define RETURN_BOOL(val) jxcore::setBool(&results[argc], val);
+
 namespace Phoenix{
-
-	//////////////////////////////////////////////////////////////////////
-	// methods for inside scripting
-
-	// void jx_setId(JXResult *results, int argc){
-	// 	jxcore::scripting->setId(jxcore::getString(&results[0]));
-	// }
-
-	// void jx_restoreId(JXResult *results, int argc){
-	// 	jxcore::scripting->restoreId();
-	// }
-
 
 	//////////////////////////////////////////////////////////////////////
 	// transform
 	void jx_getX(JXResult *results, int argc){
-		jxcore::setDouble(&results[argc], jxcore::scripting->getX((uint32_t)jxcore::getInt(&results[0])));
+		RETURN_DOUBLE(jxcore::scripting->getX(INT(0)));
 	}
 	void jx_setX(JXResult *results, int argc){
-
-		jxcore::scripting->setX((uint32_t)jxcore::getInt(&results[0]), jxcore::getDouble(&results[1]));
+		jxcore::scripting->setX(INT(0), DOUBLE(1));
 	}
 
-	// void jx_getY(JXResult *results, int argc){
-	// 	jxcore::setDouble(&results[argc], jxcore::scripting->getY());
-	// }
-	// void jx_setY(JXResult *results, int argc){
-	// 	jxcore::scripting->setY(jxcore::getDouble(&results[0]));
-	// }
+	void jx_getY(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getY(INT(0)));
+	}
+	void jx_setY(JXResult *results, int argc){
+		jxcore::scripting->setY(INT(0), DOUBLE(1));
+	}
 
-	// void jx_getZ(JXResult *results, int argc){
-	// 	jxcore::setDouble(&results[argc], jxcore::scripting->getZ());
-	// }
-	// void jx_setZ(JXResult *results, int argc){
-	// 	jxcore::scripting->setZ(jxcore::getDouble(&results[0]));
-	// }
-
-
+	void jx_getZ(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getZ(INT(0)));
+	}
+	void jx_setZ(JXResult *results, int argc){
+		jxcore::scripting->setZ(INT(0), DOUBLE(1));
+	}
 
 	//////////////////////////////////////////////////////////////////////
 	// inputs
 	void jx_keyDown(JXResult *results, int argc){
-		jxcore::setBool(&results[argc], jxcore::scripting->keyDown(jxcore::getInt(&results[0])));
+		RETURN_BOOL(jxcore::scripting->keyDown(INT(0)));
 	}
 
 
@@ -57,7 +51,7 @@ namespace Phoenix{
 	// engine
 
 	void jx_frameTime(JXResult *results, int argc){
-		jxcore::setDouble(&results[argc], jxcore::scripting->frameTime());
+		RETURN_DOUBLE(jxcore::scripting->frameTime());
 	}
 
 
@@ -77,11 +71,11 @@ namespace Phoenix{
 		jxcore::defineExtension("getX", jx_getX);
 		jxcore::defineExtension("setX", jx_setX);
 
-		// jxcore::defineExtension("getY", "entity.getY", jx_getY);
-		// jxcore::defineExtension("setY", "entity.setY", jx_setY);
+		jxcore::defineExtension("getY", jx_getY);
+		jxcore::defineExtension("setY", jx_setY);
 
-		// jxcore::defineExtension("getZ", "entity.getZ", jx_getZ);
-		// jxcore::defineExtension("setZ", "entity.setZ", jx_setZ);
+		jxcore::defineExtension("getZ", jx_getZ);
+		jxcore::defineExtension("setZ", jx_setZ);
 
 
 		//////////////////////////////////////////////////////////////////////
@@ -109,6 +103,11 @@ namespace Phoenix{
 	void Scripting::createScript(std::string script, std::string script_path){
 		jxcore::run("try{var script=new _Script();\n" + script + "\n_script_manager.create_script(\"" + script_path + "\",script);}catch(e){process.natives.warning('\\n', e.stack);}");
 		//jxcore::run_script_controller(1, script_path);
+	}
+
+
+	void Scripting::updateInit(Engine* engine){
+		_frame_time = _engine->performanceMetrics.engineLoop / 1000000;
 	}
 
 
@@ -149,6 +148,22 @@ namespace Phoenix{
 		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().position.x = (float)x;
 	}
 
+	double Scripting::getY(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().position.y;
+	}
+	void Scripting::setY(uint32_t id, double y){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().position.y = (float)y;
+	}
+
+
+	double Scripting::getZ(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().position.z;
+	}
+	void Scripting::setZ(uint32_t id, double z){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().position.z = (float)z;
+	}
+
+
 
 	//////////////////////////////////////////////////////////////////////
 	// inputs
@@ -158,13 +173,6 @@ namespace Phoenix{
 	}
 	
 
-
-	//////////////////////////////////////////////////////////////////////
-	// engine
-
-	double Scripting::frameTime(){
-		return _engine->performanceMetrics.engineLoop / 1000;
-	}
 
 
 

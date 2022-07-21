@@ -1,9 +1,12 @@
 # Changelog
 
-### 0.3.1
+### 0.3.2
 - completely overhauled scripting
+	- better performance overall
+	- improved ease of use
 <br/><br/>
 - fixed bug adding scripts in editor
+- cleaned up some code
 
 ### 0.2.22
 - allowed for editor camera movement with spacebar in addtion to the middle mouse button

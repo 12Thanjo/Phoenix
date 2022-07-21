@@ -156,6 +156,8 @@ namespace Phoenix{
 	}
 
 	void Scene::runScripts(Scripting& scripting, Engine* engine){
+		scripting.updateInit(engine);
+
 		_registry.view<Component::Script>().each([&](entt::entity entity_id, auto& component){
 			Entity entity {entity_id, this};
 			scripting.scriptControllerUpdate(component.path, entity, engine);

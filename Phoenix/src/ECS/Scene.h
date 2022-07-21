@@ -24,14 +24,6 @@ namespace Phoenix{
 	
 	class Scene{
 		public:
-			ScenePerformanceMetrics performanceMetrics;
-			std::string name;
-			UUID uuid;
-
-			OrbitalCamera camera{};
-			Lights::Directional sunlight{};
-
-		public:
 			Scene(const std::string& scene_name = "Unnamed");
 			Scene(const std::string& scene_name, const UUID& id);
 			~Scene();
@@ -73,6 +65,19 @@ namespace Phoenix{
 			void setStartupCamera(UUID camera);
 
 
+		public:
+			ScenePerformanceMetrics performanceMetrics;
+			std::string name;
+			UUID uuid;
+
+			OrbitalCamera camera{};
+			Lights::Directional sunlight{};
+
+
+		private:
+			inline bool _valid_entity(entt::entity entt_entity){ return _registry.valid(entt_entity); }
+
+
 		private:
 			entt::registry _registry;
 			Serializer* _serializer;
@@ -80,8 +85,7 @@ namespace Phoenix{
 			UUID _startup_camera;
 			bool _has_startup_camera = false;
 
-		private:
-			inline bool _valid_entity(entt::entity entt_entity){ return _registry.valid(entt_entity); }
+		
 
 
 		friend class Entity;
