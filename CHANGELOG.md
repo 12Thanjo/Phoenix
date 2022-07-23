@@ -4,6 +4,8 @@
 - completely overhauled scripting
 	- better performance overall
 	- improved ease of use
+	- extended API
+	- wrote actual documentation
 <br/><br/>
 - fixed bug adding scripts in editor
 - cleaned up some code

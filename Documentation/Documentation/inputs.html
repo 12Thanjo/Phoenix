@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="../../logo.ico">
+	<title>Phoenix Engine | Inputs</title>
+</head>
+<style type="text/css">
+	html{
+		background-color: #18181B;
+		color: #D1D5DB;
+		padding: 0px;
+		margin: 0px;
+	}
+
+	body{
+		padding: 0px;
+		margin: 0px;
+		font-size: 17px;
+	}
+
+
+	code{
+		background-color: #23241f;
+		padding: 3px;
+	}
+
+	.code{
+		background-color: #23241f;
+		padding: 15px;
+		font-size: 12px;
+		font-family: "Consolas";
+	}
+
+
+	#header{
+		position: fixed;
+		/*display: flex;*/
+		width: 100%;
+		height: 55px;
+		background-color: #27272A;
+		padding: 0px;
+	}
+
+	#title{
+		font-size: 30px;
+		margin: 10px;
+
+		color: #D1D5DB;
+		background-color: #27272A;
+		border: 0px solid #27272A;
+	}
+
+	#container{
+		margin-left: 18vw;
+		margin-right: 18vw;
+		font-size: 30px;
+		padding-top: 60px;
+		caret-color: transparent;
+		font-size: 17px;
+	}
+
+
+	.center{
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+	}
+
+	.link{
+		color: #22D3EE;
+	}
+
+	.link:hover{
+		color: #67E8F9;
+	}
+
+	.page_link{
+		font-size: 24px;
+	}
+
+	footer{
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+
+		color: #A1A1AA;
+		padding-top: 40px;
+		padding-bottom: 20px;
+	}
+
+	.footer{
+		caret-color: transparent;
+		margin: 0px!important;
+	}
+</style>
+<body>
+	<link rel="stylesheet" href="../lib/monokai-sublime.min.css">
+	<script src="../lib/highlight.min.js"></script>
+	<script>hljs.highlightAll();</script>
+	<div id="header">
+		<button id="title" onclick="window.location = './index.html';">Phoenix Engine</button>
+	</div>
+	<div id="container">
+	
+
+
+	<h1 class="center">Inputs</h1>
+
+	<p style="font-size: 19px;">Functions for checking the status of inputs</p>
+
+	<p style='font-size: 17px;padding-left: 70px;'><code><span style='color: #a6e22b;'>phoenix.keyDown</span>(<span style='color: #67d8ef;'>number</span> <span style='color: #fd9622;'>key</span>)</code></p><p style='font-size: 17px;padding-left: 150px;'>Get if a specific key is down</p><h3>Available Keys:</h3><ul style='font-size: 17px; padding-left: 70px;'><li>phoenix.key.num_1</li><li>phoenix.key.num_2</li><li>phoenix.key.num_3</li><li>phoenix.key.num_4</li><li>phoenix.key.num_5</li><li>phoenix.key.num_6</li><li>phoenix.key.num_7</li><li>phoenix.key.num_8</li><li>phoenix.key.num_9</li><li>phoenix.key.num_0</li></ul><ul style='font-size: 17px; padding-left: 70px;'><li>phoenix.key.a</li><li>phoenix.key.b</li><li>phoenix.key.c</li><li>phoenix.key.d</li><li>phoenix.key.e</li><li>phoenix.key.f</li><li>phoenix.key.g</li><li>phoenix.key.h</li><li>phoenix.key.i</li><li>phoenix.key.j</li><li>phoenix.key.k</li><li>phoenix.key.l</li><li>phoenix.key.m</li><li>phoenix.key.n</li><li>phoenix.key.o</li><li>phoenix.key.p</li><li>phoenix.key.q</li><li>phoenix.key.r</li><li>phoenix.key.s</li><li>phoenix.key.t</li><li>phoenix.key.u</li><li>phoenix.key.v</li><li>phoenix.key.w</li><li>phoenix.key.x</li><li>phoenix.key.y</li><li>phoenix.key.z</li></ul><ul style='font-size: 17px; padding-left: 70px;'><li>phoenix.key.f1</li><li>phoenix.key.f2</li><li>phoenix.key.f3</li><li>phoenix.key.f4</li><li>phoenix.key.f5</li><li>phoenix.key.f6</li><li>phoenix.key.f7</li><li>phoenix.key.f8</li><li>phoenix.key.f9</li><li>phoenix.key.f10</li><li>phoenix.key.f11</li><li>phoenix.key.f12</li><li>phoenix.key.f13</li><li>phoenix.key.f14</li><li>phoenix.key.f15</li><li>phoenix.key.f16</li><li>phoenix.key.f17</li><li>phoenix.key.f18</li><li>phoenix.key.f19</li><li>phoenix.key.f20</li><li>phoenix.key.f21</li><li>phoenix.key.f22</li><li>phoenix.key.f23</li><li>phoenix.key.f24</li><li>phoenix.key.f25</li></ul><ul style='font-size: 17px; padding-left: 70px;'><li>phoenix.key.space</li><li>phoenix.key.apostrophe</li><li>phoenix.key.comma</li><li>phoenix.key.minus</li><li>phoenix.key.period</li><li>phoenix.key.slash</li><li>phoenix.key.semicolon</li><li>phoenix.key.equal</li><li>phoenix.key.left_bracket</li><li>phoenix.key.backslash</li><li>phoenix.key.right_bracket</li><li>phoenix.key.grave_accent</li><li>phoenix.key.world_1</li><li>phoenix.key.world_2</li><li>phoenix.key.escape</li><li>phoenix.key.enter</li><li>phoenix.key.tab</li><li>phoenix.key.backspace</li><li>phoenix.key.insert</li><li>phoenix.key.delete</li><li>phoenix.key.right</li><li>phoenix.key.left</li><li>phoenix.key.down</li><li>phoenix.key.up</li><li>phoenix.key.page_up</li><li>phoenix.key.page_down</li><li>phoenix.key.home</li><li>phoenix.key.end</li><li>phoenix.key.caps_lock</li><li>phoenix.key.scroll_lock</li><li>phoenix.key.num_lock</li><li>phoenix.key.print_screen</li><li>phoenix.key.pause</li></ul><ul style='font-size: 17px; padding-left: 70px;'><li>phoenix.key.numpad_0</li><li>phoenix.key.numpad_1</li><li>phoenix.key.numpad_2</li><li>phoenix.key.numpad_3</li><li>phoenix.key.numpad_4</li><li>phoenix.key.numpad_5</li><li>phoenix.key.numpad_6</li><li>phoenix.key.numpad_7</li><li>phoenix.key.numpad_8</li><li>phoenix.key.numpad_9</li><li>phoenix.key.numpad_decimal</li><li>phoenix.key.numpad_divide</li><li>phoenix.key.numpad_multiply</li><li>phoenix.key.numpad_subtract</li><li>phoenix.key.numpad_add</li><li>phoenix.key.numpad_enter</li><li>phoenix.key.numpad_equal</li></ul><ul style='font-size: 17px; padding-left: 70px;'><li>phoenix.key.left_shift</li><li>phoenix.key.left_control</li><li>phoenix.key.left_alt</li><li>phoenix.key.left_super</li></ul><ul style='font-size: 17px; padding-left: 70px;'><li>phoenix.key.right_shift</li><li>phoenix.key.right_control</li><li>phoenix.key.right_alt</li><li>phoenix.key.right_super</li><li>phoenix.key.menu</li></ul>
+
+	</div>
+</body>
+<footer>
+	<p class="footer">Phoenix Engine is created by 12Thanjo.</p>
+	<p class="footer">Click here for the <a class="link" href="https://github.com/12Thanjo/Phoenix">source code on github</a>.</p>
+</footer>
+</html>

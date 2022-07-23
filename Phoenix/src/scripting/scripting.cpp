@@ -40,6 +40,54 @@ namespace Phoenix{
 		jxcore::scripting->setZ(INT(0), DOUBLE(1));
 	}
 
+
+
+
+	void jx_getRotationX(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getRotationX(INT(0)));
+	}
+	void jx_setRotationX(JXResult *results, int argc){
+		jxcore::scripting->setRotationX(INT(0), DOUBLE(1));
+	}
+
+	void jx_getRotationY(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getRotationY(INT(0)));
+	}
+	void jx_setRotationY(JXResult *results, int argc){
+		jxcore::scripting->setRotationY(INT(0), DOUBLE(1));
+	}
+
+	void jx_getRotationZ(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getRotationZ(INT(0)));
+	}
+	void jx_setRotationZ(JXResult *results, int argc){
+		jxcore::scripting->setRotationZ(INT(0), DOUBLE(1));
+	}
+
+
+
+
+	void jx_getScaleX(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getScaleX(INT(0)));
+	}
+	void jx_setScaleX(JXResult *results, int argc){
+		jxcore::scripting->setScaleX(INT(0), DOUBLE(1));
+	}
+
+	void jx_getScaleY(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getScaleY(INT(0)));
+	}
+	void jx_setScaleY(JXResult *results, int argc){
+		jxcore::scripting->setScaleY(INT(0), DOUBLE(1));
+	}
+
+	void jx_getScaleZ(JXResult *results, int argc){
+		RETURN_DOUBLE(jxcore::scripting->getScaleZ(INT(0)));
+	}
+	void jx_setScaleZ(JXResult *results, int argc){
+		jxcore::scripting->setScaleZ(INT(0), DOUBLE(1));
+	}
+
 	//////////////////////////////////////////////////////////////////////
 	// inputs
 	void jx_keyDown(JXResult *results, int argc){
@@ -76,6 +124,26 @@ namespace Phoenix{
 
 		jxcore::defineExtension("getZ", jx_getZ);
 		jxcore::defineExtension("setZ", jx_setZ);
+
+
+		jxcore::defineExtension("getRotationX", jx_getRotationX);
+		jxcore::defineExtension("setRotationX", jx_setRotationX);
+
+		jxcore::defineExtension("getRotationY", jx_getRotationY);
+		jxcore::defineExtension("setRotationY", jx_setRotationY);
+
+		jxcore::defineExtension("getRotationZ", jx_getRotationZ);
+		jxcore::defineExtension("setRotationZ", jx_setRotationZ);
+
+
+		jxcore::defineExtension("getScaleX", jx_getScaleX);
+		jxcore::defineExtension("setScaleX", jx_setScaleX);
+
+		jxcore::defineExtension("getScaleY", jx_getScaleY);
+		jxcore::defineExtension("setScaleY", jx_setScaleY);
+
+		jxcore::defineExtension("getScaleZ", jx_getScaleZ);
+		jxcore::defineExtension("setScaleZ", jx_setScaleZ);
 
 
 		//////////////////////////////////////////////////////////////////////
@@ -161,6 +229,54 @@ namespace Phoenix{
 	}
 	void Scripting::setZ(uint32_t id, double z){
 		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().position.z = (float)z;
+	}
+
+
+
+	double Scripting::getRotationX(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().rotation.x;
+	}
+	void Scripting::setRotationX(uint32_t id, double x){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().rotation.x = (float)x;
+	}
+
+	double Scripting::getRotationY(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().rotation.y;
+	}
+	void Scripting::setRotationY(uint32_t id, double y){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().rotation.y = (float)y;
+	}
+
+
+	double Scripting::getRotationZ(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().rotation.z;
+	}
+	void Scripting::setRotationZ(uint32_t id, double z){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().rotation.z = (float)z;
+	}
+
+
+
+	double Scripting::getScaleX(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().scale.x;
+	}
+	void Scripting::setScaleX(uint32_t id, double x){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().scale.x = (float)x;
+	}
+
+	double Scripting::getScaleY(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().scale.y;
+	}
+	void Scripting::setScaleY(uint32_t id, double y){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().scale.y = (float)y;
+	}
+
+
+	double Scripting::getScaleZ(uint32_t id){
+		return (double)Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().scale.z;
+	}
+	void Scripting::setScaleZ(uint32_t id, double z){
+		Entity((entt::entity)id, _engine->getScene()).getComponent<Component::Transform>().scale.z = (float)z;
 	}
 
 

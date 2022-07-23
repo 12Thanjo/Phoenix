@@ -107,9 +107,9 @@ var _NODEHP_ = (_PATH_, data)=>{
 				}
 			}
 
-			var macro = function(){
-				return tag_style("span", 'style="font-style: italic; color: #71717A";', "[MACRO] ");
-			}
+			// var macro = function(){
+			// 	return tag_style("span", 'style="font-style: italic; color: #71717A";', "[MACRO] ");
+			// }
 
 			var constant = function(str){
 				return tag_style("span", 'style="font-style: italic; color: #D4D4D8";', str);
@@ -122,7 +122,7 @@ var _NODEHP_ = (_PATH_, data)=>{
 					output += "<li>" + item + "</li>";
 				});
 
-				return output + "</ul>";
+				_OUTPUT_ += output + "</ul>";
 			}
 
 
@@ -145,16 +145,16 @@ var _NODEHP_ = (_PATH_, data)=>{
 			new Token("//" + regex.endl, gray);
 
 			new Token(regex.doubleQuotedString, yellow);
-			new Token(regex.capture("<", ">"), (str)=>{
-				return yellow("&lt;" + str.substring(1, str.length-1) + "&gt;");
-			});
+			// new Token(regex.capture("<", ">"), (str)=>{
+			// 	return yellow("&lt;" + str.substring(1, str.length-1) + "&gt;");
+			// });
 			new Token(regex.number, purple);
 
-			new Token("(int|char|float|bool|unsigned|class|struct|void)", (str)=>{
+			new Token("(var)", (str)=>{
 				return tag_style("span", "style='color: #67d8ef; font-style: italic;'", str);
 			});
-			new Token("(public|private|protected|override|virtual|return|static|#include|new)", red);
-			new Token("(operator)", green);
+			new Token("(if|else|for|while|break|return)", red);
+			// new Token("(operator)", green);
 
 			new Token("(\\+|=|<<|\\*|&)", red);
 
@@ -183,10 +183,8 @@ var _NODEHP_ = (_PATH_, data)=>{
 				for(var i=0; i<params.length;i++){
 					var type = params[i].type.split(" ");
 					type.forEach((t)=>{
-						if(["int", "bool"].includes(t)){ //blue
+						if(["number", "bool"].includes(t)){ //blue
 							params_str += cyan(t);
-						}else if(t == "cout"){ //red
-							params_str += red("cout");
 						}else{
 							params_str = t;
 						}

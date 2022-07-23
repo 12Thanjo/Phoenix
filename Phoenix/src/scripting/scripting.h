@@ -36,6 +36,26 @@ namespace Phoenix{
 			void setZ(uint32_t id, double z);
 
 
+			double getRotationX(uint32_t id);
+			void setRotationX(uint32_t id, double x);
+
+			double getRotationY(uint32_t id);
+			void setRotationY(uint32_t id, double y);
+
+			double getRotationZ(uint32_t id);
+			void setRotationZ(uint32_t id, double z);
+
+
+			double getScaleX(uint32_t id);
+			void setScaleX(uint32_t id, double x);
+
+			double getScaleY(uint32_t id);
+			void setScaleY(uint32_t id, double y);
+
+			double getScaleZ(uint32_t id);
+			void setScaleZ(uint32_t id, double z);
+
+
 			//////////////////////////////////////////////////////////////////////
 			// inputs
 			bool keyDown(int key);

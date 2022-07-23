@@ -1,0 +1,64 @@
+<nodehp>
+	// init
+	include('./pages/includes/header.nodehp', {
+		title: "Component::Transform",
+	});
+	var color = data.DOM.color;
+
+	var set_color = function(str){
+		return "style='color:" + str + "'";
+	}
+</nodehp>
+
+
+	<h1 class="center">Transform</h1>
+
+	<p style="font-size: 19px;">Functions for manipulating the transform of an object</p>
+
+	<nodehp>
+
+		indentation = 70;
+
+		echoTag("h3", "Position:");
+
+		create_func("entity.getX", [], "Get the x position of the entity");
+		create_func("entity.setX", [param("number", "x")], "Set the x position of the entity");
+
+		create_func("entity.getY", [], "Get the y position of the entity");
+		create_func("entity.setY", [param("number", "y")], "Set the y position of the entity");
+
+		create_func("entity.getZ", [], "Get the z position of the entity");
+		create_func("entity.setZ", [param("number", "z")], "Set the z position of the entity");
+
+
+
+		echoTag("h3", "Rotation:");
+
+		create_func("entity.getRotationX", [], "Get the x rotation of the entity");
+		create_func("entity.setRotationX", [param("number", "x")], "Set the x rotation of the entity");
+
+		create_func("entity.getRotationY", [], "Get the y rotation of the entity");
+		create_func("entity.setRotationY", [param("number", "y")], "Set the y rotation of the entity");
+
+		create_func("entity.getRotationZ", [], "Get the z rotation of the entity");
+		create_func("entity.setRotationZ", [param("number", "z")], "Set the z rotation of the entity");
+
+
+
+
+		echoTag("h3", "Scale:");
+
+		create_func("entity.getScaleX", [], "Get the x scale of the entity");
+		create_func("entity.setScaleX", [param("number", "x")], "Set the x scale of the entity");
+
+		create_func("entity.getScaleY", [], "Get the y scale of the entity");
+		create_func("entity.setScaleY", [param("number", "y")], "Set the y scale of the entity");
+
+		create_func("entity.getScaleZ", [], "Get the z scale of the entity");
+		create_func("entity.setScaleZ", [param("number", "z")], "Set the z scale of the entity");
+
+	</nodehp>
+
+<nodehp>
+	include('./pages/includes/footer.nodehp');
+</nodehp>
