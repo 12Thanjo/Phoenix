@@ -92,6 +92,9 @@ namespace Phoenix{
 		// maximize();
 		getWindow()->fullscreen();
 
+
+		runCreateScripts();
+
 	}
 
 

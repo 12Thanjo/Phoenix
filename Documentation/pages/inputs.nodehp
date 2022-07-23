@@ -1,0 +1,171 @@
+<nodehp>
+	// init
+	include('./pages/includes/header.nodehp', {
+		title: "Inputs",
+	});
+	var color = data.DOM.color;
+
+	var set_color = function(str){
+		return "style='color:" + str + "'";
+	}
+</nodehp>
+
+
+	<h1 class="center">Inputs</h1>
+
+	<p style="font-size: 19px;">Functions for checking the status of inputs</p>
+
+	<nodehp>
+
+		indentation = 70;
+
+		create_func("phoenix.keyDown", [param("number", "key")], "Get if a specific key is down");
+
+		echoTag("h3", "Available Keys:");
+		
+		list(70, [
+			"phoenix.key.num_1",
+			"phoenix.key.num_2",
+			"phoenix.key.num_3",
+			"phoenix.key.num_4",
+			"phoenix.key.num_5",
+			"phoenix.key.num_6",
+			"phoenix.key.num_7",
+			"phoenix.key.num_8",
+			"phoenix.key.num_9",
+			"phoenix.key.num_0",
+		]);
+
+		list(70, [
+			"phoenix.key.a",
+			"phoenix.key.b",
+			"phoenix.key.c",
+			"phoenix.key.d",
+			"phoenix.key.e",
+			"phoenix.key.f",
+			"phoenix.key.g",
+			"phoenix.key.h",
+			"phoenix.key.i",
+			"phoenix.key.j",
+			"phoenix.key.k",
+			"phoenix.key.l",
+			"phoenix.key.m",
+			"phoenix.key.n",
+			"phoenix.key.o",
+			"phoenix.key.p",
+			"phoenix.key.q",
+			"phoenix.key.r",
+			"phoenix.key.s",
+			"phoenix.key.t",
+			"phoenix.key.u",
+			"phoenix.key.v",
+			"phoenix.key.w",
+			"phoenix.key.x",
+			"phoenix.key.y",
+			"phoenix.key.z",
+		]);
+
+		list(70, [
+			"phoenix.key.f1",
+			"phoenix.key.f2",
+			"phoenix.key.f3",
+			"phoenix.key.f4",
+			"phoenix.key.f5",
+			"phoenix.key.f6",
+			"phoenix.key.f7",
+			"phoenix.key.f8",
+			"phoenix.key.f9",
+			"phoenix.key.f10",
+			"phoenix.key.f11",
+			"phoenix.key.f12",
+			"phoenix.key.f13",
+			"phoenix.key.f14",
+			"phoenix.key.f15",
+			"phoenix.key.f16",
+			"phoenix.key.f17",
+			"phoenix.key.f18",
+			"phoenix.key.f19",
+			"phoenix.key.f20",
+			"phoenix.key.f21",
+			"phoenix.key.f22",
+			"phoenix.key.f23",
+			"phoenix.key.f24",
+			"phoenix.key.f25",
+		]);
+
+		list(70, [
+			"phoenix.key.space",
+			"phoenix.key.apostrophe",
+			"phoenix.key.comma",
+			"phoenix.key.minus",
+			"phoenix.key.period",
+			"phoenix.key.slash",
+			"phoenix.key.semicolon",
+			"phoenix.key.equal",
+			"phoenix.key.left_bracket",
+			"phoenix.key.backslash",
+			"phoenix.key.right_bracket",
+			"phoenix.key.grave_accent",
+			"phoenix.key.world_1",
+			"phoenix.key.world_2",
+			"phoenix.key.escape",
+			"phoenix.key.enter",
+			"phoenix.key.tab",
+			"phoenix.key.backspace",
+			"phoenix.key.insert",
+			"phoenix.key.delete",
+			"phoenix.key.right",
+			"phoenix.key.left",
+			"phoenix.key.down",
+			"phoenix.key.up",
+			"phoenix.key.page_up",
+			"phoenix.key.page_down",
+			"phoenix.key.home",
+			"phoenix.key.end",
+			"phoenix.key.caps_lock",
+			"phoenix.key.scroll_lock",
+			"phoenix.key.num_lock",
+			"phoenix.key.print_screen",
+			"phoenix.key.pause",
+		]);
+
+		list(70, [
+			"phoenix.key.numpad_0",
+			"phoenix.key.numpad_1",
+			"phoenix.key.numpad_2",
+			"phoenix.key.numpad_3",
+			"phoenix.key.numpad_4",
+			"phoenix.key.numpad_5",
+			"phoenix.key.numpad_6",
+			"phoenix.key.numpad_7",
+			"phoenix.key.numpad_8",
+			"phoenix.key.numpad_9",
+			"phoenix.key.numpad_decimal",
+			"phoenix.key.numpad_divide",
+			"phoenix.key.numpad_multiply",
+			"phoenix.key.numpad_subtract",
+			"phoenix.key.numpad_add",
+			"phoenix.key.numpad_enter",
+			"phoenix.key.numpad_equal",
+		]);
+
+		list(70, [
+			"phoenix.key.left_shift",
+			"phoenix.key.left_control",
+			"phoenix.key.left_alt",
+			"phoenix.key.left_super",
+		]);
+
+		list(70, [
+			"phoenix.key.right_shift",
+			"phoenix.key.right_control",
+			"phoenix.key.right_alt",
+			"phoenix.key.right_super",
+			"phoenix.key.menu",
+		]);
+
+	</nodehp>
+
+<nodehp>
+	include('./pages/includes/footer.nodehp');
+</nodehp>

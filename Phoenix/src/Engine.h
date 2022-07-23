@@ -58,6 +58,7 @@ namespace Phoenix{
 			virtual void render(){};
 			void render3D();
 			void render2D();
+			void runCreateScripts();
 			void runScripts();
 
 			// filepath to this program (not including filename)
@@ -76,8 +77,6 @@ namespace Phoenix{
 			inline int windowHeight() { return _window->getHeight(); }
 
 			inline Window* getWindow() { return _window; }
-			inline void maximize(){ _window->maximize(); }
-			// void render();
 
 
 			//////////////////////////////////////////////////////////////////////

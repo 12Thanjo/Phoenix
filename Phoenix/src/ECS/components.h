@@ -68,9 +68,7 @@ namespace Phoenix::Component{
 				    start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
 				}
 
-				script = "{var scene = new _Script();" + script + "\n_script_manager.create_script('" + script_path + "', scene);}";
-
-				scripting.run(script);
+				scripting.createScript(script, script_path);
 			}
 	};
 

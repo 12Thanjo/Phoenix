@@ -15,8 +15,6 @@ iterate pages(i, file){
 	if(file.type != "directory"){
 		local output = nodehp(|"./pages/"file.name".nodehp"|, {
 			DOM: DOM,
-			message: "hi",
-
 		});
 
 

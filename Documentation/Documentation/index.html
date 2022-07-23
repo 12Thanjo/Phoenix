@@ -114,8 +114,6 @@
 	<br />
 	<br />
 	<p class="center" style="font-size: 26px;">Phoenix is currently in pre-alpha.</p>
-	<h2>As this project is still very much in development, full documentation will come soon (hopefully).</h2>
-	<h2>Also, when scripting is fully working, scripting documentation will take priority over C++ documentation.</h2>
 
 	<br />
 	<br />
@@ -133,12 +131,32 @@
 
 	<br />
 	<br />
+
+
+	<h3>Example:</h3>
+	<p>The create function and the update function are both optional (but you should probably use at least one)</p>
+	<div class='code'><span style='color: #74705d;'>//script create function</span><br /><span style='color: #f8f8f2;'>sript</span>.<span style='color: #f8f8f2;'>create</span> <span style='color: #f92472;'>=</span> <span style='color: #67d8ef;'>function</span><span style='color: #f8f8f2;'>(</span><span style='color: #f8f8f2;'>entity</span>){<br /><br /><div style='display: inline-block; width:27px;'></div><span style='color: #74705d;'>// scene is a global variable that can be accessed in any script</span><br /><div style='display: inline-block; width:27px;'></div><span style='color: #f8f8f2;'>scene</span>.<span style='color: #f8f8f2;'>player</span> <span style='color: #f92472;'>=</span> <span style='color: #f8f8f2;'>entity</span>;<br /><br /><div style='display: inline-block; width:27px;'></div><span style='color: #74705d;'>// if you want to save data, it should be done with the scene variable</span><br />}<br /><br /><br /><span style='color: #74705d;'>// script update function</span><br /><span style='color: #f8f8f2;'>script</span>.<span style='color: #f8f8f2;'>update</span> <span style='color: #f92472;'>=</span> <span style='color: #67d8ef;'>function</span><span style='color: #f8f8f2;'>(</span><span style='color: #f8f8f2;'>entity</span>){<br /><br /><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef; font-style: italic;'>var</span> <span style='color: #f8f8f2;'>current_x</span> <span style='color: #f92472;'>=</span> <span style='color: #f8f8f2;'>entity</span>.<span style='color: #67d8ef;'>getX</span><span style='color: #f8f8f2;'>(</span>);<br /><div style='display: inline-block; width:27px;'></div><span style='color: #67d8ef; font-style: italic;'>var</span> <span style='color: #f8f8f2;'>dx</span>;<br /><br /><div style='display: inline-block; width:27px;'></div><span style='color: #f92472;'>if</span>(<span style='color: #f8f8f2;'>phoenix</span>.<span style='color: #67d8ef;'>keyDown</span><span style='color: #f8f8f2;'>(</span><span style='color: #f8f8f2;'>phoenix</span>.<span style='color: #f8f8f2;'>key</span>.<span style='color: #f8f8f2;'>w</span>)){<br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #f8f8f2;'>dx</span> <span style='color: #f92472;'>=</span> <span style='color: #ac80ff;'>3</span> <span style='color: #f92472;'>*</span> <span style='color: #f8f8f2;'>phoenix</span>.<span style='color: #67d8ef;'>frameTime</span><span style='color: #f8f8f2;'>(</span>);<br /><div style='display: inline-block; width:27px;'></div>}<span style='color: #f92472;'>else</span> <span style='color: #f92472;'>if</span>(<span style='color: #f8f8f2;'>phoenix</span>.<span style='color: #67d8ef;'>keyDown</span><span style='color: #f8f8f2;'>(</span><span style='color: #f8f8f2;'>phoenix</span>.<span style='color: #f8f8f2;'>key</span>.<span style='color: #f8f8f2;'>s</span>)){<br /><div style='display: inline-block; width:27px;'></div><div style='display: inline-block; width:27px;'></div><span style='color: #f8f8f2;'>dx</span> <span style='color: #f92472;'>=</span> <span style='color: #ac80ff;'>-3</span> <span style='color: #f92472;'>*</span> <span style='color: #f8f8f2;'>phoenix</span>.<span style='color: #67d8ef;'>frameTime</span><span style='color: #f8f8f2;'>(</span>);<br /><div style='display: inline-block; width:27px;'></div>}<br /><br /><div style='display: inline-block; width:27px;'></div><span style='color: #f8f8f2;'>entity</span>.<span style='color: #67d8ef;'>setX</span><span style='color: #f8f8f2;'>(</span><span style='color: #f8f8f2;'>current_x</span> <span style='color: #f92472;'>+</span> <span style='color: #f8f8f2;'>dx</span>);<br /><br />}<br /></div><br />
+
+
 	
 
 
+	<br />
+	<br />
 
-	<h2>Documentation:</h2>
-	<a class="link page_link" href="./logging.html">Logging</a>
+
+	<h1>Documentation:</h1>
+
+	<h2>Phoenix:</h2>
+	<a class="link page_link" href="./inputs.html">Inputs</a>
+	<br />
+	<a class="link page_link" href="./performance.html">Performance</a>
+
+	<br />
+	<br />
+
+	<h2>Entity:</h2>
+	<a class="link page_link" href="./transform.html">Transform</a>
 
 
 	</div>

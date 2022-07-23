@@ -17,8 +17,6 @@
 	<br />
 	<br />
 	<p class="center" style="font-size: 26px;">Phoenix is currently in pre-alpha.</p>
-	<h2>As this project is still very much in development, full documentation will come soon (hopefully).</h2>
-	<h2>Also, when scripting is fully working, scripting documentation will take priority over C++ documentation.</h2>
 
 	<br />
 	<br />
@@ -36,12 +34,60 @@
 
 	<br />
 	<br />
+
+
+	<h3>Example:</h3>
+	<p>The create function and the update function are both optional (but you should probably use at least one)</p>
+	<nodehp>
+		code(`//script create function
+sript.create = function(entity){
+
+	// scene is a global variable that can be accessed in any script
+	scene.player = entity;
+
+	// if you want to save data, it should be done with the scene variable
+}
+
+
+// script update function
+script.update = function(entity){
+
+	var current_x = entity.getX();
+	var dx;
+
+	if(phoenix.keyDown(phoenix.key.w)){
+		dx = 3 * phoenix.frameTime();
+	}else if(phoenix.keyDown(phoenix.key.s)){
+		dx = -3 * phoenix.frameTime();
+	}
+
+	entity.setX(current_x + dx);
+
+}
+`);
+
+		br(1);
+	</nodehp>
+
 	
 
 
+	<br />
+	<br />
 
-	<h2>Documentation:</h2>
-	<a class="link page_link" href="./logging.html">Logging</a>
+
+	<h1>Documentation:</h1>
+
+	<h2>Phoenix:</h2>
+	<a class="link page_link" href="./inputs.html">Inputs</a>
+	<br />
+	<a class="link page_link" href="./performance.html">Performance</a>
+
+	<br />
+	<br />
+
+	<h2>Entity:</h2>
+	<a class="link page_link" href="./transform.html">Transform</a>
 
 
 <nodehp>

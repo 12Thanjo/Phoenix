@@ -134,6 +134,11 @@ namespace Phoenix{
 		// PERF_END(renderECS);
 	}
 
+
+	void Engine::runCreateScripts(){
+		_scene->runCreateScripts(_scripting, this);
+	}
+
 	void Engine::runScripts(){
 		_scene->runScripts(_scripting, this);
 	}
