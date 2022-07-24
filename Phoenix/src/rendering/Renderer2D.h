@@ -20,7 +20,7 @@ namespace Phoenix{
 			
 			void init();
 
-			void drawQuad(glm::mat4& transform, glm::vec4& color, Camera& camera);
+			void drawQuad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color, Camera& camera);
 
 			void resetPerfMetrics();
 

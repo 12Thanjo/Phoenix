@@ -119,11 +119,11 @@ namespace Phoenix{
 
 	void Scene::render2D(Renderer2D* renderer_2d, Camera& camera)
 	{
-		auto sprite_group = _registry.group<Component::SpriteRenderer>(entt::get<Component::Transform>);
+		auto sprite_group = _registry.group<Component::Sprite>(entt::get<Component::Transform>);
 		for(auto entt_entity : sprite_group){
-			auto [transform, sprite] = sprite_group.get<Component::Transform, Component::SpriteRenderer>(entt_entity);
+			auto [transform, sprite] = sprite_group.get<Component::Transform, Component::Sprite>(entt_entity);
 			
-			renderer_2d->drawQuad(transform.transform, sprite.color, camera);
+			renderer_2d->drawQuad((uint32_t)entt_entity, transform.transform, sprite.color, camera);
 		}
 		
 	}

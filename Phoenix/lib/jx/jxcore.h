@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 
-
 #include "jx.h"
 
 
@@ -28,8 +27,8 @@
 				} while (0)
 
 
-// #include <windows.h>
 #include "src/scripting/scripting.h"
+// #include <windows.h>
 
 namespace jxcore{
 	

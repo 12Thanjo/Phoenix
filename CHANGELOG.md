@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.3.5
+- release build no longer brings up console
+- fixed 2D editor controls
+- renamed SpriteRenderer to Sprite
+
 ### 0.3.2
 - completely overhauled scripting
 	- better performance overall

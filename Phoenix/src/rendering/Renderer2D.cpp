@@ -13,16 +13,18 @@ namespace Phoenix{
 
 
 	void Renderer2D::init(){
-		_quad_shader = _asset_manager->loadShader("./assets/shaders/color.shader");
+		_quad_shader = _asset_manager->loadShader("./assets/shaders/basic2d.shader");
 	}
 
 	
-	void Renderer2D::drawQuad(glm::mat4& transform, glm::vec4& color, Camera& camera){
+	void Renderer2D::drawQuad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color, Camera& camera){
 		_asset_manager->bindShader(_quad_shader);
 
 		_asset_manager->uploadMat4(_quad_shader, "u_model", transform);
 		// _asset_manager->uploadMat4(_quad_shader, "u_view_projection", camera.getViewProjection());
 		_asset_manager->uploadFloat4(_quad_shader, "u_color", color);
+
+		_asset_manager->uploadInt(_quad_shader, "u_entity_id", entt_id);
 
 		
 		float verticies[] = {

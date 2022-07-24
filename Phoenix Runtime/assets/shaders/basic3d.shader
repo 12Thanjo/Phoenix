@@ -1,9 +1,9 @@
 #shader vertex
 #version 450 core
 
-layout (location = 0) in vec3 a_position;
-layout (location = 1) in vec2 a_texture_coordinates;
-layout (location = 2) in vec3 a_normal;
+layout(location = 0) in vec3 a_position;
+layout(location = 1) in vec2 a_texture_coordinates;
+layout(location = 2) in vec3 a_normal;
 
 out vec2 t_texture_coordinates;
 out vec3 t_fragment_position;
@@ -52,7 +52,8 @@ struct DirectionalLight{
 
 
 
-out vec4 frag_color;
+layout(location=0) out vec4 frag_color;
+layout(location=1) out int entity_id;
 
 in vec2 t_texture_coordinates;
 in vec3 t_fragment_position;
@@ -69,7 +70,7 @@ uniform vec3 u_camera_position;
 // uniform PointLight u_point_lights[20];
 uniform DirectionalLight u_directional_light;
 
-
+uniform int u_entity_id;
 
 
 
@@ -136,18 +137,20 @@ vec3 calculate_directional_light(DirectionalLight light){
 
 
 void main(){
-	vec3 result = calculate_directional_light(u_directional_light);
+	vec3 lighting = calculate_directional_light(u_directional_light);
 
 
 	// for(int i = 0; i < u_num_point_lights; i += 1){
-	// 	result += calculate_point_light(u_point_lights[i]);
+	// 	lighting += calculate_point_light(u_point_lights[i]);
 	// }
 
 
 
 	if(u_using_texture == 1){
-		frag_color = vec4(result, 1.0) * texture(u_texture, t_texture_coordinates);
+		frag_color = vec4(lighting, 1.0)  * u_color * texture(u_texture, t_texture_coordinates);
 	}else{
-		frag_color = vec4(result, 1.0) * u_color;
+		frag_color = vec4(lighting, 1.0) * u_color;
 	}
+
+	entity_id = u_entity_id;
 }

@@ -80,14 +80,14 @@ namespace Phoenix::Component{
 		Phoenix::PerspectiveCamera camera;
 
 		PerspectiveCamera(float fov, float aspect_ratio, float near, float far)
-			: camera(fov, aspect_ratio, near, far) {}
+			: camera(fov, aspect_ratio, near, far) {};
 	};
 
 	struct OrbitalCamera{
 		Phoenix::OrbitalCamera camera;
 
 		OrbitalCamera(float fov, float aspect_ratio, float near, float far)
-			: camera(fov, aspect_ratio, near, far) {}
+			: camera(fov, aspect_ratio, near, far) {};
 	};
 
 
@@ -96,11 +96,11 @@ namespace Phoenix::Component{
 	//////////////////////////////////////////////////////////////////////
 	// rendering
 
-	struct SpriteRenderer{
+	struct Sprite{
 		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
 
-		SpriteRenderer() = default;
-		SpriteRenderer(const glm::vec4& _color)
+		Sprite() = default;
+		Sprite(const glm::vec4& _color)
 			: color(_color) {}
 	};
 

@@ -135,102 +135,123 @@ namespace Phoenix{
 					float current_mouse_x = editor->mouseX();
 					float current_mouse_y = editor->mouseY();
 
-					//////////////////////////////////////////////////////////////////////
-					// grab
-					if(current_state == SHP_State::Grab){
+					if(selection_context){
+						
 						float dx = current_mouse_x - _mouse_x;
 						float dy = current_mouse_y - _mouse_y;
 
-						OrbitalCamera& camera = editor->getScene()->camera;
-						glm::vec3 camera_rotation = camera.getRotation();
-						glm::vec3 camera_position = camera.getPosition();
+						if(!selection_context.hasComponent<Component::Sprite>()){
+							//////////////////////////////////////////////////////////////////////
+							// grab
+							if(current_state == SHP_State::Grab){
+								OrbitalCamera& camera = editor->getScene()->camera;
+								glm::vec3 camera_rotation = camera.getRotation();
+								glm::vec3 camera_position = camera.getPosition();
 
-						glm::vec3& position = selection_context.getComponent<Component::Transform>().position;
+								glm::vec3& position = selection_context.getComponent<Component::Transform>().position;
 
-						glm::vec3 position_dif = abs(camera_position - position);
-
-
-						float ammount = sqrt(
-							(position_dif.x * position_dif.x) + 
-							(position_dif.y * position_dif.y) + 
-							(position_dif.z * position_dif.z)
-						) * 0.0015f;
+								glm::vec3 position_dif = abs(camera_position - position);
 
 
-						position.z += dx * ammount * cos(camera_rotation.y) 							* _can_adjust_z;
-						position.x -= dx * ammount * sin(camera_rotation.y) 							* _can_adjust_x;
-
-						position.y -= dy * ammount * cos(camera_rotation.z) 							* _can_adjust_y;
-						position.x += dy * ammount * sin(camera_rotation.z) * cos(camera_rotation.y) 	* _can_adjust_x;
-						position.z += dy * ammount * sin(camera_rotation.z) * sin(camera_rotation.y) 	* _can_adjust_z;
-
-					//////////////////////////////////////////////////////////////////////
-					// rotate
-					}else if(current_state == SHP_State::Rotate){
-						float dx = current_mouse_x - _mouse_x;
-						float dy = current_mouse_y - _mouse_y;
-
-						OrbitalCamera& camera = editor->getScene()->camera;
-						glm::vec3 camera_rotation = camera.getRotation();
-						glm::vec3 camera_position = camera.getPosition();
-
-						glm::vec3 position = selection_context.getComponent<Component::Transform>().position;
-						glm::vec3& rotation = selection_context.getComponent<Component::Transform>().rotation;
-
-						glm::vec3 position_dif = abs(camera_position - position);
+								float ammount = sqrt(
+									(position_dif.x * position_dif.x) + 
+									(position_dif.y * position_dif.y) + 
+									(position_dif.z * position_dif.z)
+								) * 0.0015f;
 
 
-						float ammount = sqrt(
-							(position_dif.x * position_dif.x) + 
-							(position_dif.y * position_dif.y) + 
-							(position_dif.z * position_dif.z)
-						) * 0.0015f;
+								position.z += dx * ammount * cos(camera_rotation.y) 							* _can_adjust_z;
+								position.x -= dx * ammount * sin(camera_rotation.y) 							* _can_adjust_x;
+
+								position.y -= dy * ammount * cos(camera_rotation.z) 							* _can_adjust_y;
+								position.x += dy * ammount * sin(camera_rotation.z) * cos(camera_rotation.y) 	* _can_adjust_x;
+								position.z += dy * ammount * sin(camera_rotation.z) * sin(camera_rotation.y) 	* _can_adjust_z;
+
+							//////////////////////////////////////////////////////////////////////
+							// rotate
+							}else if(current_state == SHP_State::Rotate){
+								OrbitalCamera& camera = editor->getScene()->camera;
+								glm::vec3 camera_rotation = camera.getRotation();
+								glm::vec3 camera_position = camera.getPosition();
+
+								glm::vec3 position = selection_context.getComponent<Component::Transform>().position;
+								glm::vec3& rotation = selection_context.getComponent<Component::Transform>().rotation;
+
+								glm::vec3 position_dif = abs(camera_position - position);
+
+
+								float ammount = sqrt(
+									(position_dif.x * position_dif.x) + 
+									(position_dif.y * position_dif.y) + 
+									(position_dif.z * position_dif.z)
+								) * 0.0015f;
 
 
 
-						rotation.x -= dx * ammount * cos(camera_rotation.y) 	* _can_adjust_x;
-						rotation.y += dx * ammount * cos(camera_rotation.z) 	* _can_adjust_y;
+								rotation.x -= dx * ammount * cos(camera_rotation.y) 	* _can_adjust_x;
+								rotation.y += dx * ammount * cos(camera_rotation.z) 	* _can_adjust_y;
 
 
-						rotation.z += dy * ammount * cos(camera_rotation.y) 	* _can_adjust_z;
-						// rotation.y += dy * ammount * cos(camera_rotation.y) 	* _can_adjust_y;
-						// rotation.x -= dy * ammount * sin(camera_rotation.y) 	* _can_adjust_x;
+								rotation.z += dy * ammount * cos(camera_rotation.y) 	* _can_adjust_z;
+								// rotation.y += dy * ammount * cos(camera_rotation.y) 	* _can_adjust_y;
+								// rotation.x -= dy * ammount * sin(camera_rotation.y) 	* _can_adjust_x;
 
+							}
+							//////////////////////////////////////////////////////////////////////
+							// scale
+							if(current_state == SHP_State::Scale){
+								OrbitalCamera& camera = editor->getScene()->camera;
+								glm::vec3 camera_rotation = camera.getRotation();
+								glm::vec3 camera_position = camera.getPosition();
+
+								glm::vec3 position = selection_context.getComponent<Component::Transform>().position;
+								glm::vec3& scale = selection_context.getComponent<Component::Transform>().scale;
+
+								glm::vec3 position_dif = abs(camera_position - position);
+
+
+								float ammount = sqrt(
+									(position_dif.x * position_dif.x) + 
+									(position_dif.y * position_dif.y) + 
+									(position_dif.z * position_dif.z)
+								) * 0.0015f;
+
+
+								scale.z += dx * ammount * cos(camera_rotation.y) 							* _can_adjust_z;
+								scale.x -= dx * ammount * sin(camera_rotation.y) 							* _can_adjust_x;
+
+								scale.y -= dy * ammount * cos(camera_rotation.z) 							* _can_adjust_y;
+								scale.x += dy * ammount * sin(camera_rotation.z) * cos(camera_rotation.y) 	* _can_adjust_x;
+								scale.z += dy * ammount * sin(camera_rotation.z) * sin(camera_rotation.y) 	* _can_adjust_z;
+							}
+							
+						}else{
+							if(current_state == SHP_State::Grab){
+								glm::vec3& position = selection_context.getComponent<Component::Transform>().position;
+
+								glm::vec2 viewport_size = static_cast<Editor*>(editor)->renderer_ImGui.getViewportSize();
+
+								position.x += dx / viewport_size.x * 2 		* _can_adjust_x;
+								position.y -= dy / viewport_size.y * 2 		* _can_adjust_y;
+
+							}else if(current_state == SHP_State::Rotate){
+								glm::vec3& rotation = selection_context.getComponent<Component::Transform>().rotation;
+
+								glm::vec2 viewport_size = static_cast<Editor*>(editor)->renderer_ImGui.getViewportSize();
+
+								rotation.z += dx / viewport_size.x * 8;
+								rotation.z -= dy / viewport_size.y * 8;
+								
+							}else if(current_state == SHP_State::Scale){
+								glm::vec3& scale = selection_context.getComponent<Component::Transform>().scale;
+
+								glm::vec2 viewport_size = static_cast<Editor*>(editor)->renderer_ImGui.getViewportSize();
+
+								scale.x += dx / viewport_size.x * 4 * _can_adjust_x;
+								scale.y += dy / viewport_size.y * 4 * _can_adjust_y;
+							}
+						}
 					}
-					//////////////////////////////////////////////////////////////////////
-					// scale
-					if(current_state == SHP_State::Scale){
-						float dx = current_mouse_x - _mouse_x;
-						float dy = current_mouse_y - _mouse_y;
-
-						OrbitalCamera& camera = editor->getScene()->camera;
-						glm::vec3 camera_rotation = camera.getRotation();
-						glm::vec3 camera_position = camera.getPosition();
-
-						glm::vec3 position = selection_context.getComponent<Component::Transform>().position;
-						glm::vec3& scale = selection_context.getComponent<Component::Transform>().scale;
-
-						glm::vec3 position_dif = abs(camera_position - position);
-
-
-						float ammount = sqrt(
-							(position_dif.x * position_dif.x) + 
-							(position_dif.y * position_dif.y) + 
-							(position_dif.z * position_dif.z)
-						) * 0.0015f;
-
-
-						scale.z += dx * ammount * cos(camera_rotation.y) 							* _can_adjust_z;
-						scale.x -= dx * ammount * sin(camera_rotation.y) 							* _can_adjust_x;
-
-						scale.y -= dy * ammount * cos(camera_rotation.z) 							* _can_adjust_y;
-						scale.x += dy * ammount * sin(camera_rotation.z) * cos(camera_rotation.y) 	* _can_adjust_x;
-						scale.z += dy * ammount * sin(camera_rotation.z) * sin(camera_rotation.y) 	* _can_adjust_z;
-
-					//////////////////////////////////////////////////////////////////////
-					// rotate
-					}
-
 
 					_mouse_x = current_mouse_x;
 					_mouse_y = current_mouse_y;
@@ -572,7 +593,7 @@ namespace Phoenix{
 			bool has_orbital = selection_context.hasComponent<Component::OrbitalCamera>();
 			bool has_camera = has_perspective || has_orbital;
 
-			bool has_sprite = selection_context.hasComponent<Component::SpriteRenderer>();
+			bool has_sprite = selection_context.hasComponent<Component::Sprite>();
 			bool has_cube = selection_context.hasComponent<Component::Cube>();
 			bool has_plane = selection_context.hasComponent<Component::Plane>();
 			bool has_renderer = has_sprite || has_cube || has_plane;
@@ -624,8 +645,8 @@ namespace Phoenix{
 
 
 		    if(ImGui::BeginMenu("2D Render Objects", !has_renderer && !has_camera)){
-				if(ImGui::MenuItem("Sprite Renderer")){
-					selection_context.addComponent<Component::SpriteRenderer>();
+				if(ImGui::MenuItem("Sprite")){
+					selection_context.addComponent<Component::Sprite>();
 					if(!has_transform){
 						selection_context.addComponent<Component::Transform>(glm::vec3{0.0f, 0.0f, -1.0f}, glm::vec3{0.0f, 0.0f, 0.0f}, glm::vec3{1.0f, 1.0f, 1.0f});
 					}
@@ -733,8 +754,9 @@ namespace Phoenix{
 		});
 
 
-		draw_comonent<Component::SpriteRenderer>("Sprite Renderer", entity, [](auto& component){
-			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+		draw_comonent<Component::Sprite>("Sprite", entity, [](auto& component){
+			// ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+			imgui_draw_color_picker("Color", component.color);
 		});
 
 		draw_comonent<Component::Cube>("Cube", entity, [&](auto& component){

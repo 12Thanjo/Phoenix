@@ -17,7 +17,7 @@ namespace Phoenix{
 	}
 
 	void Renderer3D::init(){
-		_basic_shader = _asset_manager->loadShader("./assets/shaders/working.shader");
+		_basic_shader = _asset_manager->loadShader("./assets/shaders/basic3d.shader");
 	};
 
 
