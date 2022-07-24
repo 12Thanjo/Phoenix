@@ -13,27 +13,31 @@ namespace Phoenix{
 
 
 	void Renderer2D::init(){
-		_quad_shader = _asset_manager->loadShader("./assets/shaders/color.shader");
+		_quad_shader = _asset_manager->loadShader("./assets/shaders/basic2d.shader");
 	}
 
-	
-	void Renderer2D::drawQuad(glm::mat4& transform, glm::vec4& color, Camera& camera){
+	void Renderer2D::bind(){
 		_asset_manager->bindShader(_quad_shader);
+	}
 
+
+	void Renderer2D::draw_quad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color){
 		_asset_manager->uploadMat4(_quad_shader, "u_model", transform);
-		// _asset_manager->uploadMat4(_quad_shader, "u_view_projection", camera.getViewProjection());
 		_asset_manager->uploadFloat4(_quad_shader, "u_color", color);
 
+		_asset_manager->uploadInt(_quad_shader, "u_entity_id", entt_id);
+
 		
-		float verticies[] = {
-			-0.5f,  0.5f,
-			-0.5f, -0.5f,
-			 0.5f, -0.5f,
-			 0.5f,  0.5f,
+		static float verticies[] = {
+			// positions	 //text coords
+			-0.5f,  0.5f,	 0.0f,  1.0f,
+			-0.5f, -0.5f,	 0.0f,  0.0f,
+			 0.5f, -0.5f,	 1.0f,  0.0f,
+			 0.5f,  0.5f,	 1.0f,  1.0f,
 		};
 
 
-		uint32_t indicies[]{
+		static uint32_t indicies[] = {
 			0, 1, 2,
 			0, 2, 3
 		};
@@ -42,6 +46,7 @@ namespace Phoenix{
 		VertexArray va{};
 
 		VertexBuffer vb(verticies, sizeof(verticies));
+		vb.layout<float>(2);
 		vb.layout<float>(2);
 		va.addVertexBuffer(vb);
 
@@ -55,6 +60,30 @@ namespace Phoenix{
 		performanceMetrics.drawCalls += 1;
 		performanceMetrics.verticies += 4;
 		performanceMetrics.indicies  += 6;
+	}
+
+	
+	void Renderer2D::drawQuad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color){
+		_asset_manager->uploadInt(_quad_shader, "u_using_texture", 0);
+		draw_quad(entt_id, transform, color);
+	}
+
+
+	void Renderer2D::drawQuad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color, UUID& texture){
+		glm::vec4 color_output = color;
+
+		if(_asset_manager->hasTexture(texture)){
+			// use texture
+			_asset_manager->bindTexture(texture);
+			_asset_manager->uploadInt(_quad_shader, "u_texture", 3);
+			_asset_manager->uploadInt(_quad_shader, "u_using_texture", 1);
+		}else{
+			// texture not found
+			_asset_manager->uploadInt(_quad_shader, "u_using_texture", 0);
+			color_output = {1, 0, 1, 1};
+		}
+
+		draw_quad(entt_id, transform, color_output);
 	}
 
 

@@ -17,11 +17,14 @@ void main(){
 #version 450 core
 
 
-out vec4 frag_color;
+layout(location=0) out vec4 frag_color;
+layout(location=1) out int entity_id;
 
 uniform vec4 u_color;
+uniform int u_entity_id;
 
 
 void main(){
 	frag_color = u_color;
+	entity_id = u_entity_id;
 }

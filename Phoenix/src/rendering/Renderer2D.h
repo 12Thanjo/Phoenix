@@ -20,12 +20,20 @@ namespace Phoenix{
 			
 			void init();
 
-			void drawQuad(glm::mat4& transform, glm::vec4& color, Camera& camera);
+
+			void bind();
+
+			void drawQuad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color);
+			void drawQuad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color, UUID& texture);
 
 			void resetPerfMetrics();
 
 		public:
 			Renderer2DPerformanceMetrics performanceMetrics;
+
+		private:
+			void draw_quad(uint32_t entt_id, glm::mat4& transform, glm::vec4& color);
+
 			
 		private:
 			UUID _quad_shader;

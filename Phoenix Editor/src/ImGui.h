@@ -34,6 +34,7 @@ namespace Phoenix{
 
 			inline bool getMouseOverViewport() const { return _mouse_over_viewport;  };
 			inline int  getEntityIdMouseOver() const { return _mouse_over_entity_id; };
+			inline glm::vec2 getViewportSize() const { return _viewport_size; 		 };
 
 
 		public:

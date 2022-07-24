@@ -110,16 +110,12 @@ project "Phoenix"
 
 	filter "configurations:Debug"
 		defines "PH_DEBUG"
-		-- buildoptions "/MDd"
 		symbols "on"
 
 	filter "configurations:Release"
 		defines "PH_RELEASE"
-		-- buildoptions "/MD"
-		optimize "on"
-
-	filter { "system:windows", "configurations:Release" }
 	   buildoptions "/MT"
+		optimize "on"
 
 --------------------------------------------------------------------------------------------
 
@@ -176,17 +172,13 @@ project "Phoenix Runtime"
 
 	filter "configurations:Debug"
 		defines "PH_DEBUG"
-		-- buildoptions "/MDd"
 		symbols "on"
 
 	filter "configurations:Release"
 		defines "PH_RELEASE"
-		-- buildoptions "/MD"
 		optimize "on"
-
-	filter { "system:windows", "configurations:Release" }
+		kind "WindowedApp"
 	   buildoptions "/MT"
-
 
 --------------------------------------------------------------------------------------------
 
@@ -244,16 +236,15 @@ project "Phoenix Editor"
 
 	filter "configurations:Debug"
 		defines "PH_DEBUG"
-		-- buildoptions "/MDd"
 		symbols "on"
 
 	filter "configurations:Release"
 		defines "PH_RELEASE"
-		-- buildoptions "/MD"
 		optimize "on"
+		kind "WindowedApp"
+		symbols "off"
+		buildoptions "/MT"
 
-	filter { "system:windows", "configurations:Release" }
-	   buildoptions "/MT"
 
 
 

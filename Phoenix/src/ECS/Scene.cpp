@@ -11,7 +11,8 @@
 #include "src/scripting/scripting.h"
 #include "src/Engine.h"
 
-
+#define PERF_START(name) Timer _timer_##name
+#define PERF_END(name) performanceMetrics.name = (float)_timer_##name.stop()
 
 namespace Phoenix{
 
@@ -113,22 +114,24 @@ namespace Phoenix{
 			camera.camera.setPosition(transform.position);
 			camera.camera.setRotation(transform.rotation);	
 		}
-
-
 	}
 
-	void Scene::render2D(Renderer2D* renderer_2d, Camera& camera)
-	{
-		auto sprite_group = _registry.group<Component::SpriteRenderer>(entt::get<Component::Transform>);
+	void Scene::render2D(Renderer2D* renderer_2d, Camera& camera){
+		renderer_2d->bind();
+		auto sprite_group = _registry.group<Component::Sprite>(entt::get<Component::Transform>);
 		for(auto entt_entity : sprite_group){
-			auto [transform, sprite] = sprite_group.get<Component::Transform, Component::SpriteRenderer>(entt_entity);
+			auto [transform, sprite] = sprite_group.get<Component::Transform, Component::Sprite>(entt_entity);
 			
-			renderer_2d->drawQuad(transform.transform, sprite.color, camera);
+			if(sprite.using_texture && sprite.has_texture){
+				renderer_2d->drawQuad((uint32_t)entt_entity, transform.transform, sprite.color, sprite.texture);
+			}else{
+				renderer_2d->drawQuad((uint32_t)entt_entity, transform.transform, sprite.color);
+			}
 		}
-		
 	}
 
 	void Scene::render3D(Renderer3D* renderer_3d, Camera& camera){
+		renderer_3d->bind();
 
 		auto cube_group = _registry.group<Component::Cube>(entt::get<Component::Transform>);
 		for(auto entt_entity : cube_group){
@@ -144,7 +147,6 @@ namespace Phoenix{
 			
 			renderer_3d->drawPlane((uint32_t)entt_entity, transform.transform, plane.material, static_cast<PerspectiveCamera&>(camera), sunlight);
 		}
-
 	}
 
 
@@ -156,12 +158,14 @@ namespace Phoenix{
 	}
 
 	void Scene::runScripts(Scripting& scripting, Engine* engine){
-		scripting.updateInit(engine);
+		PERF_START(update);
+			scripting.updateInit(engine);
 
-		_registry.view<Component::Script>().each([&](entt::entity entity_id, auto& component){
-			Entity entity {entity_id, this};
-			scripting.scriptControllerUpdate(component.path, entity, engine);
-		});
+			_registry.view<Component::Script>().each([&](entt::entity entity_id, auto& component){
+				Entity entity {entity_id, this};
+				scripting.scriptControllerUpdate(component.path, entity, engine);
+			});
+		PERF_END(update);
 	}
 
 
@@ -200,6 +204,14 @@ namespace Phoenix{
 	void Scene::setStartupCamera(UUID camera){
 		_startup_camera = camera;
 		_has_startup_camera = true;
+	}
+
+
+	//////////////////////////////////////////////////////////////////////
+	// perf metrics
+
+	void Scene::resetPerfMetrics(){
+		performanceMetrics.update = 0;
 	}
 
 }

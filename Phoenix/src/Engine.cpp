@@ -70,22 +70,20 @@ namespace Phoenix{
 
 		while(_running){
 			PERF_START(engineLoop);
+				_window->bind();
+
+				PERF_START(updateECS);
+					_scene->update();
+				PERF_END(updateECS);
+
 				PERF_START(renderLoop);
-					_window->bind();
+					glEnable(GL_DEPTH_TEST);
+					glClearColor(PH_COOL_GRAY_900);
+					glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-					PERF_START(updateECS);
-						_scene->update();
-					PERF_END(updateECS);
-					
-					PERF_START(draw);
-						glEnable(GL_DEPTH_TEST);
-						glClearColor(PH_COOL_GRAY_900);
-						glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+					render();
 
-						render();
-
-						_window->render();
-					PERF_END(draw);
+					_window->render();
 				PERF_END(renderLoop);
 
 				set_perf_metrics();
@@ -99,7 +97,7 @@ namespace Phoenix{
 
 	void Engine::render3D(){
 		// PERF_START(renderECS);
-		PERF_START(draw3D);
+		PERF_START(render3D);
 			Camera* camera;
 			if(_camera){
 				if(_camera.hasComponent<Component::PerspectiveCamera>()){
@@ -112,12 +110,12 @@ namespace Phoenix{
 			}
 
 			_scene->render3D(_renderer_3d, *camera);
-		PERF_END(draw3D);
+		PERF_END(render3D);
 	}
 
 
 	void Engine::render2D(){
-		PERF_START(draw2D);
+		PERF_START(render2D);
 			Camera* camera;
 			if(_camera){
 				if(_camera.hasComponent<Component::PerspectiveCamera>()){
@@ -130,7 +128,7 @@ namespace Phoenix{
 			}
 
 			_scene->render2D(_renderer_2d, *camera);
-		PERF_END(draw2D);
+		PERF_END(render2D);
 		// PERF_END(renderECS);
 	}
 
@@ -232,20 +230,23 @@ namespace Phoenix{
 	void Engine::clear_perf_metrics(){
 		_renderer_2d->resetPerfMetrics();
 		_renderer_3d->resetPerfMetrics();
+		_scene->resetPerfMetrics();
 	}
 
 
 	void Engine::set_perf_metrics(){
 		performanceMetrics.entites = _scene->performanceMetrics.entities;
 
+		performanceMetrics.drawCalls3D = _renderer_3d->performanceMetrics.drawCalls;
+		performanceMetrics.verticies3D = _renderer_3d->performanceMetrics.verticies;
+		performanceMetrics.indicies3D = _renderer_3d->performanceMetrics.indicies;
 
 		performanceMetrics.drawCalls2D = _renderer_2d->performanceMetrics.drawCalls;
 		performanceMetrics.verticies2D = _renderer_2d->performanceMetrics.verticies;
 		performanceMetrics.indicies2D = _renderer_2d->performanceMetrics.indicies;
 
-		performanceMetrics.drawCalls3D = _renderer_3d->performanceMetrics.drawCalls;
-		performanceMetrics.verticies3D = _renderer_3d->performanceMetrics.verticies;
-		performanceMetrics.indicies3D = _renderer_3d->performanceMetrics.indicies;
+
+		performanceMetrics.scripts = _scene->performanceMetrics.update;
 	}
 
 }

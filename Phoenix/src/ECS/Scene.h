@@ -19,6 +19,7 @@ namespace Phoenix{
 
 	struct ScenePerformanceMetrics{
 		unsigned int entities = 0;
+		float update = 0;
 	};
 	
 	
@@ -64,7 +65,7 @@ namespace Phoenix{
 			UUID getStartupCamera() const;
 			void setStartupCamera(UUID camera);
 
-
+			void resetPerfMetrics();
 		public:
 			ScenePerformanceMetrics performanceMetrics;
 			std::string name;

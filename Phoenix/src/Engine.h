@@ -21,24 +21,21 @@ namespace Phoenix{
 
 	struct EnginePerformanceMetrics{
 		float engineLoop = 0;
-
 		float renderLoop = 0;
-		float draw = 0;
 
-		float draw3D = 0;
 		float render3D = 0;
 		unsigned int drawCalls3D = 0;
 		unsigned int verticies3D = 0;
 		unsigned int indicies3D = 0;
 
-		float draw2D = 0;
+
 		float render2D = 0;
 		unsigned int drawCalls2D = 0;
 		unsigned int verticies2D = 0;
 		unsigned int indicies2D = 0;
 		
 		float updateECS = 0;
-		float renderECS = 0;
+		float scripts = 0;
 
 		unsigned int entites = 0;
 	};

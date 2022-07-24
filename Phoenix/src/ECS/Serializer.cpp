@@ -145,8 +145,8 @@ namespace Phoenix{
 				//////////////////////////////////////////////////////////////////////
 				// Rendering
 
-				if(entity.hasComponent<Component::SpriteRenderer>()){
-					serialize_vec4(serializer, "SpriteRenderer", entity.getComponent<Component::SpriteRenderer>().color);
+				if(entity.hasComponent<Component::Sprite>()){
+					serialize_vec4(serializer, "Sprite", entity.getComponent<Component::Sprite>().color);
 				}
 				
 				if(entity.hasComponent<Component::Cube>()){
@@ -306,9 +306,9 @@ namespace Phoenix{
 				//////////////////////////////////////////////////////////////////////
 				// rendering
 
-				if(node->has("SpriteRenderer")){
-					entity.addComponent<Component::SpriteRenderer>(
-						node->get("SpriteRenderer")->value<glm::vec4>()
+				if(node->has("Sprite")){
+					entity.addComponent<Component::Sprite>(
+						node->get("Sprite")->value<glm::vec4>()
 					);
 				}
 
