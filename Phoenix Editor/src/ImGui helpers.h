@@ -15,7 +15,7 @@ namespace Phoenix{
 	// internal state settings
 
 	void imgui_set_collumn_width(float width);
-	void imgui_set_collumn_width_default();
+	void imgui_set_collumn_width_default(); //60
 
 
 	//////////////////////////////////////////////////////////////////////

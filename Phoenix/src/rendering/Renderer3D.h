@@ -21,6 +21,7 @@ namespace Phoenix{
 			~Renderer3D() = default;
 		
 			void init();
+			void bind();
 
 			void drawCube(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);
 			void drawPlane(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);

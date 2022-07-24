@@ -754,9 +754,68 @@ namespace Phoenix{
 		});
 
 
-		draw_comonent<Component::Sprite>("Sprite", entity, [](auto& component){
-			// ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
+		draw_comonent<Component::Sprite>("Sprite", entity, [&, editor](auto& component){
+			// imgui_draw_color_picker("Color", component.color);
+
+			//////////////////////////////////////////////////////////////////////
+			// 
+
+
+			const char* list[] = { "None", "Image Texture" };
+			int using_texture = component.using_texture;
+			imgui_dropdown("Texture", using_texture, list, 2);
+
+			//////////////////////////////////////////////////////////////////////
+			// texture dropdown on-change
+			if(using_texture == 1 && !component.using_texture){
+				component.using_texture = true;
+			}else if(using_texture == 0 && component.using_texture){
+				component.using_texture = false;
+			}
+
+			//////////////////////////////////////////////////////////////////////
+			// texture button
+			if(using_texture == 1){
+				// texture drag UI
+				imgui_labled_item("Image", [&, editor](){
+					std::string texture;
+
+					if(component.has_texture){
+						texture = Files::relative(
+							static_cast<Editor*>(editor)->project.textures.getLeft(component.texture),
+							"\\textures\\"
+						);
+					}else{
+						texture = "[Drag Image...]";
+					}
+
+
+					if(imgui_button(texture)){/*do nothing right now*/}
+					if(ImGui::BeginDragDropTarget()){
+						if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset Browser Item")){
+							const wchar_t* path = (const wchar_t*)payload->Data;
+
+							std::filesystem::path filesystem_path(path);
+							if(filesystem_path.extension() == ".png"){
+								UUID texture_id = static_cast<Editor*>(editor)->project.textures.getRight(
+									Files::relative(filesystem_path.string(), static_cast<Editor*>(editor)->project.getRelativePath())
+								);
+
+								component.texture = texture_id;
+								component.has_texture = true;
+							}else{
+								PH_WARNING("Attempted to drag & load a non-texture");
+							}
+						}
+						ImGui::EndDragDropTarget();
+					}
+				});
+			}
+
+			imgui_separator(0.0f);
+
 			imgui_draw_color_picker("Color", component.color);
+
 		});
 
 		draw_comonent<Component::Cube>("Cube", entity, [&](auto& component){

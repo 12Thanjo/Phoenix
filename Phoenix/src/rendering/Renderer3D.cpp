@@ -22,10 +22,13 @@ namespace Phoenix{
 
 
 
-	void Renderer3D::basicMaterialUpload(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
+	void Renderer3D::bind(){
 		_asset_manager->bindShader(_basic_shader);
+	}
 
 
+
+	void Renderer3D::basicMaterialUpload(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight){
 		_asset_manager->uploadMat4(_basic_shader, "u_model", transform);
 		_asset_manager->uploadMat4(_basic_shader, "u_view_projection", camera.getViewProjection());
 		_asset_manager->uploadFloat3(_basic_shader, "u_camera_position", camera.getPosition());
@@ -64,7 +67,8 @@ namespace Phoenix{
 		basicMaterialUpload(entt_id, transform, material, camera, sunlight);
 
 		// vertex data, buffers, and attributes
-		float verticies[] = {
+		static float verticies[] = {
+			// positions				//text coords	// normals
 			-0.5f,  0.5f, -0.5f,		0.0f, 1.0f,     0.0f,  1.0f,  0.0f,
 			 0.5f,  0.5f, -0.5f,		1.0f, 1.0f,     0.0f,  1.0f,  0.0f,
 			 0.5f,  0.5f,  0.5f,		1.0f, 0.0f,     0.0f,  1.0f,  0.0f,
@@ -100,7 +104,7 @@ namespace Phoenix{
 
 		};
 
-		uint32_t indicies[] = {
+		static uint32_t indicies[] = {
 			 0,  1,  2,		 0,  2,  3,
 			 4,  5,  6,		 4,  6,  7,
 
@@ -117,7 +121,7 @@ namespace Phoenix{
 
 		VertexBuffer vb(verticies, sizeof(verticies));
 		vb.layout<float>(3); // positions
-		vb.layout<float>(2);	// texture coordinates
+		vb.layout<float>(2); // texture coordinates
 		vb.layout<float>(3); // normals
 		va.addVertexBuffer(vb);
 
@@ -145,14 +149,14 @@ namespace Phoenix{
 
 
 		// vertex data, buffers, and attributes
-		float verticies[] = {
+		static float verticies[] = {
 			-0.5f,  0.0f, -0.5f,		0.0f, 1.0f,     0.0f,  1.0f,  0.0f,
 			 0.5f,  0.0f, -0.5f,		1.0f, 1.0f,     0.0f,  1.0f,  0.0f,
 			 0.5f,  0.0f,  0.5f,		1.0f, 0.0f,     0.0f,  1.0f,  0.0f,
 			-0.5f,  0.0f,  0.5f,		0.0f, 0.0f,     0.0f,  1.0f,  0.0f,
 		};
 
-		uint32_t indicies[] = {
+		static uint32_t indicies[] = {
 			0,  1,  2,		 0,  2,  3,
 		};
 

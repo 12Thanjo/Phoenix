@@ -1,9 +1,12 @@
 # Changelog
 
-### 0.3.5
+### 0.3.8
+- 2D textures
+- optimizied 2D and 3D renderers
 - release build no longer brings up console
 - fixed 2D editor controls
 - renamed SpriteRenderer to Sprite
+- improved PerformancePanel
 
 ### 0.3.2
 - completely overhauled scripting

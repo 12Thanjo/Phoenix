@@ -99,6 +99,10 @@ namespace Phoenix::Component{
 	struct Sprite{
 		glm::vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
 
+		bool using_texture = false;
+		bool has_texture = false;
+		Phoenix::UUID texture;
+
 		Sprite() = default;
 		Sprite(const glm::vec4& _color)
 			: color(_color) {}
