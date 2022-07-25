@@ -7,5 +7,11 @@ project "jx"
 	-- cppdialect "C++20"
 	staticruntime "on"
 	
-	targetdir ("x64")
+	targetdir ("bin")
 	objdir ("bin-int")
+
+
+	postbuildcommands {
+		-- ('echo -------------$(SolutionDir)bin/bin/' .. outputdir .. '/%{prj.name}'),
+		('{COPYDIR} "$(SolutionDir)/Phoenix/lib/jx/x64" "$(SolutionDir)/Phoenix/lib/jx/bin"')
+	}

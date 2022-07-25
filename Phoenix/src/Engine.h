@@ -110,7 +110,7 @@ namespace Phoenix{
 			inline UUID loadShader(std::string filepath){ return _asset_manager->loadShader(filepath); };
 			inline void bindShader(UUID& uuid){ _asset_manager->bindShader(uuid); };
 
-			inline void loadTexture(std::string filepath){ _asset_manager->loadTexture(filepath); };
+			inline UUID loadTexture(std::string filepath){ return _asset_manager->loadTexture(filepath); };
 			inline void loadTexture(std::string filepath, UUID uuid){ _asset_manager->loadTexture(filepath, uuid); };
 			// inline void bindTexture(UUID& uuid){ _asset_manager->bindTexture(uuid); };
 

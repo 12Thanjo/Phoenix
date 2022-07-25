@@ -28,20 +28,17 @@ namespace Phoenix::Lights{
 
 
 	class Point{
-		private:
-	
 		public:
-			Point(glm::vec3 light_position) : position(light_position) {};
+			Point() = default;
 			~Point() = default;
 			
-			void upload(Phoenix::Shader& shader, int index);
+			void upload(AssetManager* asset_manager, UUID& shader, glm::vec3& position, int index);
 
 
 			glm::vec3 ambient = noon;
 			glm::vec3 diffuse = noon;
 			glm::vec3 specular = noon;
 
-			glm::vec3 position;
 			float strength = 1.0f;
 	};
 

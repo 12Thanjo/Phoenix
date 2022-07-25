@@ -14,14 +14,14 @@ namespace Phoenix::Lights{
 
 
 
-	void Point::upload(Phoenix::Shader& shader, int index){
+	void Point::upload(AssetManager* asset_manager, UUID& shader, glm::vec3& position, int index){
 		std::string index_str = std::to_string(index);
-		shader.uploadFloat3("u_point_lights[" + index_str  + "].ambient", ambient);
-		shader.uploadFloat3("u_point_lights[" + index_str  + "].diffuse", diffuse);
-		shader.uploadFloat3("u_point_lights[" + index_str  + "].specular", specular);
+		asset_manager->uploadFloat3(shader, "u_point_lights[" + index_str  + "].ambient", ambient);
+		asset_manager->uploadFloat3(shader, "u_point_lights[" + index_str  + "].diffuse", diffuse);
+		asset_manager->uploadFloat3(shader, "u_point_lights[" + index_str  + "].specular", specular);
 
-		shader.uploadFloat3("u_point_lights[" + index_str  + "].position", position);
-		shader.uploadFloat("u_point_lights[" + index_str  + "].strength", strength);
+		asset_manager->uploadFloat3(shader, "u_point_lights[" + index_str  + "].position", position);
+		asset_manager->uploadFloat(shader, "u_point_lights[" + index_str  + "].strength", strength);
 	}
 
 

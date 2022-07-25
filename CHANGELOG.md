@@ -1,5 +1,18 @@
 # Changelog
 
+### 0.4.8
+- point lights
+- cards
+<br/><br/>
+- optimizied 3D renderer
+- serialization/deserialization of sprite textures
+- added card to cameras (in editor)
+- updated gitignore
+- fixed premake build
+- streamlined serialization code
+- fixed bug causing release editor to sometimes crash when loading a new scene
+- prevent crash when using editor tool when object doesn't have transform
+
 ### 0.3.8
 - 2D textures
 - optimizied 2D and 3D renderers

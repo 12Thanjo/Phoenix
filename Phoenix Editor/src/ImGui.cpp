@@ -61,6 +61,13 @@ namespace Phoenix{
 
 
 
+
+		camera_icon = _editor->loadTexture("assets/icons/cards/camera.png");
+		orbital_camera_icon = _editor->loadTexture("assets/icons/cards/orbital camera.png");
+		lightbulb_icon = _editor->loadTexture("assets/icons/cards/lightbulb.png");
+
+
+
 		PH_INFO("ImGui Initialized");
 	}
 
@@ -271,9 +278,21 @@ cursor is hovered over them.
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
 				std::string veiwport_title;
 				if(_scene_state == SceneState::Edit){
-					veiwport_title = "Viewport";
-				}else{
+					if(static_cast<SceneHierarchyPanel*>(scene_hierarchy_panel)->current_state == SHP_State::Grab){
+						veiwport_title = "Viewport (grab)";
+					}else if(static_cast<SceneHierarchyPanel*>(scene_hierarchy_panel)->current_state == SHP_State::Rotate){
+						veiwport_title = "Viewport (rotate)";
+					}else if(static_cast<SceneHierarchyPanel*>(scene_hierarchy_panel)->current_state == SHP_State::Scale){
+						veiwport_title = "Viewport (scale)";
+					}else if(static_cast<SceneHierarchyPanel*>(scene_hierarchy_panel)->current_state == SHP_State::None){
+						veiwport_title = "Viewport";
+					}else{
+						veiwport_title = "Viewport [ERROR]";
+					}
+				}else if(_scene_state == SceneState::Play){
 					veiwport_title = "Viewport (play)";
+				}else{
+					veiwport_title = "Viewport [ERROR]";
 				}
 				imgui_begin("viewport", veiwport_title);
 					// check if viewport resized
@@ -510,12 +529,28 @@ cursor is hovered over them.
 
 	void RendererImGui::open_scene(const std::string& filepath){
 		_editor->clearScene();
+		static_cast<SceneHierarchyPanel*>(scene_hierarchy_panel)->current_state = SHP_State::None;
+		static_cast<SceneHierarchyPanel*>(scene_hierarchy_panel)->selection_context = {};
 
 
 		std::string deserialize = _editor->deserialize(filepath);
 		if(deserialize.empty()){
 			_open_scene = filepath;
 			_just_opened = true;
+
+			//////////////////////////////////////////////////////////////////////
+			// adding cards
+			_editor->getScene()->each<Component::PerspectiveCamera>([&](Entity entity, Component::PerspectiveCamera& camera){
+				entity.addComponent<Component::Card>(camera_icon).scale = {0.4f, 0.4f};
+			});
+
+			_editor->getScene()->each<Component::OrbitalCamera>([&](Entity entity, Component::OrbitalCamera& camera){
+				entity.addComponent<Component::Card>(orbital_camera_icon).scale = {0.4f, 0.4f};
+			});
+
+			_editor->getScene()->each<Component::PointLight>([&](Entity entity, Component::PointLight& camera){
+				entity.addComponent<Component::Card>(lightbulb_icon).scale = {0.4f, 0.4f};
+			});
 
 			PH_LOG("Opened Scene: " << _open_scene);
 		}else{

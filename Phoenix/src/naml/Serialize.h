@@ -14,6 +14,8 @@ namespace Phoenix{
 			void keyValue(std::string key, float value);
 			void keyValue(std::string key, bool value);
 			void keyValue(std::string key, const UUID& value);
+			void keyValue(std::string key, const glm::vec3& value);
+			void keyValue(std::string key, const glm::vec4& value);
 
 			// group
 			void beginGroup(std::string key);

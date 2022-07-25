@@ -258,7 +258,7 @@ namespace Phoenix{
 				}
 				break;
 			case GRAB_EVENT:
-				if(selection_context){
+				if(selection_context && selection_context.hasComponent<Component::Transform>()){
 					if(current_state == SHP_State::Grab){
 						finish_tool();
 					}else{
@@ -269,7 +269,7 @@ namespace Phoenix{
 				}
 				break;
 			case ROTATE_EVENT:
-				if(selection_context){
+				if(selection_context && selection_context.hasComponent<Component::Transform>()){
 					if(current_state == SHP_State::Rotate){
 						finish_tool();
 					}else{
@@ -280,7 +280,9 @@ namespace Phoenix{
 				}
 				break;
 			case SCALE_EVENT:
-				if(selection_context){
+				if(selection_context && selection_context.hasComponent<Component::Transform>()
+					&& !selection_context.hasComponent<Component::PerspectiveCamera>() && !selection_context.hasComponent<Component::OrbitalCamera>()
+				){
 					if(current_state == SHP_State::Scale){
 						finish_tool();
 					}else{
@@ -368,11 +370,8 @@ namespace Phoenix{
 	}
 
 
-
-
-
-	template<typename T, typename UIFuncton>
-	static void draw_comonent(const std::string& name, Entity entity, UIFuncton ui_function){
+	template<typename T, typename UIFunction>
+	static void draw_comonent(const std::string& name, Entity entity, UIFunction ui_function, std::function<void()> remove_function){
 		
 		if(entity.hasComponent<T>()){
 			imgui_set_collumn_width_default();
@@ -418,10 +417,18 @@ namespace Phoenix{
 
 			if(remove_component){
 				entity.removeComponent<T>();
+				remove_function();
 			}
 
 		}
 	}
+
+
+	template<typename T, typename UIFunction>
+	static void draw_comonent(const std::string& name, Entity entity, UIFunction ui_function){
+		draw_comonent<T>(name, entity, ui_function, [](){});
+	}
+
 
 	template<typename T>
 	static void draw_empty_comonent(const std::string& name, Entity entity){
@@ -588,6 +595,7 @@ namespace Phoenix{
 		if(ImGui::BeginPopup("AddComponent") || ImGui::BeginPopupContextWindow(0, 1, false)){
 			bool has_transform = selection_context.hasComponent<Component::Transform>();
 			bool has_script = selection_context.hasComponent<Component::Script>();
+			bool has_point_light = selection_context.hasComponent<Component::PointLight>();
 
 			bool has_perspective = selection_context.hasComponent<Component::PerspectiveCamera>();
 			bool has_orbital = selection_context.hasComponent<Component::OrbitalCamera>();
@@ -627,15 +635,29 @@ namespace Phoenix{
 				}
 			imgui_end_disable_menu_item();
 
+			imgui_begin_disable_menu_item(has_point_light, true);
+				if(ImGui::MenuItem("Point Light")){
+					selection_context.addComponent<Component::PointLight>();
+					selection_context.addComponent<Component::Card>(static_cast<Editor*>(editor)->renderer_ImGui.lightbulb_icon).scale = {0.6f, 0.6f};
+					if(!has_transform){
+						selection_context.addComponent<Component::Transform>();
+					}
+
+					ImGui::CloseCurrentPopup();
+				}
+			imgui_end_disable_menu_item();
+
 	
 		    if(ImGui::BeginMenu("Cameras", !has_camera && !has_renderer)){
 				if(ImGui::MenuItem("Perspective Camera")){
 					selection_context.addComponent<Component::PerspectiveCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+					selection_context.addComponent<Component::Card>(static_cast<Editor*>(editor)->renderer_ImGui.camera_icon);
 					if(!has_transform){
 						selection_context.addComponent<Component::Transform>();
 					}
 				}else if(ImGui::MenuItem("Orbital Camera", "", has_transform)){
 					selection_context.addComponent<Component::OrbitalCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+					selection_context.addComponent<Component::Card>(static_cast<Editor*>(editor)->renderer_ImGui.orbital_camera_icon);
 				}
 		        ImGui::EndMenu();
 		    }
@@ -751,6 +773,21 @@ namespace Phoenix{
 				}
 				ImGui::EndDragDropTarget();
 			}
+		});
+
+
+		draw_comonent<Component::PointLight>("Point Light", entity, [&](auto& component){
+			
+			imgui_draw_color_picker("Ambient", component.light.ambient);
+			imgui_draw_color_picker("Diffuse", component.light.diffuse);
+			imgui_draw_color_picker("Specular", component.light.specular);
+
+			imgui_separator();
+
+			imgui_draw_float_control("Strength", component.light.strength, 0.01f);
+
+		}, [&](){
+			entity.removeComponent<Component::Card>();
 		});
 
 
@@ -871,6 +908,8 @@ namespace Phoenix{
 				editor->setCamera({});
 			}
 
+		}, [&](){
+			entity.removeComponent<Component::Card>();
 		});
 
 
@@ -929,6 +968,8 @@ namespace Phoenix{
 				editor->setCamera({});
 			}
 
+		}, [&](){
+			entity.removeComponent<Component::Card>();
 		});
 
 	}

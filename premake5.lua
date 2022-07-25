@@ -88,11 +88,13 @@ project "Phoenix"
 		"Phoenix/lib/Glad/inlcude/glad",
 	}
 
+
 	links{
 		"GLFW",
 		"Glad",
 		-- "lemon",
 		-- "ImGui",
+		"Phoenix/lib/jx/x64/jx.lib",
 		"jx",
 		-- "NodeJS",
 		"opengl32.lib",

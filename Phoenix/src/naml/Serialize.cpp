@@ -49,6 +49,25 @@ namespace Phoenix{
 		_text << "-" << key << ": " << std::to_string(value);
 	}
 
+	void NAML_S::keyValue(std::string key, const glm::vec3& value){
+		// _text << "-" << key << ": " << std::to_string(value);
+		beginList(key);
+			addToList(value.x);
+			addToList(value.y);
+			addToList(value.z);
+		endList();
+	}
+
+	void NAML_S::keyValue(std::string key, const glm::vec4& value){
+		// _text << "-" << key << ": " << std::to_string(value);
+		beginList(key);
+			addToList(value.x);
+			addToList(value.y);
+			addToList(value.z);
+			addToList(value.w);
+		endList();
+	}
+
 	/////////////////////////////////////////////////////////
 	// group
 	void NAML_S::beginGroup(std::string key){

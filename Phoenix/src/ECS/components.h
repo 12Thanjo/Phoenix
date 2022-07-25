@@ -1,8 +1,11 @@
 #pragma once
 
-#include "src/render objects/cameras.h"
+
 #include "core/UUID.h"
 #include "Entity.h"
+
+#include "src/render objects/cameras.h"
+#include "src/render objects/lights.h"
 
 #include "src/scripting/scripting.h"
 
@@ -119,12 +122,31 @@ namespace Phoenix::Component{
 		Phoenix::UUID save_texture;
 
 		Material() = default;
-		Material(const BasicMaterial& _material)
-			: material(_material) {}
+		Material(const BasicMaterial& mat)
+			: material(mat) {}
 	};
 
 
 	struct Cube : public Material{};
 	struct Plane : public Material{};
+
+
+
+	struct Card{
+		Phoenix::UUID texture;
+		glm::vec2 scale{1.0f, 1.0f};
+		
+		Card() = default;
+		Card(const Phoenix::UUID& uuid) 
+			: texture(uuid) {};
+	};
+
+
+
+	struct PointLight{
+		Lights::Point light;
+		
+		PointLight() = default;
+	};
 	
 }
