@@ -1,9 +1,10 @@
 # Changelog
 
-### 0.3.11
+### 0.3.12
 - cards
 - optimizied 3D renderer
 - serialization sprite textures
+- removed desktop.ini
 
 ### 0.3.8
 - 2D textures
