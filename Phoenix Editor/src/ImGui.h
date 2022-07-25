@@ -39,6 +39,8 @@ namespace Phoenix{
 
 		public:
 			Panel* scene_hierarchy_panel;
+			UUID camera_icon;
+			UUID orbital_camera_icon;
 		
 
 		private:
@@ -64,7 +66,6 @@ namespace Phoenix{
 			};
 
 			SceneState _scene_state = SceneState::Edit;
-
 	};
 
 }

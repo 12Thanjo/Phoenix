@@ -129,7 +129,6 @@ namespace Phoenix{
 		// y: yaw
 		// z: pitch
 
-
 		rotation.x = fmod(rotation.x, 6.283185307179586f);
 		rotation.y = fmod(rotation.y, 6.283185307179586f);
 		rotation.z = fmod(rotation.z, 6.283185307179586f);
@@ -198,6 +197,7 @@ namespace Phoenix{
 
 		_rotation.z = _phi - (3.14f*0.5f);
 		_rotation.y = _theta - 3.14f;
+
 
 		calculate_view();
 		setRotation(_rotation);

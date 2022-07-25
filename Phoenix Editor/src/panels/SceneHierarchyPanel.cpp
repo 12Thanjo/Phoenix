@@ -368,11 +368,8 @@ namespace Phoenix{
 	}
 
 
-
-
-
-	template<typename T, typename UIFuncton>
-	static void draw_comonent(const std::string& name, Entity entity, UIFuncton ui_function){
+	template<typename T, typename UIFunction>
+	static void draw_comonent(const std::string& name, Entity entity, UIFunction ui_function, std::function<void()> remove_function){
 		
 		if(entity.hasComponent<T>()){
 			imgui_set_collumn_width_default();
@@ -418,10 +415,18 @@ namespace Phoenix{
 
 			if(remove_component){
 				entity.removeComponent<T>();
+				remove_function();
 			}
 
 		}
 	}
+
+
+	template<typename T, typename UIFunction>
+	static void draw_comonent(const std::string& name, Entity entity, UIFunction ui_function){
+		draw_comonent<T>(name, entity, ui_function, [](){});
+	}
+
 
 	template<typename T>
 	static void draw_empty_comonent(const std::string& name, Entity entity){
@@ -631,11 +636,13 @@ namespace Phoenix{
 		    if(ImGui::BeginMenu("Cameras", !has_camera && !has_renderer)){
 				if(ImGui::MenuItem("Perspective Camera")){
 					selection_context.addComponent<Component::PerspectiveCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+					selection_context.addComponent<Component::Card>(static_cast<Editor*>(editor)->renderer_ImGui.camera_icon);
 					if(!has_transform){
 						selection_context.addComponent<Component::Transform>();
 					}
 				}else if(ImGui::MenuItem("Orbital Camera", "", has_transform)){
 					selection_context.addComponent<Component::OrbitalCamera>(glm::radians(65.0f), 16/9.0f, 0.1f, 100.0f);
+					selection_context.addComponent<Component::Card>(static_cast<Editor*>(editor)->renderer_ImGui.orbital_camera_icon);
 				}
 		        ImGui::EndMenu();
 		    }
@@ -871,6 +878,8 @@ namespace Phoenix{
 				editor->setCamera({});
 			}
 
+		}, [&](){
+			entity.removeComponent<Component::Card>();
 		});
 
 
@@ -929,6 +938,8 @@ namespace Phoenix{
 				editor->setCamera({});
 			}
 
+		}, [&](){
+			entity.removeComponent<Component::Card>();
 		});
 
 	}

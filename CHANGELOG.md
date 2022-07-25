@@ -1,5 +1,10 @@
 # Changelog
 
+### 0.3.11
+- cards
+- optimizied 3D renderer
+- serialization sprite textures
+
 ### 0.3.8
 - 2D textures
 - optimizied 2D and 3D renderers

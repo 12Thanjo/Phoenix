@@ -146,7 +146,13 @@ namespace Phoenix{
 				// Rendering
 
 				if(entity.hasComponent<Component::Sprite>()){
-					serialize_vec4(serializer, "Sprite", entity.getComponent<Component::Sprite>().color);
+					serializer.beginGroup("Sprite");
+						Component::Sprite& sprite = entity.getComponent<Component::Sprite>();
+						serialize_vec4(serializer, "color", sprite.color);
+						if(sprite.using_texture && sprite.has_texture){
+							serializer.keyValue("texture", sprite.texture);
+						}
+					serializer.endGroup();
 				}
 				
 				if(entity.hasComponent<Component::Cube>()){
@@ -307,9 +313,16 @@ namespace Phoenix{
 				// rendering
 
 				if(node->has("Sprite")){
-					entity.addComponent<Component::Sprite>(
-						node->get("Sprite")->value<glm::vec4>()
+					NAML_Node* sprite_node = node->get("Sprite");
+					Component::Sprite& sprite = entity.addComponent<Component::Sprite>(
+						sprite_node->get("color")->value<glm::vec4>()
 					);
+
+					if(sprite_node->has("texture")){
+						sprite.texture = sprite_node->get("texture")->value<UUID>();
+						sprite.using_texture = true;
+						sprite.has_texture = true;
+					}
 				}
 
 				if(node->has("Cube")){

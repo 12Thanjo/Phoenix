@@ -131,21 +131,62 @@ namespace Phoenix{
 	}
 
 	void Scene::render3D(Renderer3D* renderer_3d, Camera& camera){
-		renderer_3d->bind();
+		renderer_3d->bindBasic(static_cast<PerspectiveCamera&>(camera), sunlight);
 
+		//////////////////////////////////////////////////////////////////////
+		// cube
 		auto cube_group = _registry.group<Component::Cube>(entt::get<Component::Transform>);
 		for(auto entt_entity : cube_group){
 			auto [transform, cube] = cube_group.get<Component::Transform, Component::Cube>(entt_entity);
 			
-			renderer_3d->drawCube((uint32_t)entt_entity, transform.transform, cube.material, static_cast<PerspectiveCamera&>(camera), sunlight);
+			renderer_3d->drawCube((uint32_t)entt_entity, transform.transform, cube.material);
 		}
 
-
+		//////////////////////////////////////////////////////////////////////
+		// plane
 		auto plane_group = _registry.group<Component::Plane>(entt::get<Component::Transform>);
 		for(auto entt_entity : plane_group){
 			auto [transform, plane] = plane_group.get<Component::Transform, Component::Plane>(entt_entity);
 			
-			renderer_3d->drawPlane((uint32_t)entt_entity, transform.transform, plane.material, static_cast<PerspectiveCamera&>(camera), sunlight);
+			renderer_3d->drawPlane((uint32_t)entt_entity, transform.transform, plane.material);
+		}
+
+		//////////////////////////////////////////////////////////////////////
+		// cards
+		renderer_3d->bindCard(static_cast<PerspectiveCamera&>(camera));
+
+		auto card_group = _registry.group<Component::Card>(entt::get<Component::Transform>);
+		for(auto entt_entity : card_group){
+			auto [card, transform] = card_group.get<Component::Card, Component::Transform>(entt_entity);
+
+			glm::mat4 card_transform = glm::translate(glm::mat4(1.0f), transform.position);
+
+			glm::vec3 rotation = static_cast<PerspectiveCamera&>(camera).getRotation();
+
+			// card_transform = glm::rotate(card_transform, rotation.x, {1, 0, 0});
+			card_transform = glm::rotate(card_transform, rotation.y + 1.5708f, {0, -1, 0});
+			card_transform = glm::rotate(card_transform, rotation.z + 1.5708f, {1, 0, 0});
+
+			card_transform = glm::scale(card_transform, glm::vec3(card.scale.x, 1.0f, card.scale.y));
+
+			renderer_3d->drawCard((uint32_t)entt_entity, card_transform, card.texture);
+		}
+
+		auto orbital_card_group = _registry.group<Component::OrbitalCamera>(entt::get<Component::Card>);
+		for(auto entt_entity : orbital_card_group){
+			auto [card, orbital_camera] = orbital_card_group.get<Component::Card, Component::OrbitalCamera>(entt_entity);
+
+			glm::mat4 card_transform = glm::translate(glm::mat4(1.0f), orbital_camera.camera.getPosition());
+
+			glm::vec3 rotation = static_cast<PerspectiveCamera&>(camera).getRotation();
+
+			// card_transform = glm::rotate(card_transform, rotation.x, {1, 0, 0});
+			card_transform = glm::rotate(card_transform, rotation.y + 1.5708f, {0, -1, 0});
+			card_transform = glm::rotate(card_transform, rotation.z + 1.5708f, {1, 0, 0});
+
+			card_transform = glm::scale(card_transform, glm::vec3(card.scale.x, 1.0f, card.scale.y));
+
+			renderer_3d->drawCard((uint32_t)entt_entity, card_transform, card.texture);
 		}
 	}
 

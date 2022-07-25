@@ -61,6 +61,12 @@ namespace Phoenix{
 
 
 
+
+		camera_icon = _editor->loadTexture("assets/icons/cards/camera.png");
+		orbital_camera_icon = _editor->loadTexture("assets/icons/cards/orbital camera.png");
+
+
+
 		PH_INFO("ImGui Initialized");
 	}
 
@@ -516,6 +522,16 @@ cursor is hovered over them.
 		if(deserialize.empty()){
 			_open_scene = filepath;
 			_just_opened = true;
+
+			//////////////////////////////////////////////////////////////////////
+			// adding cards
+			_editor->getScene()->each<Component::PerspectiveCamera>([&](Entity entity, Component::PerspectiveCamera& camera){
+				entity.addComponent<Component::Card>(camera_icon).scale = {0.4f, 0.4f};
+			});
+
+			_editor->getScene()->each<Component::OrbitalCamera>([&](Entity entity, Component::OrbitalCamera& camera){
+				entity.addComponent<Component::Card>(orbital_camera_icon).scale = {0.4f, 0.4f};
+			});
 
 			PH_LOG("Opened Scene: " << _open_scene);
 		}else{

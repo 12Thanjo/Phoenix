@@ -21,10 +21,13 @@ namespace Phoenix{
 			~Renderer3D() = default;
 		
 			void init();
-			void bind();
+			void bindBasic(PerspectiveCamera& camera, Lights::Directional& sunlight);
+			void bindCard(PerspectiveCamera& camera);
 
-			void drawCube(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);
-			void drawPlane(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);
+			void drawCube(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material);
+			void drawPlane(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material);
+
+			void drawCard(uint32_t entt_id, glm::mat4& transform, UUID& texture);
 
 			void resetPerfMetrics();
 
@@ -32,11 +35,14 @@ namespace Phoenix{
 			Renderer3DPerformanceMetrics performanceMetrics;
 
 		private:
-			void basicMaterialUpload(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material, PerspectiveCamera& camera, Lights::Directional& sunlight);
+			void basicMaterialUpload(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material);
 
 		private:
-			UUID _basic_shader;
 			AssetManager* _asset_manager;
+
+			UUID _basic_shader;
+			UUID _card_shader;
+
 	};
 
 }
