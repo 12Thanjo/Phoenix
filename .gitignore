@@ -11,3 +11,4 @@ bin-int/
 *.sln
 logo.psd
 desktop.ini
+**/desktop.ini
