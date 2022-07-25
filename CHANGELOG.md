@@ -1,17 +1,21 @@
-# Changelog
+# Phoenix Engine Changelog
+
+### 0.4.9
+- improved `CHANGELOG`
 
 ### 0.4.8
-- point lights
-- cards
-<br/><br/>
 - optimizied 3D renderer
 - serialization/deserialization of sprite textures
 - added card to cameras (in editor)
-- updated gitignore
+- updated `GITIGNORE`
 - fixed premake build
 - streamlined serialization code
 - fixed bug causing release editor to sometimes crash when loading a new scene
 - prevent crash when using editor tool when object doesn't have transform
+
+## v0.4
+- point lights
+- cards
 
 ### 0.3.8
 - 2D textures
@@ -22,14 +26,15 @@
 - improved PerformancePanel
 
 ### 0.3.2
+- fixed bug adding scripts in editor
+- cleaned up some code
+
+## v0.3
 - completely overhauled scripting
 	- better performance overall
 	- improved ease of use
 	- extended API
 	- wrote actual documentation
-<br/><br/>
-- fixed bug adding scripts in editor
-- cleaned up some code
 
 ### 0.2.22
 - allowed for editor camera movement with spacebar in addtion to the middle mouse button
@@ -56,13 +61,9 @@
 - fixed reset values in Scene panel
 
 ### 0.2.8
-- fixed readibility of CHANGELOG
+- fixed readibility of `CHANGELOG`
 
 ### 0.2.7
-- textures
-- added dropdown UI
-- improved color picking UI
-<br/><br/>
 - improved usability of UI collumns
 - more unified UI formatting
 - made Component::Cube and Component::Plane children of Component::Material
@@ -70,6 +71,11 @@
 - fixed startup popup (had incorrect title)
 - fix UUID showing and hiding when resizing Entity Properties Panel
 - removed separate holding of UUIDs in asset manager
+
+## v0.2
+- textures
+- added dropdown UI
+- improved color picking UI
 
 ### 0.1.11
 - removed logging to console when the editor checks if the runtime is running
@@ -85,5 +91,5 @@
 ### 0.1.4
 - added support for planes
 - made checking for runtime only when it is open (smoother feel in editor)
-- started changelog
-- removed debug messages from jxcore (meant to remove these in last update)
+- started CHANGELOG
+- removed debug messages from jxcore (meant to remove these in last `GITIGNORE`
