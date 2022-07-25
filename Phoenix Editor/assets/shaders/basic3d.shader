@@ -34,14 +34,14 @@ void main(){
 #version 450 core
 
 
-// struct PointLight{
-// 	vec3 ambient;
-// 	vec3 diffuse;
-// 	vec3 specular;
+struct PointLight{
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
 
-// 	vec3 position;
-// 	float strength;
-// };
+	vec3 position;
+	float strength;
+};
 
 
 struct DirectionalLight{
@@ -66,45 +66,45 @@ uniform int u_using_texture;
 uniform float u_shininess;
 uniform vec3 u_camera_position;
 
-// uniform int u_num_point_lights;
-// uniform PointLight u_point_lights[20];
+uniform int u_num_point_lights;
+uniform PointLight u_point_lights[16];
 uniform DirectionalLight u_directional_light;
 
 uniform int u_entity_id;
 
 
 
-// vec3 calculate_point_light(PointLight light){
-// 	// ambient
-// 	vec3 ambient = 0.1 * light.ambient;
+vec3 calculate_point_light(PointLight light){
+	// ambient
+	vec3 ambient = 0.1 * light.ambient;
 
-// 	// diffuse
-// 	vec3 norm = normalize(t_normal);
-// 	vec3 light_direction = normalize(light.position - t_fragment_position);
-// 	float diff = max(dot(norm, light_direction), 0.0);
-// 	vec3 diffuse = diff * light.diffuse;
-
-
-// 	// specular
-// 	vec3 view_direction = normalize(u_camera_position - t_fragment_position);
-// 	vec3 reflect_direction = reflect(-light_direction, norm);
-// 	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_shininess);
-// 	vec3 specular = 1.5 * spec * light.specular;
+	// diffuse
+	vec3 norm = normalize(t_normal);
+	vec3 light_direction = normalize(light.position - t_fragment_position);
+	float diff = max(dot(norm, light_direction), 0.0);
+	vec3 diffuse = diff * light.diffuse;
 
 
-// 	// attenuation
-// 	float distance = length(light.position - t_fragment_position);
-// 	float attenuation = 1.0 / ((1 / light.strength) + 0.09 * distance + 0.032 * (distance * distance));
+	// specular
+	vec3 view_direction = normalize(u_camera_position - t_fragment_position);
+	vec3 reflect_direction = reflect(-light_direction, norm);
+	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_shininess);
+	vec3 specular = 1.5 * spec * light.specular;
 
 
-// 	ambient  *= attenuation;
-// 	diffuse  *= attenuation;
-// 	specular *= attenuation;
+	// attenuation
+	float distance = length(light.position - t_fragment_position);
+	float attenuation = 1.0 / ((1 / light.strength) + 0.09 * distance + 0.032 * (distance * distance));
 
 
-// 	// total
-// 	return (ambient + diffuse + specular);
-// }
+	ambient  *= attenuation;
+	diffuse  *= attenuation;
+	specular *= attenuation;
+
+
+	// total
+	return (ambient + diffuse + specular);
+}
 
 
 vec3 calculate_directional_light(DirectionalLight light){
@@ -140,10 +140,9 @@ void main(){
 	vec3 lighting = calculate_directional_light(u_directional_light);
 
 
-	// for(int i = 0; i < u_num_point_lights; i += 1){
-	// 	lighting += calculate_point_light(u_point_lights[i]);
-	// }
-
+	for(int i = 0; i < u_num_point_lights; i += 1){
+		lighting += calculate_point_light(u_point_lights[i]);
+	}
 
 
 	if(u_using_texture == 1){

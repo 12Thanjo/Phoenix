@@ -29,6 +29,21 @@ namespace Phoenix{
 
 		_asset_manager->uploadMat4(_basic_shader, "u_view_projection", camera.getViewProjection());
 		_asset_manager->uploadFloat3(_basic_shader, "u_camera_position", camera.getPosition());
+
+		_light_index = 0;
+	}
+
+	void Renderer3D::bindPointLight(Lights::Point& light, glm::vec3& position){
+		if(_light_index < 16){
+			light.upload(_asset_manager, _basic_shader, position, _light_index);
+			_light_index += 1;
+		}else{
+			PH_WARNING("Maximum Point lights is 16");
+		}
+	}
+
+	void Renderer3D::finishBindBasic(){
+		_asset_manager->uploadInt(_basic_shader, "u_num_point_lights", _light_index + 1);
 	}
 
 

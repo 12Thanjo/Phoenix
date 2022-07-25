@@ -19,30 +19,12 @@
 
 namespace Phoenix{
 
-
-	static void serialize_vec3(NAML_S& serializer, const std::string& key, const glm::vec3& vec3){
-		serializer.beginList(key);
-			serializer.addToList(vec3.x);
-			serializer.addToList(vec3.y);
-			serializer.addToList(vec3.z);
-		serializer.endList();
-	}
-
-	static void serialize_vec4(NAML_S& serializer, const std::string& key, const glm::vec4& vec4){
-		serializer.beginList(key);
-			serializer.addToList(vec4.x);
-			serializer.addToList(vec4.y);
-			serializer.addToList(vec4.z);
-			serializer.addToList(vec4.w);
-		serializer.endList();
-	}
-
 	static void serialize_basic_material(NAML_S& serializer, BasicMaterial& material){
 		serializer.beginGroup("Basic Material");
 			if(material.usingTexture()){
 				serializer.keyValue("texture", material.getTexture());
 			}
-			serialize_vec4(serializer, "color", material.color);
+			serializer.keyValue("color", material.color);
 			serializer.keyValue("shininess", material.shininess);
 		serializer.endGroup();
 	}
@@ -73,7 +55,7 @@ namespace Phoenix{
 				serializer.addToList(editor_camera.getTheta());
 				serializer.addToList(editor_camera.getPhi());
 			serializer.endList();
-			serialize_vec3(serializer, "focalPoint", editor_camera.getFocalPoint());
+			serializer.keyValue("focalPoint", editor_camera.getFocalPoint());
 		serializer.endGroup();
 
 
@@ -82,8 +64,8 @@ namespace Phoenix{
 
 		serializer.beginGroup("Sunlight");
 			Lights::Directional& sunlight = scene->sunlight;
-			serialize_vec3(serializer, "direction", sunlight.direction);
-			serialize_vec3(serializer, "color", sunlight.color);
+			serializer.keyValue("direction", sunlight.direction);
+			serializer.keyValue("color", sunlight.color);
 			serializer.keyValue("strength", sunlight.strength);
 		serializer.endGroup();
 
@@ -101,14 +83,25 @@ namespace Phoenix{
 					auto& component = entity.getComponent<Component::Transform>();
 
 					serializer.beginGroup("Transform");
-						serialize_vec3(serializer, "position", component.position);
-						serialize_vec3(serializer, "rotation", component.rotation);
-						serialize_vec3(serializer, "scale", component.scale);
+						serializer.keyValue("position", component.position);
+						serializer.keyValue("rotation", component.rotation);
+						serializer.keyValue("scale", component.scale);
 					serializer.endGroup();
 				}
 
 				if(entity.hasComponent<Component::Script>()){
 					serializer.keyValue("Script", entity.getComponent<Component::Script>().path);
+				}
+
+				if(entity.hasComponent<Component::PointLight>()){
+					Lights::Point& light = entity.getComponent<Component::PointLight>().light;
+
+					serializer.beginGroup("PointLight");
+						serializer.keyValue("ambient", light.ambient);
+						serializer.keyValue("diffuse", light.diffuse);
+						serializer.keyValue("specular", light.specular);
+						serializer.keyValue("strength", light.strength);
+					serializer.endGroup();
 				}
 
 				//////////////////////////////////////////////////////////////////////
@@ -137,7 +130,7 @@ namespace Phoenix{
 							serializer.addToList(component.camera.getTheta());
 							serializer.addToList(component.camera.getPhi());
 						serializer.endList();
-						serialize_vec3(serializer, "focalPoint", component.camera.getFocalPoint());
+						serializer.keyValue("focalPoint", component.camera.getFocalPoint());
 					serializer.endGroup();
 				}
 
@@ -148,7 +141,7 @@ namespace Phoenix{
 				if(entity.hasComponent<Component::Sprite>()){
 					serializer.beginGroup("Sprite");
 						Component::Sprite& sprite = entity.getComponent<Component::Sprite>();
-						serialize_vec4(serializer, "color", sprite.color);
+						serializer.keyValue("color", sprite.color);
 						if(sprite.using_texture && sprite.has_texture){
 							serializer.keyValue("texture", sprite.texture);
 						}
@@ -273,6 +266,17 @@ namespace Phoenix{
 						scripting,
 						entity.getComponent<Component::UUID>().id
 					);
+				}
+
+				if(node->has("PointLight")){
+					Lights::Point& light = entity.addComponent<Component::PointLight>().light;
+
+					NAML_Node* light_node = node->get("PointLight");
+
+					light.ambient = light_node->get("ambient")->value<glm::vec3>();
+					light.diffuse = light_node->get("diffuse")->value<glm::vec3>();
+					light.specular = light_node->get("specular")->value<glm::vec3>();
+					light.strength = light_node->get("strength")->value<float>();
 				}
 
 				//////////////////////////////////////////////////////////////////////

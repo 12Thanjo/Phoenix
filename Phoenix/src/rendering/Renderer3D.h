@@ -4,6 +4,7 @@
 namespace Phoenix{
 	namespace Lights{
 		class Directional;
+		class Point;
 	};
 	class AssetManager;
 	class PerspectiveCamera;
@@ -22,6 +23,8 @@ namespace Phoenix{
 		
 			void init();
 			void bindBasic(PerspectiveCamera& camera, Lights::Directional& sunlight);
+			void bindPointLight(Lights::Point& light, glm::vec3& position);
+			void finishBindBasic();
 			void bindCard(PerspectiveCamera& camera);
 
 			void drawCube(uint32_t entt_id, glm::mat4& transform, BasicMaterial& material);
@@ -42,6 +45,8 @@ namespace Phoenix{
 
 			UUID _basic_shader;
 			UUID _card_shader;
+
+			int _light_index = 0;
 
 	};
 

@@ -1,8 +1,11 @@
 #pragma once
 
-#include "src/render objects/cameras.h"
+
 #include "core/UUID.h"
 #include "Entity.h"
+
+#include "src/render objects/cameras.h"
+#include "src/render objects/lights.h"
 
 #include "src/scripting/scripting.h"
 
@@ -136,6 +139,14 @@ namespace Phoenix::Component{
 		Card() = default;
 		Card(const Phoenix::UUID& uuid) 
 			: texture(uuid) {};
+	};
+
+
+
+	struct PointLight{
+		Lights::Point light;
+		
+		PointLight() = default;
 	};
 	
 }

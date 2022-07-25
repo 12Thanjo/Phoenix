@@ -134,6 +134,17 @@ namespace Phoenix{
 		renderer_3d->bindBasic(static_cast<PerspectiveCamera&>(camera), sunlight);
 
 		//////////////////////////////////////////////////////////////////////
+		// lights
+		auto point_light_group = _registry.group<Component::PointLight>(entt::get<Component::Transform>);
+		for(auto entt_entity : point_light_group){
+			auto [transform, point_light] = point_light_group.get<Component::Transform, Component::PointLight>(entt_entity);
+			
+			renderer_3d->bindPointLight(point_light.light, transform.position);
+		}
+
+		renderer_3d->finishBindBasic();
+
+		//////////////////////////////////////////////////////////////////////
 		// cube
 		auto cube_group = _registry.group<Component::Cube>(entt::get<Component::Transform>);
 		for(auto entt_entity : cube_group){
