@@ -43,7 +43,7 @@ namespace Phoenix{
 	}
 
 	void Renderer3D::finishBindBasic(){
-		_asset_manager->uploadInt(_basic_shader, "u_num_point_lights", _light_index + 1);
+		_asset_manager->uploadInt(_basic_shader, "u_num_point_lights", _light_index);
 	}
 
 
@@ -127,13 +127,13 @@ namespace Phoenix{
 
 		static uint32_t indicies[] = {
 			 0,  1,  2,		 0,  2,  3,
-			 4,  5,  6,		 4,  6,  7,
+			 4,  6,  5,		 4,  7,  6,
 
-			 8,  9, 10,		 9, 10, 11,
-			12, 13, 14,		13, 14, 15,
+			 8, 10,  9,		 9, 10, 11,
+			12, 13, 14,		13, 15, 14,
 
-			16, 17, 18,		17, 18, 19,
-			20, 21, 22,		21, 22, 23
+			16, 17, 18,		17, 19, 18,
+			20, 22, 21,		21, 22, 23
 		};
 
 

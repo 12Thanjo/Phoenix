@@ -786,6 +786,13 @@ namespace Phoenix{
 
 			imgui_draw_float_control("Strength", component.light.strength, 0.01f);
 
+			float range = component.light.getRange();
+			imgui_draw_float_control("Range", range, 1.0f);
+
+			if(range != component.light.getRange()){
+				component.light.setRange(range);
+			}
+
 		}, [&](){
 			entity.removeComponent<Component::Card>();
 		});
