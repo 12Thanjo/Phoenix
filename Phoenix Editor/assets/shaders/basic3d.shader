@@ -41,6 +41,9 @@ struct PointLight{
 
 	vec3 position;
 	float strength;
+
+	float linear;
+	float quadratic;
 };
 
 
@@ -94,16 +97,16 @@ vec3 calculate_point_light(PointLight light){
 
 	// attenuation
 	float distance = length(light.position - t_fragment_position);
-	float attenuation = 1.0 / ((1 / light.strength) + 0.09 * distance + 0.032 * (distance * distance));
+	float attenuation = 1.0 / ((1 / light.strength) + light.linear * distance + light.quadratic * (distance * distance));
 
 
-	ambient  *= attenuation;
-	diffuse  *= attenuation;
-	specular *= attenuation;
+	// ambient  *= attenuation;
+	// diffuse  *= attenuation;
+	// specular *= attenuation;
 
 
 	// total
-	return (ambient + diffuse + specular);
+	return attenuation * (ambient + diffuse + specular);
 }
 
 
@@ -119,18 +122,18 @@ vec3 calculate_directional_light(DirectionalLight light){
 
 
 	// specular
+	vec3 specular = vec3(0, 0, 0);
 	if(u_shininess > 1){
 		vec3 view_direction = normalize(u_camera_position - t_fragment_position);
 		vec3 reflect_direction = reflect(-light_direction, norm);
 		float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_shininess);
-		vec3 specular = 1.5 * spec * light.color;
-
-		// total
-		return light.strength * (ambient + diffuse + specular);
+		specular = 1.5 * spec * light.color;
 	}
 
+
+
 	// total
-	return light.strength * (ambient + diffuse);
+	return light.strength * (ambient + diffuse + specular);
 }
 
 

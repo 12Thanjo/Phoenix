@@ -19,6 +19,7 @@ namespace Phoenix::Lights{
 
 			void upload(AssetManager* asset_manager, UUID& shader);
 
+		public:
 			glm::vec3 color = noon;
 			glm::vec3 direction = glm::vec3(-1.0f, -1.0f, -1.0f);
 			float strength = 1.3f;
@@ -34,12 +35,23 @@ namespace Phoenix::Lights{
 			
 			void upload(AssetManager* asset_manager, UUID& shader, glm::vec3& position, int index);
 
+			void setRange(float range);
+			inline float getRange() const { return _range; };
+			inline float getLinear() const { return _linear; };
+			inline float getQuadratic() const { return _quadratic; };
 
+		public:
 			glm::vec3 ambient = noon;
 			glm::vec3 diffuse = noon;
 			glm::vec3 specular = noon;
 
 			float strength = 1.0f;
+		
+
+		private:
+			float _range = 50.0f;
+			float _linear = 0.090211f;
+			float _quadratic = 0.0306157f;
 	};
 
 }

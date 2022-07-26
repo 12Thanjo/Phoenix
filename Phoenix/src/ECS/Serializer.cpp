@@ -101,6 +101,7 @@ namespace Phoenix{
 						serializer.keyValue("diffuse", light.diffuse);
 						serializer.keyValue("specular", light.specular);
 						serializer.keyValue("strength", light.strength);
+						serializer.keyValue("range", light.getRange());
 					serializer.endGroup();
 				}
 
@@ -277,6 +278,7 @@ namespace Phoenix{
 					light.diffuse = light_node->get("diffuse")->value<glm::vec3>();
 					light.specular = light_node->get("specular")->value<glm::vec3>();
 					light.strength = light_node->get("strength")->value<float>();
+					light.setRange(light_node->get("range")->value<float>());
 				}
 
 				//////////////////////////////////////////////////////////////////////

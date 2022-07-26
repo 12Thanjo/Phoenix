@@ -43,7 +43,7 @@ namespace Phoenix{
 	}
 
 	void Renderer3D::finishBindBasic(){
-		_asset_manager->uploadInt(_basic_shader, "u_num_point_lights", _light_index + 1);
+		_asset_manager->uploadInt(_basic_shader, "u_num_point_lights", _light_index);
 	}
 
 
