@@ -1,5 +1,11 @@
 # Phoenix Engine Changelog
 
+### 0.4.11
+- backface culling
+
+### 0.4.10
+- very tiny performance improvement to Basic3D shader
+
 ### 0.4.9
 - improved `CHANGELOG`
 

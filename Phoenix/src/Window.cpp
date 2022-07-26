@@ -75,6 +75,7 @@ namespace Phoenix{
 
 
 		setVSync(_config.VSync);
+		setBackfaceCulling(_config.backfaceCulling);
 		captureMouse(_config.captureMouse);
 
 
@@ -123,6 +124,21 @@ namespace Phoenix{
 
 		_config.VSync = use;
 	}
+
+
+	void Window::setBackfaceCulling(bool use){
+		if(use){
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+			PH_INFO("(" << _config.name << ") Backface Culling {enabled}");
+		}else{
+			glDisable(GL_CULL_FACE);
+			PH_INFO("(" << _config.name << ") Backface Culling {disabled}");
+		};
+
+		_config.backfaceCulling = use;
+	}
+
 
 
 	void Window::captureMouse(bool capture){

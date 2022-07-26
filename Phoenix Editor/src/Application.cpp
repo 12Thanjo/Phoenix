@@ -197,6 +197,7 @@ namespace Phoenix{
 			win_config.name = "Phoenix Engine Editor";
 			win_config.eventCallback = event_callback;
 			win_config.VSync = config.VSync;
+			win_config.backfaceCulling = true;
 		createWindow(win_config);
 
 

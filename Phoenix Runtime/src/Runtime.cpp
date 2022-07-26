@@ -48,6 +48,8 @@ namespace Phoenix{
 			config.height = WINDOW_HEIGHT;
 			config.name = "Phoenix Runtime";
 			config.eventCallback = event_callback;
+			config.VSync = false;
+			config.backfaceCulling = true;
 		createWindow(config);
 
 

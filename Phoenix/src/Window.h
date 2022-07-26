@@ -16,6 +16,7 @@ namespace Phoenix{
 		std::function<void(Event&)> eventCallback;
 
 		bool VSync = false;
+		bool backfaceCulling = false;
 		bool captureMouse = false;
 
 		int GLFWVersionMajor = 4;
@@ -54,6 +55,7 @@ namespace Phoenix{
 
 			// setting ////////////
 			void setVSync(bool use);
+			void setBackfaceCulling(bool use);
 			void captureMouse(bool capture);
 
 			void maximize();
