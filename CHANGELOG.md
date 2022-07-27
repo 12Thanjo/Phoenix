@@ -1,5 +1,9 @@
 # Phoenix Engine Changelog
 
+### 0.4.14
+- fixed 3D shader in runtime
+- added opening and closing of panels (required changing ImGui internal code)
+
 ### 0.4.12
 - backface culling
 - added point light strength

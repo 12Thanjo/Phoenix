@@ -23,10 +23,7 @@ namespace Phoenix{
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-		io.ConfigFlags |= ImGuiDockNodeFlags_NoWindowMenuButton;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable | ImGuiConfigFlags_ViewportsEnable | ImGuiDockNodeFlags_NoWindowMenuButton;
 
 
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/Inconsolata/static/Inconsolata/Inconsolata-Medium.ttf", 12.0f);
@@ -35,15 +32,10 @@ namespace Phoenix{
 		ImGui::StyleColorsDark();
 
 		ImGuiStyle& style = ImGui::GetStyle();
-		if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable){
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 
 		set_dark_theme();
-
-		//////////////////////////////////////////////////////////////////////
-		// icons
 	}
 
 
@@ -51,13 +43,16 @@ namespace Phoenix{
 		ImGui_ImplGlfw_InitForOpenGL(_editor->getWindow()->getWindowContext(), true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 
+		#define CREATE_PANEL(var, class) var = static_cast<Panel*>(new class()); \
+			_panels.push_back(var);
 
-		scene_hierarchy_panel = static_cast<Panel*>(new SceneHierarchyPanel());
-		_panels.push_back(scene_hierarchy_panel);
-		
-		_panels.push_back(static_cast<Panel*>(new AssetBrowserPanel()));
-		_panels.push_back(static_cast<Panel*>(new PerformancePanel()));
-		_panels.push_back(static_cast<Panel*>(new ScenePanel()));
+		// scene_hierarchy_panel = static_cast<Panel*>(new SceneHierarchyPanel());
+		// _panels.push_back(scene_hierarchy_panel);
+		CREATE_PANEL(scene_hierarchy_panel, SceneHierarchyPanel);
+		CREATE_PANEL(asset_browser_panel, AssetBrowserPanel);
+		CREATE_PANEL(performance_panel, PerformancePanel);
+		CREATE_PANEL(scene_panel, ScenePanel);
+
 
 
 
@@ -114,8 +109,7 @@ namespace Phoenix{
 	void RendererImGui::render(FrameBuffer* render_buffer){
 		static bool dockspaceOpen = true;
 		if(dockspaceOpen){
-			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-			dockspace_flags |= ImGuiDockNodeFlags_NoWindowMenuButton; //get rid of window menu button
+			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_NoWindowMenuButton | ImGuiDockNodeFlags_NoCloseButton;
 
 			// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 			// because it would be confusing to have two docking targets within each others.
@@ -126,8 +120,8 @@ namespace Phoenix{
 		    ImGui::SetNextWindowViewport(viewport->ID);
 		    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-		    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-		    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+		    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+		    	 | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiTabBarFlags_NoCloseWithMiddleMouseButton;
 
 			// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
 			// and handle the pass-thru hole, so we ask Begin() to not render a background.
@@ -160,10 +154,15 @@ namespace Phoenix{
 
 			if(ImGui::BeginMenuBar()){
 				bool menu_item;
+
+				//if the menu item should have a hover description
 				#define HOVER_MENU_ITEM(title, msg, action) menu_item = ImGui::MenuItem(title, "..."); \
 					imgui_hover(msg);\
 					if(menu_item)action
+
+				//if the menu item should have a keyboard shortcut shown
 				#define MENU_ITEM(title, command, action) if(ImGui::MenuItem(title, command))action
+
 
 			    if(ImGui::BeginMenu("File")){
 			    	if(ImGui::MenuItem("New", "Ctrl+N")){
@@ -199,6 +198,33 @@ namespace Phoenix{
 			    	});
 			    	
 			    	ImGui::EndMenu();
+			    }
+
+
+			    if(ImGui::BeginMenu("Panels")){
+
+			    	#define PANELS_MENU_ITEM(text, T, var) imgui_begin_disable_menu_item(static_cast<T*>(var)->visible); \
+					    	MENU_ITEM(text, "", { \
+					    		static_cast<T*>(var)->visible = true; \
+					    	}); \
+				    	imgui_end_disable_menu_item();
+
+				    #define PANELS_MENU_ITEM_MULTI(text, T, var, visible_var) imgui_begin_disable_menu_item(static_cast<T*>(var)->visible_var); \
+					    	MENU_ITEM(text, "", { \
+					    		static_cast<T*>(var)->visible_var = true; \
+					    	}); \
+				    	imgui_end_disable_menu_item();
+			    	
+
+			    	PANELS_MENU_ITEM("Asset Browser", AssetBrowserPanel, asset_browser_panel );
+			    	PANELS_MENU_ITEM_MULTI("Entity Properties", SceneHierarchyPanel, scene_hierarchy_panel, entity_properties_visible);
+			    	PANELS_MENU_ITEM("Scene",ScenePanel, scene_panel);
+			    	PANELS_MENU_ITEM_MULTI("Scene Hierarchy", SceneHierarchyPanel, scene_hierarchy_panel, scene_hierarchy_visible);
+			    	PANELS_MENU_ITEM("Performance", PerformancePanel, performance_panel);
+
+
+
+			    	ImGui::EndMenu();	
 			    }
 
 

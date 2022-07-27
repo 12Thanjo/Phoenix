@@ -10,6 +10,9 @@ namespace Phoenix{
 			~PerformancePanel() = default;
 	
 			void render(Engine* editor) override;
+
+		public:
+			bool visible = true;
 			
 	};
 
