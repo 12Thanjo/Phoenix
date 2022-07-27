@@ -8249,7 +8249,7 @@ bool    ImGui::TabItemEx(ImGuiTabBar* tab_bar, const char* label, bool* p_open, 
     bool just_closed;
     bool text_clipped;
     TabItemLabelAndCloseButton(display_draw_list, bb, flags, tab_bar->FramePadding, label, id, close_button_id, tab_contents_visible, &just_closed, &text_clipped);
-    if (just_closed && p_open != NULL)
+    if (just_closed && p_open != NULL && !ImGui::IsMouseDown(ImGuiMouseButton_Middle))
     {
         *p_open = false;
         TabBarCloseTab(tab_bar, tab);
@@ -8389,7 +8389,19 @@ void ImGui::TabItemLabelAndCloseButton(ImDrawList* draw_list, const ImRect& bb, 
     bool close_button_visible = false;
     if (close_button_id != 0)
         if (is_contents_visible || bb.GetWidth() >= ImMax(button_sz, g.Style.TabMinWidthForCloseButton))
-            if (g.HoveredId == tab_id || g.HoveredId == close_button_id || g.ActiveId == tab_id || g.ActiveId == close_button_id)
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            //
+            //  I removed this line so that close buttons always show
+            //
+            //
+            //
+            // if (g.HoveredId == tab_id || g.HoveredId == close_button_id || g.ActiveId == tab_id || g.ActiveId == close_button_id)
+            //
+            //
+            //
+            //
+            //
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 close_button_visible = true;
     bool unsaved_marker_visible = (flags & ImGuiTabItemFlags_UnsavedDocument) != 0 && (button_pos.x + button_sz <= bb.Max.x);
 

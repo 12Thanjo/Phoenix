@@ -21,7 +21,12 @@ namespace Phoenix{
 	
 	void imgui_begin(std::string id, std::string name){
 		std::string imgui_id = name + "###" + id;
-		ImGui::Begin(imgui_id.c_str(), nullptr);
+		ImGui::Begin(imgui_id.c_str());
+	}
+
+	bool imgui_begin(std::string id, std::string name, bool* visible){
+		std::string imgui_id = name + "###" + id;
+		return ImGui::Begin(imgui_id.c_str(), visible);
 	}
 
 

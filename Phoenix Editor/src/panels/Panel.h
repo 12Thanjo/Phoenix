@@ -10,15 +10,12 @@
 namespace Phoenix{
 	
 	class Panel{
-		private:
-	
 		public:
 			Panel() = default;
 			~Panel() = default;
 
 			virtual void render(Engine* editor) = 0;
 			virtual void onEvent(Event& e, Engine* editor){};
-			
 	};
 
 }
