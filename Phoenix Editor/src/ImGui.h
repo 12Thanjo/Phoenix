@@ -43,9 +43,6 @@ namespace Phoenix{
 			UUID lightbulb_icon;
 		
 			Panel* scene_hierarchy_panel;
-			Panel* asset_browser_panel;
-			Panel* performance_panel;
-			Panel* scene_panel;
 
 		private:
 			void play_scene();

@@ -14,40 +14,36 @@ namespace Phoenix{
 
 	void SceneHierarchyPanel::render(Engine* editor){
 		// Scene Hierarchy Panel
-		if(scene_hierarchy_visible){
-			imgui_begin("2", "Scene Hierarchy", &scene_hierarchy_visible);
-				editor->getScene()->forEach([&](Entity entity){
-					draw_entity_node(editor, entity);
-				});
+		imgui_begin("2", "Scene Hierarchy");
+			editor->getScene()->forEach([&](Entity entity){
+				draw_entity_node(editor, entity);
+			});
 
 
-				if(ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()){
-					selection_context = {};
+			if(ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()){
+				selection_context = {};
+			}
+
+
+			if(ImGui::BeginPopupContextWindow(0, 1, false)){
+				if(ImGui::MenuItem("Create Empty Entity")){
+					editor->createEntity("Empty Entity");
 				}
 
-
-				if(ImGui::BeginPopupContextWindow(0, 1, false)){
-					if(ImGui::MenuItem("Create Empty Entity")){
-						editor->createEntity("Empty Entity");
-					}
-
-					ImGui::EndPopup();
-				}
-			ImGui::End();
-		}
+				ImGui::EndPopup();
+			}
+		ImGui::End();
 
 
 
 		// properties
-		if(entity_properties_visible){
-			imgui_begin("3", "Entity Properties", &entity_properties_visible);
-				if(selection_context){
-					draw_components(editor, selection_context);
-				}else{
-					ImGui::Text("No Entity Selected");
-				}
-			ImGui::End();
-		}
+		imgui_begin("3", "Entity Properties");
+			if(selection_context){
+				draw_components(editor, selection_context);
+			}else{
+				ImGui::Text("No Entity Selected");
+			}
+		ImGui::End();
 	}
 
 

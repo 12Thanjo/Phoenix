@@ -223,8 +223,3 @@ project "Phoenix Editor"
 		kind "WindowedApp"
 		symbols "off"
 		buildoptions "/MT"
-
-
-
-
-

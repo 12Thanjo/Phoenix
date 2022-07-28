@@ -13,9 +13,6 @@ namespace Phoenix{
 			~AssetBrowserPanel();
 	
 			void render(Engine* editor) override;
-
-		public:
-			bool visible = true;
 		
 		private:
 			std::filesystem::path _current_dir;
