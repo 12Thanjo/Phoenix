@@ -21,8 +21,7 @@ namespace Phoenix{
 	//////////////////////////////////////////////////////////////////////
 	// general
 	
-	void imgui_begin(std::string id, std::string name); //use this if panel should be uncloseablse
-	bool imgui_begin(std::string id, std::string name, bool* visible);
+	void imgui_begin(std::string id, std::string name);
 
 	void imgui_separator(float top_spacer = 5.0f);
 

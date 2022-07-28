@@ -21,12 +21,7 @@ namespace Phoenix{
 	
 	void imgui_begin(std::string id, std::string name){
 		std::string imgui_id = name + "###" + id;
-		ImGui::Begin(imgui_id.c_str());
-	}
-
-	bool imgui_begin(std::string id, std::string name, bool* visible){
-		std::string imgui_id = name + "###" + id;
-		return ImGui::Begin(imgui_id.c_str(), visible);
+		ImGui::Begin(imgui_id.c_str(), nullptr);
 	}
 
 
@@ -272,11 +267,11 @@ namespace Phoenix{
 
 
 	bool imgui_image_button(glID id, float width, float height, int padding){
-		return ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0}, padding);
+		return ImGui::ImageButton((ImTextureID)(uint64_t)id, {width, height}, {0, 1}, {1, 0}, padding);
 	}
 
 	bool imgui_image_button(Texture* texture, float width, float height, int padding){
-		return ImGui::ImageButton((ImTextureID)texture->getID(), {width, height}, {0, 1}, {1, 0}, padding);
+		return ImGui::ImageButton((ImTextureID)(uint64_t)texture->getID(), {width, height}, {0, 1}, {1, 0}, padding);
 	}
 
 

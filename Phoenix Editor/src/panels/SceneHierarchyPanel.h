@@ -30,9 +30,6 @@ namespace Phoenix{
 			Entity selection_context;
 			SHP_State current_state = SHP_State::None;
 
-			bool scene_hierarchy_visible = true;
-			bool entity_properties_visible = true;
-
 		private:
 			void draw_entity_node(Engine* editor, Entity& entity);
 			void draw_components(Engine* editor, Entity& entity);

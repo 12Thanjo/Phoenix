@@ -98,7 +98,7 @@ namespace Phoenix{
 				element.type,
 				GL_FALSE,
 				stride,
-				(const void*)offset
+				(const void*)(uint64_t)offset
 			);
 
 			offset += element.size;

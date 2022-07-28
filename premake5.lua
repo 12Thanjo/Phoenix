@@ -13,7 +13,7 @@ workspace "Phoenix"
 	}
 
 
-outputdir = "%{cfg.buildcfg}/%{cfg.system}"
+outputdir = "%{cfg.buildcfg}"
 
 IncludeDirs = {}
 IncludeDirs["GLFW"] = "Phoenix/lib/GLFW/include"
@@ -23,15 +23,13 @@ IncludeDirs["ImGui"] = "Phoenix/lib/ImGui"
 IncludeDirs["stb_image"] = "Phoenix/lib/stb_image"
 IncludeDirs["EnTT"] = "Phoenix/lib/EnTT"
 IncludeDirs["jx"] = "Phoenix/lib/jx"
--- IncludeDirs["NodeJS"] = "Phoenix/lib/nodejs/src"
--- IncludeDirs["lemon"] = "Phoenix/lib/lemon"
+
 
 include "Phoenix/lib/GLFW"
 include "Phoenix/lib/Glad"
 include "Phoenix/lib/ImGui"
 include "Phoenix/lib/jx"
--- include "Phoenix/lib/nodejs"
--- include "Phoenix/lib/lemon"
+
 
 project "Phoenix"
 	location "Phoenix"
@@ -46,11 +44,6 @@ project "Phoenix"
 
 	pchheader "ph_pch.h"
 	pchsource "Phoenix/ph_pch.cpp"
-
-	linkoptions{
-		"/NODEFAULTLIB:'LIBCMT'",
-		"/ignore:4006",
-	}
 
 
 	files{
@@ -77,13 +70,10 @@ project "Phoenix"
 
 		"%{IncludeDirs.GLFW}",
 		"%{IncludeDirs.Glad}",
-		-- "%{IncludeDirs.NodeJS}",
 		"%{IncludeDirs.glm}",
-		-- "%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.stb_image}",
 		"%{IncludeDirs.EnTT}",
 		"%{IncludeDirs.jx}",
-		-- "%{IncludeDirs.lemon}",
 
 		"Phoenix/lib/Glad/inlcude/glad",
 	}
@@ -92,11 +82,8 @@ project "Phoenix"
 	links{
 		"GLFW",
 		"Glad",
-		-- "lemon",
-		-- "ImGui",
 		"Phoenix/lib/jx/x64/jx.lib",
 		"jx",
-		-- "NodeJS",
 		"opengl32.lib",
 		"shlwapi.lib",
 	}
@@ -141,12 +128,10 @@ project "Phoenix Runtime"
 	includedirs{
 		"Phoenix",
 		"Phoenix/src",
-		-- "%{IncludeDirs.EnTT}",
 		"%{IncludeDirs.jx}",
 		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.Glad}",
 		"%{IncludeDirs.GLFW}",
-		-- "%{IncludeDirs.lemon}",
 	}
 
 
@@ -155,8 +140,6 @@ project "Phoenix Runtime"
 		"ImGui",
 		"GLFW",
 		"Glad",
-		-- "lemon",
-		-- "NodeJS",
 	}
 
 
@@ -168,7 +151,6 @@ project "Phoenix Runtime"
 		}
 
 		postbuildcommands {
-			-- ('echo -------------$(SolutionDir)bin/bin/' .. outputdir .. '/%{prj.name}'),
 			('{COPYDIR} "$(SolutionDir)/Phoenix/lib/jx/x64" "$(SolutionDir)bin/bin/' .. outputdir .. '/%{prj.name}"')
 		}
 
@@ -204,12 +186,10 @@ project "Phoenix Editor"
 	includedirs{
 		"Phoenix",
 		"Phoenix/src",
-		-- "%{IncludeDirs.EnTT}",
 		"%{IncludeDirs.jx}",
 		"%{IncludeDirs.ImGui}",
 		"%{IncludeDirs.Glad}",
 		"%{IncludeDirs.GLFW}",
-		-- "%{IncludeDirs.lemon}",
 	}
 
 
@@ -218,8 +198,6 @@ project "Phoenix Editor"
 		"ImGui",
 		"GLFW",
 		"Glad",
-		-- "lemon",
-		-- "NodeJS",
 	}
 
 
@@ -232,7 +210,6 @@ project "Phoenix Editor"
 		}
 
 		postbuildcommands {
-			-- ('echo -------------$(SolutionDir)%{cfg.targetdir.relpath}'),
 			('{COPYDIR} "$(SolutionDir)/Phoenix/lib/jx/x64" "$(SolutionDir)bin/bin/' .. outputdir .. '/%{prj.name}"')
 		}
 
@@ -246,8 +223,3 @@ project "Phoenix Editor"
 		kind "WindowedApp"
 		symbols "off"
 		buildoptions "/MT"
-
-
-
-
-

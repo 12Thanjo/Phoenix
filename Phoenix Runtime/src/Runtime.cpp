@@ -33,8 +33,8 @@ namespace Phoenix{
 					break;
 				case PH_WINDOW_RESIZE_EVENT:
 					resizeCameras(
-						static_cast<WindowResizeEvent&>(e).getWidth(),
-						static_cast<WindowResizeEvent&>(e).getHeight()
+						(float)static_cast<WindowResizeEvent&>(e).getWidth(),
+						(float)static_cast<WindowResizeEvent&>(e).getHeight()
 					);
 					break;
 			}

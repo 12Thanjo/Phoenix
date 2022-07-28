@@ -23,6 +23,7 @@ namespace Phoenix::Utils{
 						return std::get<0>(pair);
 					}
 				}
+				return A();
 			}
 
 			bool hasLeft(const A& index){
