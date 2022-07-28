@@ -86,7 +86,6 @@ namespace Phoenix{
 
 		draw_quad(entt_id, transform, color_output);
 	}
-	
 
 
 	void Renderer2D::resetPerfMetrics(){
