@@ -63,7 +63,6 @@ namespace Phoenix{
 
 	VertexArray::~VertexArray(){
 		glDeleteVertexArrays(1, &_id);
-
 	}
 
 

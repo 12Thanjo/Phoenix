@@ -53,6 +53,7 @@ namespace Phoenix{
 		IndexBuffer ib(indicies, sizeof(indicies));
 
 
+		
 		va.bind();
 		glDrawElements(GL_TRIANGLES, sizeof(indicies), GL_UNSIGNED_INT, 0);
 		va.unbind();
