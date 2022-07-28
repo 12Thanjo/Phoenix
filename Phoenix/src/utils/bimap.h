@@ -53,8 +53,10 @@ namespace Phoenix::Utils{
 				}
 			}
 			
+
 		private:
 			std::map<A, B> _map;
+			
 
 	};
 

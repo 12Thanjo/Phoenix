@@ -92,7 +92,7 @@ vec3 calculate_point_light(PointLight light){
 	vec3 view_direction = normalize(u_camera_position - t_fragment_position);
 	vec3 reflect_direction = reflect(-light_direction, norm);
 	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_shininess);
-	vec3 specular = 1.5 * spec * light.specular;
+	vec3 specular = 0.5 * spec * light.specular;
 
 
 	// attenuation
@@ -127,7 +127,7 @@ vec3 calculate_directional_light(DirectionalLight light){
 		vec3 view_direction = normalize(u_camera_position - t_fragment_position);
 		vec3 reflect_direction = reflect(-light_direction, norm);
 		float spec = pow(max(dot(view_direction, reflect_direction), 0.0), u_shininess);
-		specular = 1.5 * spec * light.color;
+		specular = 0.5 * spec * light.color;
 	}
 
 

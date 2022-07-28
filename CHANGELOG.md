@@ -1,8 +1,9 @@
 # Phoenix Engine Changelog
 
-### 0.4.18
-- updated premake
-- fixed a bunch of compiler warnings	
+### 0.4.19
+- fixed git versioning issue
+- cleaned up premake
+- fixed a bunch of compiler warnings
 - improved quality of lighting in 3d shader
 - fixed bug where sprites weren't showing
 
