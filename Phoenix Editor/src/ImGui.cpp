@@ -325,7 +325,7 @@ cursor is hovered over them.
 					ImVec2 content_region_avail = ImGui::GetContentRegionAvail();
 					if(content_region_avail.x != _viewport_size.x || content_region_avail.y != _viewport_size.y || _just_opened){
 						_viewport_size = {content_region_avail.x, content_region_avail.y};
-						render_buffer->resize(content_region_avail.x, content_region_avail.y);
+						render_buffer->resize((unsigned int)content_region_avail.x, (unsigned int)content_region_avail.y);
 						
 						_editor->getScene()->each<Component::PerspectiveCamera>([&](Entity entity, Component::PerspectiveCamera& component){
 							PerspectiveCamera& camera = component.camera;
@@ -346,7 +346,7 @@ cursor is hovered over them.
 
 					// draw from frame buffer
 					uint32_t texture_id = render_buffer->getColorAttachment(0);
-					ImGui::Image((void*)texture_id, ImVec2{content_region_avail.x, content_region_avail.y}, ImVec2{0,1}, ImVec2{1,0});
+					ImGui::Image((void*)(uint64_t)texture_id, ImVec2{content_region_avail.x, content_region_avail.y}, ImVec2{0,1}, ImVec2{1,0});
 
 					if(ImGui::BeginDragDropTarget()){
 						if(const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("Asset Browser Item")){
@@ -378,7 +378,7 @@ cursor is hovered over them.
 					int mouse_y = (int)(mouse_pos.y - viewport_pos.y - (viewport_size.y - _viewport_size.y));
 
 
-					_mouse_over_entity_id = render_buffer->readPixel(1, mouse_x, _viewport_size.y - mouse_y);
+					_mouse_over_entity_id = render_buffer->readPixel(1, mouse_x, (int)_viewport_size.y - mouse_y);
 					
 
 				ImGui::End();

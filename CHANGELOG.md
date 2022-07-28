@@ -1,5 +1,10 @@
 # Phoenix Engine Changelog
 
+### 0.4.17
+- fixed a bunch of compiler warnings
+- improved quality of lighting in 3d shader
+- fixed bug where sprites weren't showing
+
 ### 0.4.14
 - fixed 3D shader in runtime
 - added opening and closing of panels (required changing ImGui internal code)

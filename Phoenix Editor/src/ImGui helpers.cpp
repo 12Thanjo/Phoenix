@@ -272,11 +272,11 @@ namespace Phoenix{
 
 
 	bool imgui_image_button(glID id, float width, float height, int padding){
-		return ImGui::ImageButton((ImTextureID)id, {width, height}, {0, 1}, {1, 0}, padding);
+		return ImGui::ImageButton((ImTextureID)(uint64_t)id, {width, height}, {0, 1}, {1, 0}, padding);
 	}
 
 	bool imgui_image_button(Texture* texture, float width, float height, int padding){
-		return ImGui::ImageButton((ImTextureID)texture->getID(), {width, height}, {0, 1}, {1, 0}, padding);
+		return ImGui::ImageButton((ImTextureID)(uint64_t)texture->getID(), {width, height}, {0, 1}, {1, 0}, padding);
 	}
 
 

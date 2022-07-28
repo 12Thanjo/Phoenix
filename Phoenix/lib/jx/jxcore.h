@@ -298,7 +298,7 @@ namespace jxcore{
 
 		// set params
 		JX_SetInt32(&params[0], func);
-		JX_SetString(&params[1], script_id.c_str(), script_id.length());
+		JX_SetString(&params[1], script_id.c_str(), (const int32_t)script_id.length());
 		JX_SetInt32(&params[2], entt_id);
 
 		// run

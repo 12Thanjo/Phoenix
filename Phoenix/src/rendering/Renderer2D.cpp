@@ -38,8 +38,8 @@ namespace Phoenix{
 
 
 		static uint32_t indicies[] = {
-			0, 1, 2,
-			0, 2, 3
+			0, 2, 1,
+			0, 3, 2
 		};
 
 
@@ -51,6 +51,7 @@ namespace Phoenix{
 		va.addVertexBuffer(vb);
 
 		IndexBuffer ib(indicies, sizeof(indicies));
+
 
 		va.bind();
 		glDrawElements(GL_TRIANGLES, sizeof(indicies), GL_UNSIGNED_INT, 0);

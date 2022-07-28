@@ -13,7 +13,7 @@ workspace "Phoenix"
 	}
 
 
-outputdir = "%{cfg.buildcfg}/%{cfg.system}"
+outputdir = "%{cfg.buildcfg}"
 
 IncludeDirs = {}
 IncludeDirs["GLFW"] = "Phoenix/lib/GLFW/include"
@@ -46,11 +46,6 @@ project "Phoenix"
 
 	pchheader "ph_pch.h"
 	pchsource "Phoenix/ph_pch.cpp"
-
-	linkoptions{
-		"/NODEFAULTLIB:'LIBCMT'",
-		"/ignore:4006",
-	}
 
 
 	files{
