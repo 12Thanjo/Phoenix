@@ -19,6 +19,7 @@ project "Engine"
 		(lib.Evo),
 		(lib.GLFW),
 		(lib.glm),
+		(lib.PhysX),
 		(lib.Vulkan),
 		
 		(lib.stb_image),
@@ -28,6 +29,9 @@ project "Engine"
 
 	defines {
 		"PH_EXPORT",
+
+		-- For physx
+		"_SILENCE_CXX20_CISO646_REMOVED_WARNING",
 	}
 
 	links {
@@ -99,6 +103,55 @@ project "Engine"
 		}
 	filter {}
 
+
+	------------------------------------------
+	-- physx
+
+	filter {"system:Windows", "configurations:Debug"}
+		links{
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysX_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXCommon_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXFoundation_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXExtensions_static_64"),
+		}
+	filter {}
+
+	filter {"system:Windows", "configurations:Dev"}
+		links{
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysX_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXCommon_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXFoundation_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXExtensions_static_64"),
+		}
+	filter {}
+
+
+	filter {"system:Windows", "configurations:Optimize"}
+		links{
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysX_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysXCommon_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysXFoundation_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysXExtensions_static_64"),
+		}
+	filter {}
+
+	filter {"system:Windows", "configurations:Release"}
+		links{
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysX_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXCommon_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXFoundation_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXExtensions_static_64"),
+		}
+	filter {}
+
+	filter {"system:Windows", "configurations:ReleaseDist"}
+		links{
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysX_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXCommon_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXFoundation_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXExtensions_static_64"),
+		}
+	filter {}
 
 
 project "*"

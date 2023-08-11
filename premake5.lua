@@ -147,6 +147,7 @@ lib = {
 	Evo       = (config.location .. "/extern/Evo/"),
 	GLFW      = (config.location .. "/extern/GLFW/include"),
 	glm       = (config.location .. "/extern/glm"),
+	PhysX     = (config.location .. "/extern/PhysX/physx/include"),
 	stb_image = (config.location .. "/extern/stb_image"),
 	tinyobj   = (config.location .. "/extern/tinyobjloader"),
 
@@ -198,7 +199,11 @@ filter {}
 
 filter "configurations:Debug"
 	warnings "High"
-	debugdir (config.location)
+	debugdir(config.location)
+
+	debugenvs {
+		("PATH=%PATH%;" .. config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug"),
+	}
 
 	defines{
 		"PH_BUILD_DEBUG",
@@ -213,6 +218,10 @@ filter "configurations:Dev"
 	warnings "High"
 	debugdir (config.location)
 
+	debugenvs {
+		("PATH=%PATH%;" .. config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug"),
+	}
+
 	defines{
 		"PH_BUILD_DEV",
 		"PH_CONFIG_DEBUG",
@@ -224,6 +233,10 @@ filter {}
 filter "configurations:Optimize"
 	debugdir (config.location)
 
+	debugenvs {
+		("PATH=%PATH%;" .. config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked"),
+	}
+
 	defines{
 		"PH_BUILD_OPTIMIZE",
 		"PH_CONFIG_DEBUG",
@@ -234,6 +247,11 @@ filter {}
 
 filter "configurations:Release"
 	debugdir (config.location)
+
+	-- TODO: release
+	debugenvs {
+		("PATH=%PATH%;" .. config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release"),
+	}
 
 	defines{
 		"PH_BUILD_RELEASE",

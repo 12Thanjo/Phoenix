@@ -7,3 +7,6 @@
 [submodule "extern/Evo"]
 	path = extern/Evo
 	url = https://github.com/12Thanjo/Evo.git
+[submodule "extern/PhysX"]
+	path = extern/PhysX
+	url = https://github.com/NVIDIA-Omniverse/PhysX.git

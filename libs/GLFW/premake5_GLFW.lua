@@ -3,7 +3,7 @@
 project "GLFW"
 	kind "StaticLib"
 	language "C"
-	staticruntime "On"
+	staticruntime "Off"
 	
 	targetdir(target.lib)
 	objdir(target.obj)

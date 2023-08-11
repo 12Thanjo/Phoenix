@@ -3,9 +3,11 @@
 
 #include <libs/glm/glm.h>
 
+// TODO: proper lib
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+// TODO: proper lib
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
@@ -13,10 +15,13 @@
 #include "vulkan/Renderer.h"
 #include "GLFW.h"
 #include "inputs/InputManager.h"
+#include "physics/Physics.h"
 
 #include "Logging.h"
 
 #include <format>
+
+
 
 
 namespace ph{
@@ -31,6 +36,7 @@ namespace ph{
 		GLFW::Window window{};
 		vulkan::Renderer renderer{};
 		InputManager input_manager{};
+		Physics physics{};
 
 		bool suspended = false;
 
@@ -88,6 +94,8 @@ namespace ph{
 		}
 
 
+
+		this->backend->physics.init();
 
 
 		///////////////////////////////////
