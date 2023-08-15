@@ -83,7 +83,7 @@ namespace Game{
 
 		auto player = Player{
 			.transform = ph::Transform{
-				.position = {0.0f, 1.0f, 0.0f},
+				.position = {-2.0f, 1.0f, 70.0f},
 				.scale = {1.0f, 2.0f, 0.2f},
 			},
 		};

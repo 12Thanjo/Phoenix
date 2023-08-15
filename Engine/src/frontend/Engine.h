@@ -7,6 +7,7 @@
 #include "./AssetManager.h"
 #include "./Renderer.h"
 #include "./Window.h"
+#include "./Physics.h"
 
 #include "common.h"
 
@@ -39,6 +40,7 @@ namespace ph{
 			AssetManager assets{&this->interface};
 			Renderer renderer{&this->interface};
 			Window window{&this->interface};
+			Physics physics{&this->interface};
 	
 		private:
 			EngineInterface interface{};

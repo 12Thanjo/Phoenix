@@ -15,7 +15,7 @@
 #include "vulkan/Renderer.h"
 #include "GLFW.h"
 #include "inputs/InputManager.h"
-#include "physics/Physics.h"
+#include "physics/PhysicsEngine.h"
 
 #include "Logging.h"
 
@@ -36,7 +36,7 @@ namespace ph{
 		GLFW::Window window{};
 		vulkan::Renderer renderer{};
 		InputManager input_manager{};
-		Physics physics{};
+		PhysicsEngine physics{};
 
 		bool suspended = false;
 
@@ -553,6 +553,9 @@ namespace ph{
 
 		this->backend->update_callback();
 
+		this->backend->physics.simulate(this->backend->frame_time);
+		// this->backend->physics.simulate(1.0f / 1000.0f);
+
 
 		///////////////////////////////////
 		// render
@@ -562,6 +565,15 @@ namespace ph{
 			this->backend->renderer.bind_index_buffer_3D();
 
 			this->backend->render_callback_3D();
+
+			///////////////////////////////////
+			// temp
+			{
+				auto temp = this->backend->physics.get_body();
+				this->render_mesh((alias::Mat4)&temp, 0);
+			}
+			// temp
+			///////////////////////////////////
 
 		this->backend->renderer.end_render_pass_3D();
 
