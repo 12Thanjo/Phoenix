@@ -1,5 +1,8 @@
 # Phoenix Engine Change Log
 
+### v0.1.3
+- Exposed Physics API
+
 ### v0.1.2
 - Added backend implementation of PhysX rigid bodies
 	- Static

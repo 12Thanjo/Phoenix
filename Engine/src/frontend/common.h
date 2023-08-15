@@ -5,13 +5,24 @@
 #include <stdint.h>
 
 namespace ph{
-	
-	using MaterialID = uint32_t;
-	using MeshID = uint32_t;
-	using TextureID = uint32_t;
+		
+
+	struct Material3D{ uint32_t id;	};
+	struct Material2D{ uint32_t id;	};
+
+	struct Mesh3D{ uint32_t id;	};
+	struct Mesh2D{ uint32_t id;	};
+
+	struct TextureID{ uint32_t id; };
+
+
+	struct StaticCollider{ uint32_t id; };
+	struct DynamicCollider{ uint32_t id; };
+
 
 	// type aliases to go over the DLL boundary
 	namespace alias{
+		using Vec3 = void*;
 		using Vec4 = void*;
 		using Mat4 = void*;
 

@@ -47,8 +47,8 @@ namespace ph{
 		std::vector<MeshInfo> mesh_infos_3D{};
 		std::vector<MeshInfo> mesh_infos_2D{};
 
-		MeshID default_mesh_2D;
-		MeshID default_mesh_3D;
+		Mesh3D default_mesh_3D;
+		Mesh2D default_mesh_2D;
 		TextureID default_texture;
 
 		evo::time::Nanoseconds frame_start_time;
@@ -96,6 +96,7 @@ namespace ph{
 
 
 		this->backend->physics.init();
+
 
 
 		///////////////////////////////////
@@ -158,7 +159,7 @@ namespace ph{
 
 			this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, static_cast<uint32_t>(indices.size()));
 
-			this->backend->default_mesh_3D = static_cast<MeshID>(this->backend->mesh_infos_3D.size() - 1);
+			this->backend->default_mesh_3D = Mesh3D{ static_cast<uint32_t>(this->backend->mesh_infos_3D.size() - 1) };
 		}
 
 
@@ -190,7 +191,7 @@ namespace ph{
 
 			this->backend->mesh_infos_2D.emplace_back(mesh_result->first, mesh_result->second, static_cast<uint32_t>(indices.size()));
 
-			this->backend->default_mesh_2D = static_cast<MeshID>(this->backend->mesh_infos_2D.size() - 1);
+			this->backend->default_mesh_2D = Mesh2D{ static_cast<uint32_t>(this->backend->mesh_infos_2D.size() - 1) };
 		}
 
 
@@ -301,30 +302,30 @@ namespace ph{
 	auto EngineInterface::set_render_callback_2D(Callback callback) noexcept -> void { this->backend->render_callback_2D = callback; };
 
 
-	auto EngineInterface::bind_material(MaterialID id) noexcept -> void {
-		this->backend->renderer.bind_descriptor_set_3D(id);
+	auto EngineInterface::bind_material(Material3D material) noexcept -> void {
+		this->backend->renderer.bind_descriptor_set_3D(material.id);
 	};
 
-	auto EngineInterface::bind_material_2D(MaterialID id) noexcept -> void {
-		this->backend->renderer.bind_descriptor_set_2D(id);
+	auto EngineInterface::bind_material_2D(Material2D material) noexcept -> void {
+		this->backend->renderer.bind_descriptor_set_2D(material.id);
 	};
 
 
-	auto EngineInterface::render_mesh(const alias::Mat4 model, MeshID id) noexcept -> void {
-		PH_ASSERT(id < this->backend->mesh_infos_3D.size(), "Invalid mesh id");
+	auto EngineInterface::render_mesh(const alias::Mat4 model, Mesh3D mesh) noexcept -> void {
+		PH_ASSERT(mesh.id < this->backend->mesh_infos_3D.size(), "Invalid mesh id");
 
 		this->backend->renderer.set_model_push_constant_3D( alias::as<glm::mat4>(model) );
 
-		const auto& mesh = this->backend->mesh_infos_3D[id];
-		this->backend->renderer.draw_indexed(mesh.index_count, mesh.index_offset, mesh.vertex_offset);
+		const auto& mesh_info = this->backend->mesh_infos_3D[mesh.id];
+		this->backend->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
 	};
 
 
 	auto EngineInterface::render_mesh_2D(const alias::Mat4 model) noexcept -> void {
 		this->backend->renderer.set_model_push_constant_2D( alias::as<glm::mat4>(model) );
 
-		const auto& mesh = this->backend->mesh_infos_2D[this->backend->default_mesh_2D];
-		this->backend->renderer.draw_indexed(mesh.index_count, mesh.index_offset, mesh.vertex_offset);
+		const auto& mesh_info = this->backend->mesh_infos_2D[this->backend->default_mesh_2D.id];
+		this->backend->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
 	};
 
 
@@ -363,7 +364,7 @@ namespace ph{
 	// asset manager
 
 	// TODO: remove and replace with Assimp
-	auto EngineInterface::load_mesh(const char* filepath, MeshID* out_id) noexcept -> bool {
+	auto EngineInterface::load_mesh(const char* filepath, Mesh3D* out_id) noexcept -> bool {
 		// https://vulkan-tutorial.com/Loading_models
 		tinyobj::attrib_t attrib;
 		std::vector<tinyobj::shape_t> shapes;
@@ -425,7 +426,7 @@ namespace ph{
 		this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, static_cast<uint32_t>(indices.size()));
 
 
-		*out_id = static_cast<MeshID>(this->backend->mesh_infos_3D.size() - 1);
+		*out_id = Mesh3D{ static_cast<uint32_t>(this->backend->mesh_infos_3D.size() - 1) };
 		return true;
 	};
 
@@ -453,26 +454,26 @@ namespace ph{
 
 
 
-	auto EngineInterface::set_material_color(MaterialID material, alias::Vec4 color) noexcept -> void {
-		this->backend->renderer.set_instance_ubo_3D(material, &alias::as<glm::vec4>(color));
+	auto EngineInterface::set_material_color(Material3D material, alias::Vec4 color) noexcept -> void {
+		this->backend->renderer.set_instance_ubo_3D(material.id, &alias::as<glm::vec4>(color));
 	};
 
-	auto EngineInterface::set_material_texture(MaterialID material, TextureID texture) noexcept -> void {
-		this->backend->renderer.set_instance_texture_3D(material, texture);
-	};
-
-
-
-	auto EngineInterface::set_material_color_2D(MaterialID material, alias::Vec4 color) noexcept -> void {
-		this->backend->renderer.set_instance_ubo_2D(material, &alias::as<glm::vec4>(color));
-	};
-
-	auto EngineInterface::set_material_texture_2D(MaterialID material, TextureID texture) noexcept -> void {
-		this->backend->renderer.set_instance_texture_2D(material, texture);
+	auto EngineInterface::set_material_texture(Material3D material, TextureID texture) noexcept -> void {
+		this->backend->renderer.set_instance_texture_3D(material.id, texture.id);
 	};
 
 
-	auto EngineInterface::get_cube_mesh() const noexcept -> MeshID { return this->backend->default_mesh_3D;	};
+
+	auto EngineInterface::set_material_color_2D(Material2D material, alias::Vec4 color) noexcept -> void {
+		this->backend->renderer.set_instance_ubo_2D(material.id, &alias::as<glm::vec4>(color));
+	};
+
+	auto EngineInterface::set_material_texture_2D(Material2D material, TextureID texture) noexcept -> void {
+		this->backend->renderer.set_instance_texture_2D(material.id, texture.id);
+	};
+
+
+	auto EngineInterface::get_cube_mesh() const noexcept -> Mesh3D { return this->backend->default_mesh_3D;	};
 	auto EngineInterface::get_default_texture() const noexcept -> TextureID { return this->backend->default_texture; };
 
 
@@ -487,6 +488,55 @@ namespace ph{
 
 	auto EngineInterface::capture_mouse() noexcept -> void { this->backend->window.capture_mouse();	};
 	auto EngineInterface::release_mouse() noexcept -> void { this->backend->window.release_mouse();	};
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// physics
+
+	///////////////////////////////////
+	// static
+
+	auto EngineInterface::create_static_cube(
+		alias::Vec3 position, alias::Vec3 scale, float static_friction, float dynamic_friction, float restitution
+	) noexcept -> StaticCollider {
+
+		return this->backend->physics.create_static_cube(
+			alias::as<glm::vec3>(position), alias::as<glm::vec3>(scale), PhysicsMaterial{static_friction, dynamic_friction, restitution}
+		);
+
+	};
+
+
+
+	///////////////////////////////////
+	// dynamic
+
+	auto EngineInterface::create_dynamic_cube(
+		alias::Vec3 position, alias::Vec3 scale, float static_friction, float dynamic_friction, float restitution
+	) noexcept -> DynamicCollider {
+
+		return this->backend->physics.create_dynamic_cube(
+			alias::as<glm::vec3>(position), alias::as<glm::vec3>(scale), PhysicsMaterial{static_friction, dynamic_friction, restitution}
+		);
+
+	};
+
+
+
+	auto EngineInterface::set_dynamic_collider_density(DynamicCollider collider, float density) noexcept -> void {
+		this->backend->physics.set_dynamic_collider_density(collider, density);
+	};
+
+	auto EngineInterface::set_dynamic_collider_mass(DynamicCollider collider, float mass) noexcept -> void {
+		this->backend->physics.set_dynamic_collider_mass(collider, mass);
+	};
+
+
+	auto EngineInterface::get_dynamic_collider_transform(DynamicCollider collider) const noexcept -> glm::mat4 {
+		return this->backend->physics.get_dynamic_collider_transform(collider);
+	};
+
 
 
 
@@ -565,15 +615,6 @@ namespace ph{
 			this->backend->renderer.bind_index_buffer_3D();
 
 			this->backend->render_callback_3D();
-
-			///////////////////////////////////
-			// temp
-			{
-				auto temp = this->backend->physics.get_body();
-				this->render_mesh((alias::Mat4)&temp, 0);
-			}
-			// temp
-			///////////////////////////////////
 
 		this->backend->renderer.end_render_pass_3D();
 

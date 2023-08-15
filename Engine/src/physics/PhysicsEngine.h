@@ -4,7 +4,17 @@
 
 #include <libs/glm/glm.h>
 
+#include "frontend/common.h"
+
 namespace ph{
+
+	struct PhysicsMaterial{
+		float static_friction;
+		float dynamic_friction;
+		float restitution;
+	};
+
+
 		
 	class PhysicsEngine{
 		public:
@@ -14,9 +24,26 @@ namespace ph{
 			EVO_NODISCARD auto init() noexcept -> bool;
 			auto shutdown() noexcept -> void;
 
-			auto get_body() noexcept -> glm::mat4;
-
 			auto simulate(float dt) noexcept -> void;
+
+
+
+			///////////////////////////////////
+			// colliders
+
+			// static
+			PH_NODISCARD auto create_static_cube(glm::vec3 position, glm::vec3 scale, PhysicsMaterial material) noexcept -> StaticCollider;
+
+
+			// dynamic
+			PH_NODISCARD auto create_dynamic_cube(glm::vec3 position, glm::vec3 scale, PhysicsMaterial material) noexcept -> DynamicCollider;
+
+			auto set_dynamic_collider_density(DynamicCollider collider, float density) noexcept -> void;
+			auto set_dynamic_collider_mass(DynamicCollider collider, float mass) noexcept -> void;
+
+			PH_NODISCARD auto get_dynamic_collider_transform(DynamicCollider collider) const noexcept -> glm::mat4;
+
+
 	
 		private:
 			struct PhysicsBackend* backend;

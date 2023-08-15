@@ -36,10 +36,10 @@ namespace ph{
 			};
 
 
-			inline auto bindMaterial(MaterialID id) noexcept -> void { this->interface->bind_material(id); };
-			inline auto drawMesh(const glm::mat4& model, MeshID id) noexcept -> void { this->interface->render_mesh((alias::Mat4)&model, id); };
+			inline auto bindMaterial(Material3D material) noexcept -> void { this->interface->bind_material(material); };
+			inline auto drawMesh(const glm::mat4& model, Mesh3D id) noexcept -> void { this->interface->render_mesh((alias::Mat4)&model, id); };
 
-			inline auto bindMaterial2D(MaterialID id) noexcept -> void { this->interface->bind_material_2D(id); };
+			inline auto bindMaterial2D(Material2D material) noexcept -> void { this->interface->bind_material_2D(material); };
 			inline auto renderQuad2D(const glm::mat4& model) noexcept -> void { this->interface->render_mesh_2D((alias::Mat4)&model); };
 
 			inline auto setCamera(const glm::mat4& transform) noexcept -> void {

@@ -7,11 +7,11 @@
 namespace Game{
 
 
-	constexpr ph::MaterialID ground_material = 0;
-	constexpr ph::MaterialID wall_material = 1;
-	constexpr ph::MaterialID player_material = 2;
+	constexpr ph::Material3D ground_material = {0};
+	constexpr ph::Material3D wall_material = {1};
+	constexpr ph::Material3D player_material = {2};
 
-	constexpr ph::MaterialID crosshair_material = 0;
+	constexpr ph::Material2D crosshair_material = {0};
 
 
 
@@ -37,6 +37,10 @@ namespace Game{
 		engine.assets.setMaterialColor2D(crosshair_material, {1.0f, 1.0f, 1.0f, 1.0f});
 		engine.assets.setMaterialTexture2D(crosshair_material, engine.assets.getDefaultTexture());
 	};
+
+
+
+
 
 
 	static auto render_map(ph::Engine& engine) noexcept -> void {
@@ -91,11 +95,16 @@ namespace Game{
 
 		// const ph::MeshID tank = engine.assets.loadMesh("./assets/models/tank.obj").value();
 
-
-
 		setup_materials(engine);
 
 		engine.window.captureMouse();
+
+
+		auto ground_collider = engine.physics.createStaticCube(glm::vec3{0.0f, -0.5f, 0.0f}, glm::vec3{20.0f, 0.5f, 20.0f}, 0.5f, 0.5f, 0.9f);
+
+		auto box_collider = engine.physics.createDynamicCube(glm::vec3{0.0f, 10.0f, 0.0f}, glm::vec3{0.5f, 0.5f, 0.5f}, 0.5f, 0.5f, 0.75f);
+		engine.physics.setDynamicColliderDensity(box_collider, 1.5f);
+
 
 
 		engine.setUpdateCallback([&](){
@@ -133,6 +142,10 @@ namespace Game{
 
 			engine.renderer.bindMaterial(player_material);
 			engine.renderer.drawMesh(player.transform.calculate(), engine.assets.getCubeMesh());
+
+
+			const glm::mat4 box_transform = engine.physics.getDynamicColliderTransform(box_collider);
+			engine.renderer.drawMesh(box_transform, engine.assets.getCubeMesh());
 
 
 			render_map(engine);

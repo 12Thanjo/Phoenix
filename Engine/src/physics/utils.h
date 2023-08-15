@@ -8,6 +8,23 @@
 
 
 namespace ph{
+
+	//////////////////////////////////////////////////////////////////////
+	// vec3
+
+	EVO_NODISCARD inline auto PhysX_to_glm(const physx::PxVec3& physx_vec) noexcept -> glm::vec3 {
+		return glm::vec3{physx_vec.x, physx_vec.y, physx_vec.z};
+	};
+
+
+	EVO_NODISCARD inline auto glm_to_PhysX(const glm::vec3& glm_vec) noexcept -> physx::PxVec3 {
+		return physx::PxVec3{glm_vec.x, glm_vec.y, glm_vec.z};
+	};
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// mat4
 		
 	EVO_NODISCARD inline auto PhysX_to_glm(const physx::PxMat44& physx_mat) noexcept -> glm::mat4 {
 		auto glm_mat = glm::mat4{};
