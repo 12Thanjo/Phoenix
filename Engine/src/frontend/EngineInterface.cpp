@@ -95,7 +95,10 @@ namespace ph{
 
 
 
-		this->backend->physics.init();
+		if(this->backend->physics.init() == false){
+			PH_FATAL("Failed to initialize physics");
+			return false;	
+		}
 
 
 
@@ -206,7 +209,7 @@ namespace ph{
 				return false;
 			}
 
-			this->backend->default_texture = static_cast<TextureID>(*texture_result);
+			this->backend->default_texture = TextureID{ static_cast<uint32_t>(*texture_result) };
 		}
 
 
@@ -233,7 +236,12 @@ namespace ph{
 	auto EngineInterface::execute() noexcept -> bool {
 
 	    this->backend->window.set_resize_callback([&](int width, int height){
-	    	this->resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+	    	bool resize_result = this->resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+
+	    	if(resize_result == false){
+	    		PH_FATAL("Engine failed to resize");
+	    		// TODO: error handling
+	    	}
 	    });
 
 	    this->backend->frame_start_time = evo::time::now();
@@ -311,18 +319,18 @@ namespace ph{
 	};
 
 
-	auto EngineInterface::render_mesh(const alias::Mat4 model, Mesh3D mesh) noexcept -> void {
+	auto EngineInterface::render_mesh(const glm::mat4& model, Mesh3D mesh) noexcept -> void {
 		PH_ASSERT(mesh.id < this->backend->mesh_infos_3D.size(), "Invalid mesh id");
 
-		this->backend->renderer.set_model_push_constant_3D( alias::as<glm::mat4>(model) );
+		this->backend->renderer.set_model_push_constant_3D(model);
 
 		const auto& mesh_info = this->backend->mesh_infos_3D[mesh.id];
 		this->backend->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
 	};
 
 
-	auto EngineInterface::render_mesh_2D(const alias::Mat4 model) noexcept -> void {
-		this->backend->renderer.set_model_push_constant_2D( alias::as<glm::mat4>(model) );
+	auto EngineInterface::render_mesh_2D(const glm::mat4& model) noexcept -> void {
+		this->backend->renderer.set_model_push_constant_2D(model);
 
 		const auto& mesh_info = this->backend->mesh_infos_2D[this->backend->default_mesh_2D.id];
 		this->backend->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
@@ -330,11 +338,11 @@ namespace ph{
 
 
 
-	auto EngineInterface::set_camera(alias::Mat4 transform) noexcept -> void {
+	auto EngineInterface::set_camera(const glm::mat4& transform) noexcept -> void {
 		const auto [width, height] = this->backend->window.size();
 
 		auto ubo = GlobalUBO3D{
-			.view = alias::as<glm::mat4>(transform),
+			.view = transform,
 			.proj = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 1000.0f),
 		};
 		ubo.proj[1][1] *= -1;
@@ -343,13 +351,13 @@ namespace ph{
 	};
 
 
-	auto EngineInterface::set_camera_2D(alias::Mat4 transform) noexcept -> void {
+	auto EngineInterface::set_camera_2D(const glm::mat4& transform) noexcept -> void {
 		const auto [width, height] = this->backend->window.size();
 		float window_half_width = static_cast<float>(width);
 		float window_half_height = static_cast<float>(height);
 
 		auto ubo = GlobalUBO3D{
-			.view = alias::as<glm::mat4>(transform),
+			.view = transform,
 			.proj = glm::ortho(-window_half_width, window_half_width, window_half_height, -window_half_height, -1.0f, 1.0f),
 		};
 
@@ -448,14 +456,14 @@ namespace ph{
 			return false;
 		}
 
-		*out_id = static_cast<TextureID>(*texture_result);
+		*out_id = TextureID{ static_cast<uint32_t>(*texture_result) };
 		return true;
 	};
 
 
 
-	auto EngineInterface::set_material_color(Material3D material, alias::Vec4 color) noexcept -> void {
-		this->backend->renderer.set_instance_ubo_3D(material.id, &alias::as<glm::vec4>(color));
+	auto EngineInterface::set_material_color(Material3D material, glm::vec4 color) noexcept -> void {
+		this->backend->renderer.set_instance_ubo_3D(material.id, &color);
 	};
 
 	auto EngineInterface::set_material_texture(Material3D material, TextureID texture) noexcept -> void {
@@ -464,8 +472,8 @@ namespace ph{
 
 
 
-	auto EngineInterface::set_material_color_2D(Material2D material, alias::Vec4 color) noexcept -> void {
-		this->backend->renderer.set_instance_ubo_2D(material.id, &alias::as<glm::vec4>(color));
+	auto EngineInterface::set_material_color_2D(Material2D material, glm::vec4 color) noexcept -> void {
+		this->backend->renderer.set_instance_ubo_2D(material.id, &color);
 	};
 
 	auto EngineInterface::set_material_texture_2D(Material2D material, TextureID texture) noexcept -> void {
@@ -498,13 +506,10 @@ namespace ph{
 	// static
 
 	auto EngineInterface::create_static_cube(
-		alias::Vec3 position, alias::Vec3 scale, float static_friction, float dynamic_friction, float restitution
+		glm::vec3 position, glm::vec3 scale, float static_friction, float dynamic_friction, float restitution
 	) noexcept -> StaticCollider {
 
-		return this->backend->physics.create_static_cube(
-			alias::as<glm::vec3>(position), alias::as<glm::vec3>(scale), PhysicsMaterial{static_friction, dynamic_friction, restitution}
-		);
-
+		return this->backend->physics.create_static_cube(position, scale, PhysicsMaterial{static_friction, dynamic_friction, restitution});
 	};
 
 
@@ -513,13 +518,10 @@ namespace ph{
 	// dynamic
 
 	auto EngineInterface::create_dynamic_cube(
-		alias::Vec3 position, alias::Vec3 scale, float static_friction, float dynamic_friction, float restitution
+		glm::vec3 position, glm::vec3 scale, float static_friction, float dynamic_friction, float restitution
 	) noexcept -> DynamicCollider {
 
-		return this->backend->physics.create_dynamic_cube(
-			alias::as<glm::vec3>(position), alias::as<glm::vec3>(scale), PhysicsMaterial{static_friction, dynamic_friction, restitution}
-		);
-
+		return this->backend->physics.create_dynamic_cube(position, scale, PhysicsMaterial{static_friction, dynamic_friction, restitution});
 	};
 
 
@@ -539,6 +541,20 @@ namespace ph{
 
 
 
+	///////////////////////////////////
+	// character controller
+
+	auto EngineInterface::create_character_controller(glm::vec3 position, float height, float radius) noexcept -> CharacterController {
+		return this->backend->physics.create_character_controller(position, height, radius);
+	};
+
+	auto EngineInterface::get_character_controller_position(CharacterController controller) noexcept -> glm::vec3 {
+		return this->backend->physics.get_character_controller_position(controller);
+	};
+
+	auto EngineInterface::character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void {
+		this->backend->physics.character_controller_move(controller, direction, dt);
+	};
 
 
 	//////////////////////////////////////////////////////////////////////

@@ -57,11 +57,11 @@ namespace ph{
 
 			auto bind_material(Material3D material) noexcept -> void;
 			auto bind_material_2D(Material2D material) noexcept -> void;
-			auto render_mesh(const alias::Mat4 model, Mesh3D mesh) noexcept -> void;
-			auto render_mesh_2D(const alias::Mat4 model) noexcept -> void;
+			auto render_mesh(const glm::mat4& model, Mesh3D mesh) noexcept -> void;
+			auto render_mesh_2D(const glm::mat4& model) noexcept -> void;
 
-			auto set_camera(alias::Mat4 transform) noexcept -> void;
-			auto set_camera_2D(alias::Mat4 transform) noexcept -> void;
+			auto set_camera(const glm::mat4& transform) noexcept -> void;
+			auto set_camera_2D(const glm::mat4& transform) noexcept -> void;
 
 
 			///////////////////////////////////
@@ -70,10 +70,10 @@ namespace ph{
 			PH_NODISCARD auto load_mesh(const char* filepath, Mesh3D* out_id) noexcept -> bool;
 			PH_NODISCARD auto load_texture(const char* filepath, TextureID* out_id) noexcept -> bool;
 
-			auto set_material_color(Material3D material, alias::Vec4 color) noexcept -> void;
+			auto set_material_color(Material3D material, glm::vec4 color) noexcept -> void;
 			auto set_material_texture(Material3D material, TextureID texture) noexcept -> void;
 
-			auto set_material_color_2D(Material2D material, alias::Vec4 color) noexcept -> void;
+			auto set_material_color_2D(Material2D material, glm::vec4 color) noexcept -> void;
 			auto set_material_texture_2D(Material2D material, TextureID texture) noexcept -> void;
 			
 			PH_NODISCARD auto get_cube_mesh() const noexcept -> Mesh3D;
@@ -94,13 +94,13 @@ namespace ph{
 
 			// static
 			PH_NODISCARD auto create_static_cube(
-				alias::Vec3 position, alias::Vec3 scale, float static_friction, float dynamic_friction, float restitution
+				glm::vec3 position, glm::vec3 scale, float static_friction, float dynamic_friction, float restitution
 			) noexcept -> StaticCollider;
 
 
 			// dynamic
 			PH_NODISCARD auto create_dynamic_cube(
-				alias::Vec3 position, alias::Vec3 scale, float static_friction, float dynamic_friction, float restitution
+				glm::vec3 position, glm::vec3 scale, float static_friction, float dynamic_friction, float restitution
 			) noexcept -> DynamicCollider;
 
 
@@ -108,6 +108,13 @@ namespace ph{
 			auto set_dynamic_collider_mass(DynamicCollider collider, float mass) noexcept -> void;
 
 			PH_NODISCARD auto get_dynamic_collider_transform(DynamicCollider collider) const noexcept -> glm::mat4;
+
+
+			// character controller
+			PH_NODISCARD auto create_character_controller(glm::vec3 position, float height, float radius) noexcept -> CharacterController;
+			PH_NODISCARD auto get_character_controller_position(CharacterController controller) noexcept -> glm::vec3;
+			auto character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void;
+			
 
 
 		private:

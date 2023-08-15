@@ -18,16 +18,7 @@ namespace ph{
 
 	struct StaticCollider{ uint32_t id; };
 	struct DynamicCollider{ uint32_t id; };
+	struct CharacterController{ uint32_t id; };
 
 
-	// type aliases to go over the DLL boundary
-	namespace alias{
-		using Vec3 = void*;
-		using Vec4 = void*;
-		using Mat4 = void*;
-
-
-		template<typename T>
-		PH_NODISCARD constexpr auto as(void* ptr) noexcept -> T& { return *reinterpret_cast<T*>(ptr); };
-	};
 };

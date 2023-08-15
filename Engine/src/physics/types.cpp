@@ -1,9 +1,10 @@
 #include "types.h"
 
 
-
 #include "Logging.h"
 #include <format>
+
+#include "physics/utils.h"
 
 
 namespace ph{
@@ -17,7 +18,7 @@ namespace ph{
 		float static_friction, float dynamic_friction, float restitution,
 		float width, float height, float depth,
 		physx::PxMat44 transform
-	) noexcept -> bool {
+	) noexcept -> void {
 
 		this->material = physics->createMaterial(static_friction, dynamic_friction, restitution);
 
@@ -30,7 +31,6 @@ namespace ph{
 
 
 		PH_TRACE("Created: PhysX rigid static (cube)");
-		return true;
 	};
 
 
@@ -57,7 +57,7 @@ namespace ph{
 		float static_friction, float dynamic_friction, float restitution,
 		float width, float height, float depth,
 		physx::PxMat44 transform
-	) noexcept -> bool {
+	) noexcept -> void {
 
 		this->material = physics->createMaterial(static_friction, dynamic_friction, restitution);
 
@@ -69,7 +69,6 @@ namespace ph{
 		scene->addActor(*this->actor);
 
 		PH_TRACE("Created: PhysX rigid dynamic (cube)");
-		return true;
 	};
 
 
@@ -101,6 +100,51 @@ namespace ph{
 	auto PhysicsRigidDynamic::get_transform() const noexcept -> physx::PxMat44 {
 		const physx::PxTransform pose = physx::PxShapeExt::getGlobalPose(*this->shape, *this->actor);
 		return physx::PxMat44{pose};
+	};
+
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// character controller
+
+
+	auto PhysicsCharacterController::create(
+		physx::PxPhysics* physics, physx::PxControllerManager* controller_manager, glm::vec3 position, float height, float radius
+	) noexcept -> void {
+
+		auto description = physx::PxCapsuleControllerDesc{};
+		description.position      = glm_to_PhysX_extended(position);
+		description.height        = height / 2.0f;
+		description.radius        = radius;
+		// description.stepOffset = 0.1f;
+		description.material      = physics->createMaterial(0.5f, 0.5f, 0.6f);
+
+
+		this->controller = controller_manager->createController(description);
+
+		PH_TRACE("Created: Physics character controller");
+	};
+
+
+	auto PhysicsCharacterController::destroy() noexcept -> void {
+
+		this->controller->release();
+		
+		PH_TRACE("Destroyed: Physics character controller");
+	};
+
+
+	auto PhysicsCharacterController::move(glm::vec3 direction, float dt, float min_distance) noexcept -> void {
+		const physx::PxVec3 displacement = glm_to_PhysX(direction);
+		const physx::PxControllerFilters filters = {};
+
+		const physx::PxControllerCollisionFlags collision_flags = this->controller->move(displacement, min_distance, dt, filters, nullptr);
+	};
+
+
+	auto PhysicsCharacterController::get_position() const noexcept -> glm::vec3 {
+		return extended_PhysX_to_glm(this->controller->getPosition());
 	};
 
 		

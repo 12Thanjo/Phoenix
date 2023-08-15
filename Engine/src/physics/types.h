@@ -4,6 +4,7 @@
 #include <libs/Evo/Evo.h>
 
 #include <libs/PhysX/PhysX.h>
+#include <libs/glm/glm.h>
 
 
 namespace ph{
@@ -18,12 +19,12 @@ namespace ph{
 			PhysicsRigidStatic() = default;
 			~PhysicsRigidStatic() = default;
 
-			EVO_NODISCARD auto create_cube(
+			auto create_cube(
 				physx::PxPhysics* physics, physx::PxScene* scene,
 				float static_friction, float dynamic_friction, float restitution,
 				float width, float height, float depth,
 				physx::PxMat44 transform
-			) noexcept -> bool;
+			) noexcept -> void;
 
 			auto destroy(physx::PxScene* scene) noexcept -> void;
 
@@ -45,12 +46,12 @@ namespace ph{
 			PhysicsRigidDynamic() = default;
 			~PhysicsRigidDynamic() = default;
 
-			EVO_NODISCARD auto create_cube(
+			auto create_cube(
 				physx::PxPhysics* physics, physx::PxScene* scene,
 				float static_friction, float dynamic_friction, float restitution,
 				float width, float height, float depth,
 				physx::PxMat44 transform
-			) noexcept -> bool;
+			) noexcept -> void;
 
 			auto destroy(physx::PxScene* scene) noexcept -> void;
 
@@ -66,6 +67,33 @@ namespace ph{
 			physx::PxMaterial* material = nullptr;
 			physx::PxShape* shape = nullptr;
 			physx::PxRigidDynamic* actor = nullptr;
+	};
+
+
+
+	//////////////////////////////////////////////////////////////////////
+	// character controller
+
+
+	class PhysicsCharacterController{
+		public:
+			PhysicsCharacterController() = default;
+			~PhysicsCharacterController() = default;
+
+			auto create(
+				physx::PxPhysics* physics, physx::PxControllerManager* controller_manager, glm::vec3 position, float height, float radius
+			) noexcept -> void;
+
+			auto destroy() noexcept -> void;
+
+
+			auto move(glm::vec3 direction, float dt, float min_distance = 0.0001f) noexcept -> void;
+
+			EVO_NODISCARD auto get_position() const noexcept -> glm::vec3;
+
+	
+		private:
+			physx::PxController* controller = nullptr;
 	};
 
 

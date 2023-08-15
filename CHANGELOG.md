@@ -1,7 +1,14 @@
 # Phoenix Engine Change Log
 
+### v0.1.4
+- Added physics character controllers
+- Removed glm aliasing over dynamic library boundary
+- Added error checking in two places
+	- engine resize
+	- Physics init
+
 ### v0.1.3
-- Exposed Physics API
+- Exposed physics API
 
 ### v0.1.2
 - Added backend implementation of PhysX rigid bodies

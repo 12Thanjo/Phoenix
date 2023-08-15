@@ -35,7 +35,7 @@ namespace ph{
 
 
 			inline auto setMaterialColor(Material3D material, glm::vec4 color) noexcept -> void {
-				this->interface->set_material_color(material, &color);
+				this->interface->set_material_color(material, color);
 			};
 
 			inline auto setMaterialTexture(Material3D material, TextureID texture) noexcept -> void {
@@ -44,7 +44,7 @@ namespace ph{
 
 
 			inline auto setMaterialColor2D(Material2D material, glm::vec4 color) noexcept -> void {
-				this->interface->set_material_color_2D(material, &color);
+				this->interface->set_material_color_2D(material, color);
 			};
 
 			inline auto setMaterialTexture2D(Material2D material, TextureID texture) noexcept -> void {

@@ -82,15 +82,20 @@ namespace Game{
 
 
 		auto camera = ph::Camera{
-			.position = {0.35f + 0.5f, 0.55f, 3.2f},
+			// .position = {0.35f + 0.5f, 0.55f, 3.2f},
+			.position = {0.35f + 0.5f, 0.55f, 5.0f},
 		};
 
 		auto player = Player{
 			.transform = ph::Transform{
-				.position = {-2.0f, 1.0f, 70.0f},
+				.position = {-2.0f, 1.0f, 30.0f},
 				.scale = {1.0f, 2.0f, 0.2f},
 			},
 		};
+
+
+		ph::CharacterController player_controller = engine.physics.createCharacterController({-2.0f, 10.0f, 18.0f}, 2.0f, 0.5f);
+
 
 
 		// const ph::MeshID tank = engine.assets.loadMesh("./assets/models/tank.obj").value();
@@ -102,8 +107,18 @@ namespace Game{
 
 		auto ground_collider = engine.physics.createStaticCube(glm::vec3{0.0f, -0.5f, 0.0f}, glm::vec3{20.0f, 0.5f, 20.0f}, 0.5f, 0.5f, 0.9f);
 
-		auto box_collider = engine.physics.createDynamicCube(glm::vec3{0.0f, 10.0f, 0.0f}, glm::vec3{0.5f, 0.5f, 0.5f}, 0.5f, 0.5f, 0.75f);
-		engine.physics.setDynamicColliderDensity(box_collider, 1.5f);
+		auto tower1_collider = engine.physics.createStaticCube({10.0f, 5.0f, -10.0f}, glm::vec3{1.0f, 10.0f, 1.0f}/2.0f, 0.5f, 0.5f, 0.9f);
+		auto tower2_collider = engine.physics.createStaticCube({-10.0f, 5.0f, -10.0f}, glm::vec3{1.0f, 10.0f, 1.0f}/2.0f, 0.5f, 0.5f, 0.9f);
+
+
+		auto box_collider1 = engine.physics.createDynamicCube(glm::vec3{0.0f, 10.0f, 0.0f}, glm::vec3{0.5f, 0.5f, 0.5f}, 0.5f, 0.5f, 0.75f);
+		engine.physics.setDynamicColliderDensity(box_collider1, 1.5f);
+
+		auto box_collider2 = engine.physics.createDynamicCube(glm::vec3{0.5f, 12.0f, 0.0f}, glm::vec3{0.5f, 0.5f, 0.5f}, 0.5f, 0.5f, 0.75f);
+		engine.physics.setDynamicColliderDensity(box_collider2, 1.5f);
+
+		auto box_collider3 = engine.physics.createDynamicCube(glm::vec3{-0.5f, 14.0f, 0.5f}, glm::vec3{0.5f, 0.5f, 0.5f}, 0.5f, 0.5f, 0.75f);
+		engine.physics.setDynamicColliderDensity(box_collider3, 1.5f);
 
 
 
@@ -125,11 +140,18 @@ namespace Game{
 			     if(engine.inputs.isDown(ph::Inputs::Key::A)){ player_velocity += ph::getTransformLeft(player_current_transform); }
 			else if(engine.inputs.isDown(ph::Inputs::Key::D)){ player_velocity += ph::getTransformRight(player_current_transform); }
 
+
 			if(player_velocity.x != 0 || player_velocity.y != 0 || player_velocity.z != 0){
 				player_velocity = glm::normalize(player_velocity);
 			}
 
-			player.transform.position += player_velocity * player.speed * engine.getFrameTime();
+			// gravity (sorta)
+			player_velocity.y -= 4.0f;
+
+
+			// player.transform.position += player_velocity * player.speed * engine.getFrameTime();
+			engine.physics.characterControllerMove(player_controller, player_velocity * player.speed * engine.getFrameTime(), engine.getFrameTime());
+			player.transform.position = engine.physics.getCharacterControllerPosition(player_controller);
 		});
 
 
@@ -144,8 +166,9 @@ namespace Game{
 			engine.renderer.drawMesh(player.transform.calculate(), engine.assets.getCubeMesh());
 
 
-			const glm::mat4 box_transform = engine.physics.getDynamicColliderTransform(box_collider);
-			engine.renderer.drawMesh(box_transform, engine.assets.getCubeMesh());
+			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider1), engine.assets.getCubeMesh());
+			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider2), engine.assets.getCubeMesh());
+			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider3), engine.assets.getCubeMesh());
 
 
 			render_map(engine);

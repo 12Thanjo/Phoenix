@@ -61,9 +61,11 @@ namespace ph{
 		physx::PxPhysics* physics = nullptr;
 		physx::PxDefaultCpuDispatcher* dispatcher = nullptr;
 		physx::PxScene* scene = nullptr;
+		physx::PxControllerManager* controller_manager = nullptr;
 
 		std::vector<PhysicsRigidStatic> static_colliders{};
 		std::vector<PhysicsRigidDynamic> dynamic_colliders{};
+		std::vector<PhysicsCharacterController> character_controllers{};
 	};
 
 
@@ -71,7 +73,6 @@ namespace ph{
 	//////////////////////////////////////////////////////////////////////
 	// physics
 
-	// TODO: some funcs can return nullptr
 	auto PhysicsEngine::init() noexcept -> bool {
 		this->backend = new PhysicsBackend();
 
@@ -88,7 +89,6 @@ namespace ph{
 			PX_PHYSICS_VERSION, *this->backend->foundation, physx::PxTolerancesScale(), record_memory_allocations, pvd
 		);
 
-
 		if(this->backend->physics == nullptr){
 			PH_FATAL("Failed to initialize PhysX physics");
 			return false;
@@ -97,7 +97,7 @@ namespace ph{
 
 
 		// if(!PxInitExtensions(*this->backend->physics, nullptr)){
-		//     // fatalError("PxInitExtensions failed!");
+		//     // PH_FATAL("PxInitExtensions failed!");
 		// }
 
 
@@ -111,14 +111,7 @@ namespace ph{
 		this->backend->scene = this->backend->physics->createScene(scene_description);
 
 
-
-
-		// auto cube = this->create_dynamic_cube(glm::vec3{0.0f, 10.0f, 0.0f}, glm::vec3{0.5f, 0.5f, 0.5f}, PhysicsMaterial{0.5f, 0.5f, 0.75f});
-		// this->set_dynamic_collider_density(cube, 1.5f);
-
-
-		// this->create_static_cube(glm::vec3{0.0f, -0.5f, 0.0f}, glm::vec3{20.0f, 0.5f, 20.0f}, PhysicsMaterial{0.5f, 0.5f, 0.9f});
-
+		this->backend->controller_manager = PxCreateControllerManager(*this->backend->scene);
 
 
 		PH_INFO("Initialized: Physics (NVIDIA PhysX 5.2)");
@@ -137,6 +130,12 @@ namespace ph{
 		for(auto& dynamic_collider : this->backend->dynamic_colliders){
 			dynamic_collider.destroy(this->backend->scene);
 		}
+
+		for(auto& character_controller : this->backend->character_controllers){
+			character_controller.destroy();
+		}
+
+
 
 
 		if(this->backend->scene != nullptr){
@@ -230,6 +229,29 @@ namespace ph{
 		return PhysX_to_glm(this->backend->dynamic_colliders[collider.id].get_transform());
 	};
 
+
+	///////////////////////////////////
+	// character controller
+
+
+	auto PhysicsEngine::create_character_controller(glm::vec3 position, float height, float radius) noexcept -> CharacterController {
+
+		auto& new_controller = this->backend->character_controllers.emplace_back();
+
+		new_controller.create(this->backend->physics, this->backend->controller_manager, position, height, radius);
+
+		return CharacterController{ static_cast<uint32_t>(this->backend->character_controllers.size() - 1) };
+	};
+
+
+	auto PhysicsEngine::get_character_controller_position(CharacterController controller) noexcept -> glm::vec3 {
+		return this->backend->character_controllers[controller.id].get_position();
+	};
+
+
+	auto PhysicsEngine::character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void {
+		return this->backend->character_controllers[controller.id].move(direction, dt, 0.0001f);
+	};
 
 		
 

@@ -44,6 +44,14 @@ namespace ph{
 			PH_NODISCARD auto get_dynamic_collider_transform(DynamicCollider collider) const noexcept -> glm::mat4;
 
 
+			// character controller
+			PH_NODISCARD auto create_character_controller(glm::vec3 position, float height, float radius) noexcept -> CharacterController;
+
+			PH_NODISCARD auto get_character_controller_position(CharacterController controller) noexcept -> glm::vec3;
+
+			auto character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void;
+
+
 	
 		private:
 			struct PhysicsBackend* backend;

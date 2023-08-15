@@ -113,6 +113,7 @@ project "Engine"
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXCommon_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXFoundation_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXExtensions_static_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXCharacterKinematic_static_64"),
 		}
 	filter {}
 
@@ -122,6 +123,7 @@ project "Engine"
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXCommon_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXFoundation_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXExtensions_static_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/debug/PhysXCharacterKinematic_static_64"),
 		}
 	filter {}
 
@@ -132,6 +134,7 @@ project "Engine"
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysXCommon_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysXFoundation_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysXExtensions_static_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/checked/PhysXCharacterKinematic_static_64"),
 		}
 	filter {}
 
@@ -141,6 +144,7 @@ project "Engine"
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXCommon_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXFoundation_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXExtensions_static_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXCharacterKinematic_static_64"),
 		}
 	filter {}
 
@@ -150,6 +154,7 @@ project "Engine"
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXCommon_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXFoundation_64"),
 			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXExtensions_static_64"),
+			(config.location .. "/extern/PhysX/physx/bin/win.x86_64.vc143.md/release/PhysXCharacterKinematic_static_64"),
 		}
 	filter {}
 
