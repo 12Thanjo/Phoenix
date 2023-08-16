@@ -87,7 +87,7 @@ namespace ph{
 			auto destroy() noexcept -> void;
 
 
-			auto move(glm::vec3 direction, float dt, float min_distance = 0.0001f) noexcept -> void;
+			auto move(glm::vec3 direction, float dt, float min_distance = 0.0f) noexcept -> void;
 
 			EVO_NODISCARD auto get_position() const noexcept -> glm::vec3;
 

@@ -114,11 +114,11 @@ namespace ph{
 	) noexcept -> void {
 
 		auto description = physx::PxCapsuleControllerDesc{};
-		description.position      = glm_to_PhysX_extended(position);
-		description.height        = height / 2.0f;
-		description.radius        = radius;
-		// description.stepOffset = 0.1f;
-		description.material      = physics->createMaterial(0.5f, 0.5f, 0.6f);
+		description.position   = glm_to_PhysX_extended(position);
+		description.height     = height / 2.0f;
+		description.radius     = radius;
+		description.stepOffset = 0.1f;
+		description.material   = physics->createMaterial(0.5f, 0.5f, 0.6f);
 
 
 		this->controller = controller_manager->createController(description);

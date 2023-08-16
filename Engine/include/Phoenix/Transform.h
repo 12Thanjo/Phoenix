@@ -61,15 +61,11 @@ namespace ph{
 		PH_NODISCARD inline auto calculate() const noexcept -> glm::mat4 {
 			glm::mat4 transform = glm::mat4{1.0f};
 
-			transform = glm::translate(transform, this->position);
+			transform = glm::rotate(transform, this->rotation.x, glm::vec3(-1.0f, 0.0f, 0.0f));
+			transform = glm::rotate(transform, this->rotation.y, glm::vec3(0.0f, -1.0f, 0.0f));
+			transform = glm::rotate(transform, this->rotation.z, glm::vec3(0.0f, 0.0f, -1.0f));
 
-			transform = glm::rotate(transform, this->rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-			transform = glm::rotate(transform, this->rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-			transform = glm::rotate(transform, this->rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-
-			transform = glm::inverse(transform);
-
-			// transform *= glm::inverse( glm::translate(glm::mat4(1.0f), this->position) );
+			transform *= glm::inverse( glm::translate(glm::mat4(1.0f), this->position) );
 
 			return transform;
 		};

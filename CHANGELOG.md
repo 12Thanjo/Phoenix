@@ -1,5 +1,8 @@
 # Phoenix Engine Change Log
 
+### v0.1.5
+- fixed camera transform calculation
+
 ### v0.1.4
 - Added physics character controllers
 - Removed glm aliasing over dynamic library boundary

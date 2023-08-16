@@ -250,7 +250,7 @@ namespace ph{
 
 
 	auto PhysicsEngine::character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void {
-		return this->backend->character_controllers[controller.id].move(direction, dt, 0.0001f);
+		return this->backend->character_controllers[controller.id].move(direction, dt, 0.0f);
 	};
 
 		

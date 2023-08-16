@@ -4,6 +4,9 @@
 #include <Phoenix/Phoenix.h>
 
 
+#include <iostream>
+
+
 namespace Game{
 
 
@@ -18,6 +21,9 @@ namespace Game{
 	struct Player{
 		ph::Transform transform{};
 		float speed = 7.0f;
+
+		ph::CharacterController controller;
+		float falling_speed = 0.0001f;
 	};
 
 
@@ -82,19 +88,19 @@ namespace Game{
 
 
 		auto camera = ph::Camera{
-			// .position = {0.35f + 0.5f, 0.55f, 3.2f},
-			.position = {0.35f + 0.5f, 0.55f, 5.0f},
+			.position = {0.35f + 0.5f, 0.55f, 3.2f},
+			// .position = {0.35f + 0.5f, 0.55f, 5.0f},
 		};
 
 		auto player = Player{
 			.transform = ph::Transform{
-				.position = {-2.0f, 1.0f, 30.0f},
+				.position = {-2.0f, 15.0f, 18.0f},
 				.scale = {1.0f, 2.0f, 0.2f},
 			},
+			.controller = engine.physics.createCharacterController({-2.0f, 15.0f, 18.0f}, 2.0f, 0.5f),
 		};
 
 
-		ph::CharacterController player_controller = engine.physics.createCharacterController({-2.0f, 10.0f, 18.0f}, 2.0f, 0.5f);
 
 
 
@@ -128,6 +134,7 @@ namespace Game{
 
 
 			player.transform.rotation.y -= engine.inputs.mouseDX() * engine.getFrameTime();
+			player.transform.rotation.x -= engine.inputs.mouseDY() * engine.getFrameTime();
 
 
 			auto player_velocity = glm::vec3{0.0f};
@@ -142,28 +149,36 @@ namespace Game{
 
 
 			if(player_velocity.x != 0 || player_velocity.y != 0 || player_velocity.z != 0){
-				player_velocity = glm::normalize(player_velocity);
+				player_velocity = glm::normalize(player_velocity) * player.speed * engine.getFrameTime();
 			}
 
-			// gravity (sorta)
-			player_velocity.y -= 4.0f;
+
+			player_velocity.y = 0.5f * ((2 * player.falling_speed) + (-9.81f * engine.getFrameTime())) * engine.getFrameTime();
+			if(engine.inputs.isDown(ph::Inputs::Key::Spacebar)){
+				player_velocity.y = 5.0f * engine.getFrameTime();
+			}
+			player.falling_speed = (player_velocity.y + (0.5f * -9.81f * engine.getFrameTime() * engine.getFrameTime())) / engine.getFrameTime();
 
 
-			// player.transform.position += player_velocity * player.speed * engine.getFrameTime();
-			engine.physics.characterControllerMove(player_controller, player_velocity * player.speed * engine.getFrameTime(), engine.getFrameTime());
-			player.transform.position = engine.physics.getCharacterControllerPosition(player_controller);
+			engine.physics.characterControllerMove(player.controller, player_velocity, engine.getFrameTime());
+			player.transform.position = engine.physics.getCharacterControllerPosition(player.controller);
 		});
 
 
 
 		
 		engine.renderer.setCallback3D([&](){
-
+			camera.position.z = 3.2f - glm::sin(player.transform.rotation.x);
 			engine.renderer.setCamera(camera.calculate() * ph::Camera{player.transform.position, player.transform.rotation}.calculate());
-
+			// engine.renderer.setCamera(player.transform.calculate() * camera.calculate());
+			
 
 			engine.renderer.bindMaterial(player_material);
+
+			const float player_rot_x = player.transform.rotation.x;
+			player.transform.rotation.x = 0;
 			engine.renderer.drawMesh(player.transform.calculate(), engine.assets.getCubeMesh());
+			player.transform.rotation.x = player_rot_x;
 
 
 			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider1), engine.assets.getCubeMesh());
