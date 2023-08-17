@@ -24,6 +24,7 @@ namespace Game{
 
 		ph::CharacterController controller;
 		float falling_speed = 0.0001f;
+		bool is_grounded = false;
 	};
 
 
@@ -128,6 +129,7 @@ namespace Game{
 
 
 
+
 		engine.setUpdateCallback([&](){
 			     if(engine.inputs.isDown(ph::Inputs::Key::Escape)){ engine.window.releaseMouse(); }
 			else if(engine.inputs.isDown(ph::Inputs::Mouse::Left)){ engine.window.captureMouse(); }
@@ -153,16 +155,33 @@ namespace Game{
 			}
 
 
-			player_velocity.y = 0.5f * ((2 * player.falling_speed) + (-9.81f * engine.getFrameTime())) * engine.getFrameTime();
-			if(engine.inputs.isDown(ph::Inputs::Key::Spacebar)){
+			if(engine.inputs.wasPressed(ph::Inputs::Key::Spacebar) && player.is_grounded){
 				player_velocity.y = 5.0f * engine.getFrameTime();
+
+			}else{
+				player_velocity.y = 0.5f * ((2 * player.falling_speed) + (-9.81f * engine.getFrameTime())) * engine.getFrameTime();
 			}
-			player.falling_speed = (player_velocity.y + (0.5f * -9.81f * engine.getFrameTime() * engine.getFrameTime())) / engine.getFrameTime();
 
 
 			engine.physics.characterControllerMove(player.controller, player_velocity, engine.getFrameTime());
-			player.transform.position = engine.physics.getCharacterControllerPosition(player.controller);
+			const glm::vec3 player_new_position = engine.physics.getCharacterControllerPosition(player.controller);
+
+
+			if((player.transform.position.y - player_new_position.y) != 0){
+				player.falling_speed = (player_velocity.y + (0.5f * -9.81f * engine.getFrameTime() * engine.getFrameTime())) / engine.getFrameTime();
+				player.is_grounded = false;
+
+			}else{
+				player.falling_speed = 0.0f;
+				player.is_grounded = true;
+			}
+
+
+
+			player.transform.position = player_new_position;
 		});
+
+
 
 
 
@@ -171,7 +190,7 @@ namespace Game{
 			camera.position.z = 3.2f - glm::sin(player.transform.rotation.x);
 			engine.renderer.setCamera(camera.calculate() * ph::Camera{player.transform.position, player.transform.rotation}.calculate());
 			// engine.renderer.setCamera(player.transform.calculate() * camera.calculate());
-			
+
 
 			engine.renderer.bindMaterial(player_material);
 

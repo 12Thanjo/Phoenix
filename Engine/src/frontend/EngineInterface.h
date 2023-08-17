@@ -39,8 +39,17 @@ namespace ph{
 			PH_NODISCARD auto is_mouse_down(int button) const noexcept -> bool;
 			PH_NODISCARD auto is_mouse_up(int button) const noexcept -> bool;
 
+			PH_NODISCARD auto was_mouse_down(int button) const noexcept -> bool;
+			PH_NODISCARD auto was_mouse_up(int button) const noexcept -> bool;
+
+
 			PH_NODISCARD auto is_key_down(int key) const noexcept -> bool;
 			PH_NODISCARD auto is_key_up(int key) const noexcept -> bool;
+
+			PH_NODISCARD auto was_key_down(int key) const noexcept -> bool;
+			PH_NODISCARD auto was_key_up(int key) const noexcept -> bool;
+
+
 
 			PH_NODISCARD auto mouse_x() const noexcept -> int32_t;
 			PH_NODISCARD auto mouse_y() const noexcept -> int32_t;

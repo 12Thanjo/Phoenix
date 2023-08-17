@@ -18,7 +18,12 @@ namespace ph{
 	
 	auto InputManager::init(GLFW::Window& window) noexcept -> bool {
 		this->key_down.fill(false);
+		this->key_down_old.fill(false);
+
 		this->mouse_down.fill(false);
+		this->mouse_down_old.fill(false);
+
+		
 
 		// mouse button
 		window.set_mouse_button_callback([&](int button, int action, [[maybe_unused]] int mods){
@@ -84,6 +89,9 @@ namespace ph{
 
 
 	auto InputManager::update() noexcept -> void {
+		this->mouse_down_old = this->mouse_down;
+		this->key_down_old = this->key_down;
+
 		this->mouse.dx = 0;
 		this->mouse.dy = 0;
 
@@ -100,19 +108,37 @@ namespace ph{
 		return this->mouse_down[static_cast<size_t>(button) - 1];
 	};
 
-
 	auto InputManager::is_mouse_up(InputCodes::Mouse button) const noexcept -> bool {
 		return (this->mouse_down[static_cast<size_t>(button) - 1] == false);
 	};
+
+	auto InputManager::was_mouse_down(InputCodes::Mouse button) const noexcept -> bool {
+		return this->mouse_down_old[static_cast<size_t>(button) - 1];
+	};
+
+	auto InputManager::was_mouse_up(InputCodes::Mouse button) const noexcept -> bool {
+		return (this->mouse_down_old[static_cast<size_t>(button) - 1] == false);
+	};
+
+
 
 
 	auto InputManager::is_key_down(InputCodes::Key key) const noexcept -> bool {
 		return this->key_down[static_cast<size_t>(key)];
 	};
 
-
 	auto InputManager::is_key_up(InputCodes::Key key) const noexcept -> bool {
 		return (this->key_down[static_cast<size_t>(key)] == false);
+	};
+
+
+	auto InputManager::was_key_down(InputCodes::Key key) const noexcept -> bool {
+		return this->key_down_old[static_cast<size_t>(key)];
+	};
+
+
+	auto InputManager::was_key_up(InputCodes::Key key) const noexcept -> bool {
+		return (this->key_down_old[static_cast<size_t>(key)] == false);
 	};
 
 

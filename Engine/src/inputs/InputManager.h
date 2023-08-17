@@ -26,9 +26,15 @@ namespace ph{
 			EVO_NODISCARD auto is_mouse_down(InputCodes::Mouse button) const noexcept -> bool;
 			EVO_NODISCARD auto is_mouse_up(InputCodes::Mouse button) const noexcept -> bool;
 
+			EVO_NODISCARD auto was_mouse_down(InputCodes::Mouse button) const noexcept -> bool;
+			EVO_NODISCARD auto was_mouse_up(InputCodes::Mouse button) const noexcept -> bool;
+
 
 			EVO_NODISCARD auto is_key_down(InputCodes::Key key) const noexcept -> bool;
 			EVO_NODISCARD auto is_key_up(InputCodes::Key key) const noexcept -> bool;
+
+			EVO_NODISCARD auto was_key_down(InputCodes::Key key) const noexcept -> bool;
+			EVO_NODISCARD auto was_key_up(InputCodes::Key key) const noexcept -> bool;
 
 
 			EVO_NODISCARD inline auto get_mouse_x() noexcept -> int32_t { return this->mouse.x; };
@@ -43,7 +49,11 @@ namespace ph{
 	
 		private:
 			std::array<bool, static_cast<size_t>(InputCodes::Key::_size)> key_down{};
+			std::array<bool, static_cast<size_t>(InputCodes::Key::_size)> key_down_old{};
+
 			std::array<bool, static_cast<size_t>(InputCodes::Mouse::_size)> mouse_down{};
+			std::array<bool, static_cast<size_t>(InputCodes::Mouse::_size)> mouse_down_old{};
+
 
 			struct /* mouse */ {
 				int32_t x = 0;

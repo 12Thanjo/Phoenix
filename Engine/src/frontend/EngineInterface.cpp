@@ -286,6 +286,16 @@ namespace ph{
 		return this->backend->input_manager.is_mouse_up(static_cast<InputCodes::Mouse>(button));
 	};
 
+	auto EngineInterface::was_mouse_down(int button) const noexcept -> bool {
+		return this->backend->input_manager.was_mouse_down(static_cast<InputCodes::Mouse>(button));
+	};
+
+	auto EngineInterface::was_mouse_up(int button) const noexcept -> bool {
+		return this->backend->input_manager.was_mouse_up(static_cast<InputCodes::Mouse>(button));
+	};
+
+
+
 
 	auto EngineInterface::is_key_down(int key) const noexcept -> bool {
 		return this->backend->input_manager.is_key_down(static_cast<InputCodes::Key>(key));
@@ -294,6 +304,16 @@ namespace ph{
 	auto EngineInterface::is_key_up(int key) const noexcept -> bool {
 		return this->backend->input_manager.is_key_up(static_cast<InputCodes::Key>(key));
 	};
+
+
+	auto EngineInterface::was_key_down(int key) const noexcept -> bool {
+		return this->backend->input_manager.was_key_down(static_cast<InputCodes::Key>(key));
+	};
+
+	auto EngineInterface::was_key_up(int key) const noexcept -> bool {
+		return this->backend->input_manager.was_key_up(static_cast<InputCodes::Key>(key));
+	};
+
 
 
 	auto EngineInterface::mouse_x() const noexcept -> int32_t { return this->backend->input_manager.get_mouse_x(); };

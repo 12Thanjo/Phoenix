@@ -1,5 +1,10 @@
 # Phoenix Engine Change Log
 
+### v0.1.6
+- added new Inputs functions
+	- wasPressed
+	- wasReleased
+
 ### v0.1.5
 - fixed camera transform calculation
 
