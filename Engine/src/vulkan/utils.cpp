@@ -528,7 +528,7 @@ namespace ph{
 
 			// memory information
 			for(uint32_t i = 0; i < memory_properties.memoryHeapCount; i++){
-				float memory_size_gib = static_cast<float>(memory_properties.memoryHeaps[i].size) / 1024.0f / 1024.0f / 1024.0f;
+				float memory_size_gib = float(memory_properties.memoryHeaps[i].size) / 1024.0f / 1024.0f / 1024.0f;
 
 				if(memory_properties.memoryHeaps[i].flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT){
 					PH_INFO( std::format("\tGPU memory heap <{}> (Local):  {} GiB", i, memory_size_gib) );

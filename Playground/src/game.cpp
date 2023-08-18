@@ -3,8 +3,8 @@
 
 #include <Phoenix/Phoenix.h>
 
-
 #include <iostream>
+#include <algorithm>
 
 
 namespace Game{
@@ -25,6 +25,7 @@ namespace Game{
 		ph::CharacterController controller;
 		float falling_speed = 0.0001f;
 		bool is_grounded = false;
+		int jumps_left = 2;
 	};
 
 
@@ -138,6 +139,9 @@ namespace Game{
 			player.transform.rotation.y -= engine.inputs.mouseDX() * engine.getFrameTime();
 			player.transform.rotation.x -= engine.inputs.mouseDY() * engine.getFrameTime();
 
+			player.transform.rotation.x = std::clamp(player.transform.rotation.x, -glm::radians(89.0f), glm::radians(89.0f));
+
+
 
 			auto player_velocity = glm::vec3{0.0f};
 
@@ -155,8 +159,9 @@ namespace Game{
 			}
 
 
-			if(engine.inputs.wasPressed(ph::Inputs::Key::Spacebar) && player.is_grounded){
-				player_velocity.y = 5.0f * engine.getFrameTime();
+			if(engine.inputs.wasPressed(ph::Inputs::Key::Spacebar) && player.jumps_left > 0){
+				player_velocity.y = 6.0f * engine.getFrameTime();
+				player.jumps_left -= 1;
 
 			}else{
 				player_velocity.y = 0.5f * ((2 * player.falling_speed) + (-9.81f * engine.getFrameTime())) * engine.getFrameTime();
@@ -167,13 +172,14 @@ namespace Game{
 			const glm::vec3 player_new_position = engine.physics.getCharacterControllerPosition(player.controller);
 
 
-			if((player.transform.position.y - player_new_position.y) != 0){
+			if(engine.physics.isCharacterControllerGrounded(player.controller) == false){
 				player.falling_speed = (player_velocity.y + (0.5f * -9.81f * engine.getFrameTime() * engine.getFrameTime())) / engine.getFrameTime();
 				player.is_grounded = false;
 
 			}else{
 				player.falling_speed = 0.0f;
 				player.is_grounded = true;
+				player.jumps_left = 2;
 			}
 
 
@@ -191,13 +197,20 @@ namespace Game{
 			engine.renderer.setCamera(camera.calculate() * ph::Camera{player.transform.position, player.transform.rotation}.calculate());
 			// engine.renderer.setCamera(player.transform.calculate() * camera.calculate());
 
+			if(player.is_grounded){
+				engine.renderer.bindMaterial(player_material);
+			}else{
+				engine.renderer.bindMaterial(wall_material);
+			}
 
-			engine.renderer.bindMaterial(player_material);
 
 			const float player_rot_x = player.transform.rotation.x;
 			player.transform.rotation.x = 0;
 			engine.renderer.drawMesh(player.transform.calculate(), engine.assets.getCubeMesh());
 			player.transform.rotation.x = player_rot_x;
+
+
+			engine.renderer.bindMaterial(player_material);
 
 
 			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider1), engine.assets.getCubeMesh());

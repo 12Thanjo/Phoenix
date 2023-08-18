@@ -190,7 +190,7 @@ namespace ph{
 		);
 
 
-		return StaticCollider{ static_cast<uint32_t>(this->backend->static_colliders.size() - 1) };
+		return StaticCollider{ uint32_t(this->backend->static_colliders.size() - 1) };
 	};
 
 
@@ -211,7 +211,7 @@ namespace ph{
 		);
 
 
-		return DynamicCollider{ static_cast<uint32_t>(this->backend->dynamic_colliders.size() - 1) };
+		return DynamicCollider{ uint32_t(this->backend->dynamic_colliders.size() - 1) };
 	};
 
 
@@ -240,17 +240,23 @@ namespace ph{
 
 		new_controller.create(this->backend->physics, this->backend->controller_manager, position, height, radius);
 
-		return CharacterController{ static_cast<uint32_t>(this->backend->character_controllers.size() - 1) };
+		return CharacterController{ uint32_t(this->backend->character_controllers.size() - 1) };
 	};
 
 
-	auto PhysicsEngine::get_character_controller_position(CharacterController controller) noexcept -> glm::vec3 {
+	auto PhysicsEngine::get_character_controller_position(CharacterController controller) const noexcept -> glm::vec3 {
 		return this->backend->character_controllers[controller.id].get_position();
 	};
 
 
 	auto PhysicsEngine::character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void {
 		return this->backend->character_controllers[controller.id].move(direction, dt, 0.0f);
+	};
+
+
+
+	auto PhysicsEngine::get_character_controller_grounded(CharacterController controller) const noexcept -> bool {
+		return this->backend->character_controllers[controller.id].is_colliding_below();
 	};
 
 		

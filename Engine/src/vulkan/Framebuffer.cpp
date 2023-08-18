@@ -19,7 +19,7 @@ namespace ph{
 
 			const auto create_info = VkFramebufferCreateInfo{ .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
 				.renderPass      = renderpass.handle,
-				.attachmentCount = static_cast<uint32_t>(attachments.size()),
+				.attachmentCount = uint32_t(attachments.size()),
 				.pAttachments    = attachments.data(),
 				.width           = width,
 				.height          = height,

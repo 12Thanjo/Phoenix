@@ -57,7 +57,7 @@ namespace ph{
 				.compareEnable           = VK_FALSE,
 				.compareOp               = VK_COMPARE_OP_ALWAYS,
 				.minLod                  = 0.0f,
-				.maxLod                  = static_cast<float>(mip_levels),
+				.maxLod                  = float(mip_levels),
 				.borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
 				.unnormalizedCoordinates = VK_FALSE,
 			};
@@ -425,7 +425,7 @@ namespace ph{
 
 				uint32_t mip_levels = 1;
 				if(create_mipmaps){
-					mip_levels = static_cast<uint32_t>(std::floor(std::log2(std::max(width, height)))) + 1;
+					mip_levels = uint32_t(std::floor(std::log2(std::max(width, height)))) + 1;
 				}
 
 

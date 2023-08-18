@@ -47,9 +47,11 @@ namespace ph{
 			// character controller
 			PH_NODISCARD auto create_character_controller(glm::vec3 position, float height, float radius) noexcept -> CharacterController;
 
-			PH_NODISCARD auto get_character_controller_position(CharacterController controller) noexcept -> glm::vec3;
+			PH_NODISCARD auto get_character_controller_position(CharacterController controller) const noexcept -> glm::vec3;
 
 			auto character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void;
+
+			PH_NODISCARD auto get_character_controller_grounded(CharacterController controller) const noexcept -> bool;
 
 
 	

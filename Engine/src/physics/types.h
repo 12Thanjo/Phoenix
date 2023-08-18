@@ -91,9 +91,16 @@ namespace ph{
 
 			EVO_NODISCARD auto get_position() const noexcept -> glm::vec3;
 
+			EVO_NODISCARD inline auto is_colliding_below() const noexcept -> bool { return this->collision_below; };
+			EVO_NODISCARD inline auto is_colliding_above() const noexcept -> bool { return this->collision_above; };
+			EVO_NODISCARD inline auto is_colliding_side() const noexcept -> bool { return this->collision_side; };
 	
 		private:
 			physx::PxController* controller = nullptr;
+
+			bool collision_below = false;
+			bool collision_above = false;
+			bool collision_side = false;
 	};
 
 

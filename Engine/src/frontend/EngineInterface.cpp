@@ -160,9 +160,9 @@ namespace ph{
 				return false;
 			}
 
-			this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, static_cast<uint32_t>(indices.size()));
+			this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
 
-			this->backend->default_mesh_3D = Mesh3D{ static_cast<uint32_t>(this->backend->mesh_infos_3D.size() - 1) };
+			this->backend->default_mesh_3D = Mesh3D{ uint32_t(this->backend->mesh_infos_3D.size() - 1) };
 		}
 
 
@@ -192,9 +192,9 @@ namespace ph{
 				return false;
 			}
 
-			this->backend->mesh_infos_2D.emplace_back(mesh_result->first, mesh_result->second, static_cast<uint32_t>(indices.size()));
+			this->backend->mesh_infos_2D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
 
-			this->backend->default_mesh_2D = Mesh2D{ static_cast<uint32_t>(this->backend->mesh_infos_2D.size() - 1) };
+			this->backend->default_mesh_2D = Mesh2D{ uint32_t(this->backend->mesh_infos_2D.size() - 1) };
 		}
 
 
@@ -209,7 +209,7 @@ namespace ph{
 				return false;
 			}
 
-			this->backend->default_texture = TextureID{ static_cast<uint32_t>(*texture_result) };
+			this->backend->default_texture = TextureID{ uint32_t(*texture_result) };
 		}
 
 
@@ -236,7 +236,7 @@ namespace ph{
 	auto EngineInterface::execute() noexcept -> bool {
 
 	    this->backend->window.set_resize_callback([&](int width, int height){
-	    	bool resize_result = this->resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+	    	bool resize_result = this->resize(uint32_t(width), uint32_t(height));
 
 	    	if(resize_result == false){
 	    		PH_FATAL("Engine failed to resize");
@@ -363,7 +363,7 @@ namespace ph{
 
 		auto ubo = GlobalUBO3D{
 			.view = transform,
-			.proj = glm::perspective(glm::radians(45.0f), static_cast<float>(width) / static_cast<float>(height), 0.1f, 1000.0f),
+			.proj = glm::perspective(glm::radians(45.0f), float(width) / float(height), 0.1f, 1000.0f),
 		};
 		ubo.proj[1][1] *= -1;
 
@@ -373,8 +373,8 @@ namespace ph{
 
 	auto EngineInterface::set_camera_2D(const glm::mat4& transform) noexcept -> void {
 		const auto [width, height] = this->backend->window.size();
-		float window_half_width = static_cast<float>(width);
-		float window_half_height = static_cast<float>(height);
+		float window_half_width = float(width);
+		float window_half_height = float(height);
 
 		auto ubo = GlobalUBO3D{
 			.view = transform,
@@ -435,7 +435,7 @@ namespace ph{
 
 
 				if(unique_vertices.count(vertex) == 0){
-					unique_vertices[vertex] = static_cast<uint32_t>(vertices.size());
+					unique_vertices[vertex] = uint32_t(vertices.size());
 					vertices.push_back(vertex);
 				}
 
@@ -451,10 +451,10 @@ namespace ph{
 		}
 
 
-		this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, static_cast<uint32_t>(indices.size()));
+		this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
 
 
-		*out_id = Mesh3D{ static_cast<uint32_t>(this->backend->mesh_infos_3D.size() - 1) };
+		*out_id = Mesh3D{ uint32_t(this->backend->mesh_infos_3D.size() - 1) };
 		return true;
 	};
 
@@ -476,7 +476,7 @@ namespace ph{
 			return false;
 		}
 
-		*out_id = TextureID{ static_cast<uint32_t>(*texture_result) };
+		*out_id = TextureID{ uint32_t(*texture_result) };
 		return true;
 	};
 
@@ -568,12 +568,17 @@ namespace ph{
 		return this->backend->physics.create_character_controller(position, height, radius);
 	};
 
-	auto EngineInterface::get_character_controller_position(CharacterController controller) noexcept -> glm::vec3 {
+	auto EngineInterface::get_character_controller_position(CharacterController controller) const noexcept -> glm::vec3 {
 		return this->backend->physics.get_character_controller_position(controller);
 	};
 
 	auto EngineInterface::character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void {
 		this->backend->physics.character_controller_move(controller, direction, dt);
+	};
+
+
+	auto EngineInterface::is_character_controller_grounded(CharacterController controller) const noexcept -> bool {
+		return this->backend->physics.get_character_controller_grounded(controller);
 	};
 
 
@@ -583,7 +588,7 @@ namespace ph{
 
 	auto EngineInterface::resize() noexcept -> bool {
 		const auto [width, height] = this->backend->window.size();
-		return this->resize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+		return this->resize(uint32_t(width), uint32_t(height));
 	};
 
 
@@ -690,7 +695,7 @@ namespace ph{
 		const evo::time::Nanoseconds time_diff = now - this->backend->frame_start_time;
 
 
-		this->backend->frame_time = static_cast<float>(time_diff) / static_cast<float>( static_cast<evo::time::Nanoseconds>(evo::time::Seconds{1}) );
+		this->backend->frame_time = float(time_diff) / float( static_cast<evo::time::Nanoseconds>(evo::time::Seconds{1}) );
 
 		this->backend->frame_start_time = now;
 

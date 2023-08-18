@@ -24,11 +24,11 @@ namespace ph{
 
 
 	EVO_NODISCARD inline auto extended_PhysX_to_glm(const physx::PxExtendedVec3& physx_vec) noexcept -> glm::vec3 {
-		return glm::vec3{static_cast<float>(physx_vec.x), static_cast<float>(physx_vec.y), static_cast<float>(physx_vec.z)};
+		return glm::vec3{float(physx_vec.x), float(physx_vec.y), float(physx_vec.z)};
 	};
 
 	EVO_NODISCARD inline auto glm_to_PhysX_extended(const glm::vec3& glm_vec) noexcept -> physx::PxExtendedVec3 {
-		return physx::PxExtendedVec3{static_cast<double>(glm_vec.x), static_cast<double>(glm_vec.y), static_cast<double>(glm_vec.z)};
+		return physx::PxExtendedVec3{double(glm_vec.x), double(glm_vec.y), double(glm_vec.z)};
 	};
 
 

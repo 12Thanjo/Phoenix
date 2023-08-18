@@ -153,7 +153,7 @@ namespace ph{
 				.imageUsage            = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
 
 				.imageSharingMode      = queue_families_different ? VK_SHARING_MODE_CONCURRENT : VK_SHARING_MODE_EXCLUSIVE,
-				.queueFamilyIndexCount = queue_families_different ? static_cast<uint32_t>(queue_family_indicies.size()) : 0ul,
+				.queueFamilyIndexCount = queue_families_different ? uint32_t(queue_family_indicies.size()) : 0ul,
 				.pQueueFamilyIndices   = queue_families_different ? queue_family_indicies.data() : nullptr,
 
 				.preTransform          = swapchain_support.capabilities.currentTransform,

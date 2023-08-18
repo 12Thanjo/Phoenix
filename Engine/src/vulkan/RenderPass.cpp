@@ -148,7 +148,7 @@ namespace ph{
 				.pInputAttachments = nullptr,
 
 				// color attachment
-				.colorAttachmentCount = static_cast<uint32_t>(color_attachment_refs.size()),
+				.colorAttachmentCount = uint32_t(color_attachment_refs.size()),
 				.pColorAttachments = color_attachment_refs.data(),
 
 				// multisampling color attachments
@@ -187,7 +187,7 @@ namespace ph{
 
 
 			const auto create_info = VkRenderPassCreateInfo{ .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-				.attachmentCount = static_cast<uint32_t>(attachment_descriptions.size()),
+				.attachmentCount = uint32_t(attachment_descriptions.size()),
 				.pAttachments = attachment_descriptions.data(),
 
 				.subpassCount = 1,
@@ -228,7 +228,7 @@ namespace ph{
 					.offset = {0, 0},
 					.extent = {width, height},
 				},
-				.clearValueCount = static_cast<uint32_t>(this->clear_values.size()),
+				.clearValueCount = uint32_t(this->clear_values.size()),
 				.pClearValues    = this->clear_values.data(),
 			};
 

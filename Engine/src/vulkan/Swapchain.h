@@ -75,7 +75,7 @@ namespace ph{
 
 				EVO_NODISCARD inline auto get_image_index() const noexcept -> uint32_t { return this->image_index; };
 				EVO_NODISCARD constexpr auto get_image_format() const noexcept -> VkFormat { return this->image_format; };
-				EVO_NODISCARD inline auto get_image_count() const noexcept -> uint32_t { return static_cast<uint32_t>(this->images.size()); };
+				EVO_NODISCARD inline auto get_image_count() const noexcept -> uint32_t { return uint32_t(this->images.size()); };
 				EVO_NODISCARD inline auto get_image_view(uint32_t index) const noexcept -> const VkImageView& {
 					return this->image_views[index];
 				};

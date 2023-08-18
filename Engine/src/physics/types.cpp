@@ -140,6 +140,10 @@ namespace ph{
 		const physx::PxControllerFilters filters = {};
 
 		const physx::PxControllerCollisionFlags collision_flags = this->controller->move(displacement, min_distance, dt, filters, nullptr);
+
+		this->collision_below = collision_flags.isSet(physx::PxControllerCollisionFlag::eCOLLISION_DOWN);
+		this->collision_above = collision_flags.isSet(physx::PxControllerCollisionFlag::eCOLLISION_UP);
+		this->collision_side = collision_flags.isSet(physx::PxControllerCollisionFlag::eCOLLISION_SIDES);
 	};
 
 

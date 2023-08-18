@@ -54,10 +54,10 @@ namespace ph{
 
 
 			const auto create_info = VkPipelineLayoutCreateInfo{ .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-				.setLayoutCount         = static_cast<uint32_t>(descriptor_set_layouts.size()),
+				.setLayoutCount         = uint32_t(descriptor_set_layouts.size()),
 				.pSetLayouts            = descriptor_set_layouts.data(),
 
-				.pushConstantRangeCount = static_cast<uint32_t>(push_constant_ranges.size()),
+				.pushConstantRangeCount = uint32_t(push_constant_ranges.size()),
 				.pPushConstantRanges    = push_constant_ranges.data(),
 			};
 
@@ -90,7 +90,7 @@ namespace ph{
 		) noexcept -> std::optional<VkDescriptorSetLayout> {
 
 			const auto create_info = VkDescriptorSetLayoutCreateInfo{ .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-				.bindingCount = static_cast<uint32_t>(bindings.size()),
+				.bindingCount = uint32_t(bindings.size()),
 				.pBindings    = bindings.data(),
 			};
 
@@ -125,7 +125,7 @@ namespace ph{
 
 			auto create_info = VkDescriptorPoolCreateInfo{ .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 				.maxSets       = max_sets,
-				.poolSizeCount = static_cast<uint32_t>(pool_sizes.size()),
+				.poolSizeCount = uint32_t(pool_sizes.size()),
 				.pPoolSizes    = pool_sizes.data(),
 			};
 
@@ -160,7 +160,7 @@ namespace ph{
 
 			const auto alloc_info = VkDescriptorSetAllocateInfo{ .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
 				.descriptorPool     = pool,
-				.descriptorSetCount = static_cast<uint32_t>(layouts.size()),
+				.descriptorSetCount = uint32_t(layouts.size()),
 				.pSetLayouts        = layouts.data(),
 			};
 
@@ -199,13 +199,13 @@ namespace ph{
 
 
 		auto PipelineConfig::add_vertex_binding(uint32_t size, VkVertexInputRate input_rate) noexcept -> void {
-			const uint32_t binding = static_cast<uint32_t>(this->vertex_bindings.size());
+			const uint32_t binding = uint32_t(this->vertex_bindings.size());
 			this->vertex_bindings.emplace_back(binding, size, input_rate);
 		};
 
 
 		auto PipelineConfig::add_vertex_attribute(VkFormat format, uint32_t binding) noexcept -> void {
-			const uint32_t location = static_cast<uint32_t>(this->vertex_attributes.size());
+			const uint32_t location = uint32_t(this->vertex_attributes.size());
 			const uint32_t offset = [&](){
 				if(this->vertex_attributes.empty()) return uint32_t(0);
 
@@ -232,10 +232,10 @@ namespace ph{
 
 
 			const auto vertex_input = VkPipelineVertexInputStateCreateInfo{ .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-				.vertexBindingDescriptionCount   = static_cast<uint32_t>(config.vertex_bindings.size()),
+				.vertexBindingDescriptionCount   = uint32_t(config.vertex_bindings.size()),
 				.pVertexBindingDescriptions      = config.vertex_bindings.data(),
 
-				.vertexAttributeDescriptionCount = static_cast<uint32_t>(config.vertex_attributes.size()),
+				.vertexAttributeDescriptionCount = uint32_t(config.vertex_attributes.size()),
 				.pVertexAttributeDescriptions    = config.vertex_attributes.data(),
 			};
 
@@ -309,14 +309,14 @@ namespace ph{
 			});
 
 			const auto dynamic_state = VkPipelineDynamicStateCreateInfo{ .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-				.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size()),
+				.dynamicStateCount = uint32_t(dynamic_states.size()),
 				.pDynamicStates    = dynamic_states.data(),
 			};
 
 			
 
 			const auto create_info = VkGraphicsPipelineCreateInfo{ .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
-				.stageCount          = static_cast<uint32_t>(config.shader_stages.size()),
+				.stageCount          = uint32_t(config.shader_stages.size()),
 				.pStages             = config.shader_stages.data(),
 				.pVertexInputState   = &vertex_input,
 				.pInputAssemblyState = &input_assembly,

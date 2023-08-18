@@ -191,10 +191,10 @@ namespace ph{
 
 				.pApplicationInfo        = &app_info,
 
-				.enabledLayerCount       = static_cast<uint32_t>(required_validation_layers.size()),
+				.enabledLayerCount       = uint32_t(required_validation_layers.size()),
 				.ppEnabledLayerNames     = required_validation_layers.data(),
 
-				.enabledExtensionCount   = static_cast<uint32_t>(required_extensions.size()),
+				.enabledExtensionCount   = uint32_t(required_extensions.size()),
 				.ppEnabledExtensionNames = required_extensions.data(),
 			};
 
@@ -431,14 +431,14 @@ namespace ph{
 
 
 			const auto create_info = VkDeviceCreateInfo{ .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-				.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size()),
+				.queueCreateInfoCount    = uint32_t(queue_create_infos.size()),
 				.pQueueCreateInfos       = queue_create_infos.data(),
 
 				// depricated
 				.enabledLayerCount       = 0,
 				.ppEnabledLayerNames     = nullptr,
 
-				.enabledExtensionCount   = static_cast<uint32_t>(device_extensions.size()),
+				.enabledExtensionCount   = uint32_t(device_extensions.size()),
 				.ppEnabledExtensionNames = device_extensions.data(),
 
 				.pEnabledFeatures        = &device_features,

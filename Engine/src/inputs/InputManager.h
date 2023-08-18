@@ -48,11 +48,11 @@ namespace ph{
 
 	
 		private:
-			std::array<bool, static_cast<size_t>(InputCodes::Key::_size)> key_down{};
-			std::array<bool, static_cast<size_t>(InputCodes::Key::_size)> key_down_old{};
+			std::array<bool, size_t(InputCodes::Key::_size)> key_down{};
+			std::array<bool, size_t(InputCodes::Key::_size)> key_down_old{};
 
-			std::array<bool, static_cast<size_t>(InputCodes::Mouse::_size)> mouse_down{};
-			std::array<bool, static_cast<size_t>(InputCodes::Mouse::_size)> mouse_down_old{};
+			std::array<bool, size_t(InputCodes::Mouse::_size)> mouse_down{};
+			std::array<bool, size_t(InputCodes::Mouse::_size)> mouse_down_old{};
 
 
 			struct /* mouse */ {

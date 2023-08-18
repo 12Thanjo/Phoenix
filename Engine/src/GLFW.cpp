@@ -149,7 +149,7 @@ namespace ph{
 
 				glfwShowWindow(this->handle);
 
-				return static_cast<bool>(darkmode_success);
+				return bool(darkmode_success);
 			};
 		#endif
 

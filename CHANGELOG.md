@@ -1,5 +1,8 @@
 # Phoenix Engine Change Log
 
+### v0.1.7
+- changed type conversion of basic types from `static_cast` (for example, `static_cast<int>(num)` to `int(num)`)
+
 ### v0.1.6
 - added new Inputs functions
 	- wasPressed

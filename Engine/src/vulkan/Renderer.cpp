@@ -467,7 +467,7 @@ namespace ph{
 
 
 					vkUpdateDescriptorSets(
-						this->device.get_handle(), static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+						this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
 					);
 				}
 			}
@@ -524,7 +524,7 @@ namespace ph{
 
 
 						vkUpdateDescriptorSets(
-							this->device.get_handle(), static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+							this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
 						);
 					}
 				}
@@ -579,7 +579,7 @@ namespace ph{
 
 
 					vkUpdateDescriptorSets(
-						this->device.get_handle(), static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+						this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
 					);
 				}
 			}
@@ -636,7 +636,7 @@ namespace ph{
 
 
 						vkUpdateDescriptorSets(
-							this->device.get_handle(), static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+							this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
 						);
 					}
 				}
@@ -857,8 +857,8 @@ namespace ph{
 			const auto viewport = VkViewport{
 				.x        = 0.0f,
 				.y        = 0.0f,
-				.width    = static_cast<float>(this->swapchain.get_width()),
-				.height   = static_cast<float>(this->swapchain.get_height()),
+				.width    = float(this->swapchain.get_width()),
+				.height   = float(this->swapchain.get_height()),
 				.minDepth = 0.0f,
 				.maxDepth = 1.0f,
 			};
@@ -1011,8 +1011,8 @@ namespace ph{
 			const auto output = std::pair<uint32_t, uint32_t>{this->vertex_buffer_3D_index, this->index_buffer_3D_index};
 
 
-			const uint32_t vbo_size = static_cast<uint32_t>(sizeof(vulkan::Vertex3D) * vbo.size());
-			const uint32_t ibo_size = static_cast<uint32_t>(sizeof(uint32_t) * ibo.size());
+			const uint32_t vbo_size = uint32_t(sizeof(vulkan::Vertex3D) * vbo.size());
+			const uint32_t ibo_size = uint32_t(sizeof(uint32_t) * ibo.size());
 			const uint32_t staging_buffer_size = std::max(vbo_size, ibo_size);
 
 
@@ -1052,8 +1052,8 @@ namespace ph{
 
 			staging_buffer.destroy(this->device);
 
-			this->vertex_buffer_3D_index += static_cast<uint32_t>(vbo.size());
-			this->index_buffer_3D_index += static_cast<uint32_t>(ibo.size());
+			this->vertex_buffer_3D_index += uint32_t(vbo.size());
+			this->index_buffer_3D_index += uint32_t(ibo.size());
 
 			PH_TRACE("Created mesh 3D");
 			return output;
@@ -1068,8 +1068,8 @@ namespace ph{
 			const auto output = std::pair<uint32_t, uint32_t>{this->vertex_buffer_2D_index, this->index_buffer_2D_index};
 
 
-			const uint32_t vbo_size = static_cast<uint32_t>(sizeof(vulkan::Vertex2D) * vbo.size());
-			const uint32_t ibo_size = static_cast<uint32_t>(sizeof(uint32_t) * ibo.size());
+			const uint32_t vbo_size = uint32_t(sizeof(vulkan::Vertex2D) * vbo.size());
+			const uint32_t ibo_size = uint32_t(sizeof(uint32_t) * ibo.size());
 			const uint32_t staging_buffer_size = std::max(vbo_size, ibo_size);
 
 
@@ -1109,8 +1109,8 @@ namespace ph{
 
 			staging_buffer.destroy(this->device);
 
-			this->vertex_buffer_2D_index += static_cast<uint32_t>(vbo.size());
-			this->index_buffer_2D_index += static_cast<uint32_t>(ibo.size());
+			this->vertex_buffer_2D_index += uint32_t(vbo.size());
+			this->index_buffer_2D_index += uint32_t(ibo.size());
 
 			PH_TRACE("Created mesh 2D");
 			return output;
@@ -1166,7 +1166,7 @@ namespace ph{
 
 			this->framebuffers_3D.resize(this->swapchain.get_image_count());
 
-			for(uint32_t i = 0; i < static_cast<uint32_t>(this->swapchain.get_image_count()); i++){
+			for(uint32_t i = 0; i < uint32_t(this->swapchain.get_image_count()); i++){
 				const auto attachments = std::array<VkImageView, 3>{
 					this->color_image.view,
 					this->depth_image.view,
@@ -1184,7 +1184,7 @@ namespace ph{
 			}
 
 			this->framebuffers_2D.resize(this->swapchain.get_image_count());
-			for(uint32_t i = 0; i < static_cast<uint32_t>(this->swapchain.get_image_count()); i++){
+			for(uint32_t i = 0; i < uint32_t(this->swapchain.get_image_count()); i++){
 				const auto attachments = std::array<VkImageView, 2>{
 					this->color_image.view,
 					this->swapchain.get_image_view(i)
@@ -1292,7 +1292,7 @@ namespace ph{
 			};
 
 			vkUpdateDescriptorSets(
-				this->device.get_handle(), static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+				this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
 			);
 		};
 
@@ -1317,7 +1317,7 @@ namespace ph{
 			};
 
 			vkUpdateDescriptorSets(
-				this->device.get_handle(), static_cast<uint32_t>(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+				this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
 			);
 		};
 

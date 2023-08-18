@@ -50,7 +50,7 @@ namespace ph{
 			};
 
 
-			PH_NODISCARD inline auto getDynamicColliderTransform(DynamicCollider collider) noexcept -> glm::mat4 {
+			PH_NODISCARD inline auto getDynamicColliderTransform(DynamicCollider collider) const noexcept -> glm::mat4 {
 				return this->interface->get_dynamic_collider_transform(collider);
 			};
 
@@ -64,14 +64,16 @@ namespace ph{
 				return this->interface->create_character_controller(position, height, radius);
 			};
 
-
-			PH_NODISCARD inline auto getCharacterControllerPosition(CharacterController controller) noexcept -> glm::vec3 {
+			PH_NODISCARD inline auto getCharacterControllerPosition(CharacterController controller) const noexcept -> glm::vec3 {
 				return this->interface->get_character_controller_position(controller);
 			};
 
-
 			PH_NODISCARD inline auto characterControllerMove(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void {
 				return this->interface->character_controller_move(controller, direction, dt);
+			};
+
+			PH_NODISCARD inline auto isCharacterControllerGrounded(CharacterController controller) const noexcept -> bool {
+				return this->interface->is_character_controller_grounded(controller);
 			};
 
 			

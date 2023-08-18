@@ -27,7 +27,7 @@ namespace ph{
 
 		// mouse button
 		window.set_mouse_button_callback([&](int button, int action, [[maybe_unused]] int mods){
-			if(button >= static_cast<int>(InputCodes::Mouse::_size)){
+			if(button >= int(InputCodes::Mouse::_size)){
 				PH_WARNING(std::format("Recieved unknown or unsupported mouse button code ({})", button));
 				return;
 			}
@@ -53,15 +53,15 @@ namespace ph{
 			InputCodes::Key key = convert_keycode(keycode);
 			bool pressed = (action == GLFW_PRESS);
 
-			this->key_down[static_cast<int>(key)] = pressed;
+			this->key_down[int(key)] = pressed;
 		});
 
 
 
 		// mouse_position
 		window.set_mouse_move_callback([&](double mouse_x, double mouse_y){
-			const int32_t x = static_cast<int32_t>(mouse_x);
-			const int32_t y = static_cast<int32_t>(mouse_y);
+			const int32_t x = int32_t(mouse_x);
+			const int32_t y = int32_t(mouse_y);
 
 			this->mouse.dx = x - this->mouse.x;
 			this->mouse.dy = y - this->mouse.y;
@@ -105,40 +105,40 @@ namespace ph{
 
 
 	auto InputManager::is_mouse_down(InputCodes::Mouse button) const noexcept -> bool {
-		return this->mouse_down[static_cast<size_t>(button) - 1];
+		return this->mouse_down[size_t(button) - 1];
 	};
 
 	auto InputManager::is_mouse_up(InputCodes::Mouse button) const noexcept -> bool {
-		return (this->mouse_down[static_cast<size_t>(button) - 1] == false);
+		return (this->mouse_down[size_t(button) - 1] == false);
 	};
 
 	auto InputManager::was_mouse_down(InputCodes::Mouse button) const noexcept -> bool {
-		return this->mouse_down_old[static_cast<size_t>(button) - 1];
+		return this->mouse_down_old[size_t(button) - 1];
 	};
 
 	auto InputManager::was_mouse_up(InputCodes::Mouse button) const noexcept -> bool {
-		return (this->mouse_down_old[static_cast<size_t>(button) - 1] == false);
+		return (this->mouse_down_old[size_t(button) - 1] == false);
 	};
 
 
 
 
 	auto InputManager::is_key_down(InputCodes::Key key) const noexcept -> bool {
-		return this->key_down[static_cast<size_t>(key)];
+		return this->key_down[size_t(key)];
 	};
 
 	auto InputManager::is_key_up(InputCodes::Key key) const noexcept -> bool {
-		return (this->key_down[static_cast<size_t>(key)] == false);
+		return (this->key_down[size_t(key)] == false);
 	};
 
 
 	auto InputManager::was_key_down(InputCodes::Key key) const noexcept -> bool {
-		return this->key_down_old[static_cast<size_t>(key)];
+		return this->key_down_old[size_t(key)];
 	};
 
 
 	auto InputManager::was_key_up(InputCodes::Key key) const noexcept -> bool {
-		return (this->key_down_old[static_cast<size_t>(key)] == false);
+		return (this->key_down_old[size_t(key)] == false);
 	};
 
 

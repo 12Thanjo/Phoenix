@@ -20,20 +20,20 @@ namespace ph{
 
 
 			PH_NODISCARD inline auto isDown(Mouse button) noexcept -> bool {
-				return this->interface->is_mouse_down(static_cast<int>(button));
+				return this->interface->is_mouse_down(int(button));
 			};
 
 			PH_NODISCARD inline auto isUp(Mouse button) noexcept -> bool {
-				return this->interface->is_mouse_up(static_cast<int>(button));
+				return this->interface->is_mouse_up(int(button));
 			};
 
 
 			PH_NODISCARD inline auto wasPressed(Mouse button) noexcept -> bool {
-				return this->isDown(button) && (this->interface->was_mouse_up(static_cast<int>(button)));
+				return this->isDown(button) && (this->interface->was_mouse_up(int(button)));
 			};
 
 			PH_NODISCARD inline auto wasReleased(Mouse button) noexcept -> bool {
-				return this->isUp(button) && (this->interface->was_mouse_down(static_cast<int>(button)));
+				return this->isUp(button) && (this->interface->was_mouse_down(int(button)));
 			};
 
 
@@ -41,20 +41,20 @@ namespace ph{
 
 
 			PH_NODISCARD inline auto isDown(Key key) noexcept -> bool {
-				return this->interface->is_key_down(static_cast<int>(key));
+				return this->interface->is_key_down(int(key));
 			};
 
 			PH_NODISCARD inline auto isUp(Key key) noexcept -> bool {
-				return this->interface->is_key_up(static_cast<int>(key));
+				return this->interface->is_key_up(int(key));
 			};
 
 
 			PH_NODISCARD inline auto wasPressed(Key button) noexcept -> bool {
-				return this->isDown(button) && (this->interface->was_key_up(static_cast<int>(button)));
+				return this->isDown(button) && (this->interface->was_key_up(int(button)));
 			};
 
 			PH_NODISCARD inline auto wasReleased(Key button) noexcept -> bool {
-				return this->isUp(button) && (this->interface->was_key_down(static_cast<int>(button)));
+				return this->isUp(button) && (this->interface->was_key_down(int(button)));
 			};
 
 
