@@ -21,6 +21,9 @@ project "Engine"
 		(lib.glm),
 		(lib.PhysX),
 		(lib.Vulkan),
+
+		(lib.msdfgen),
+		(lib.msdf_atlas_gen),
 		
 		(lib.stb_image),
 		(lib.tinyobj),
@@ -37,6 +40,7 @@ project "Engine"
 	links {
 		"GLFW",
 		"Evo",
+		"msdf_atlas_gen",
 	}
 
 

@@ -12,6 +12,7 @@
 
 #include "asset_loaders/ImageLoader.h"
 #include "asset_loaders/MeshLoader.h"
+#include "asset_loaders/TextLoader.h"
 
 #include "Logging.h"
 
@@ -34,6 +35,7 @@ namespace ph{
 
 		assets::ImageLoader image_loader{};
 		assets::MeshLoader mesh_loader{};
+		assets::TextLoader text_loader{};
 
 		bool suspended = false;
 
@@ -107,6 +109,12 @@ namespace ph{
 
 		if(this->backend->mesh_loader.init() == false){
 			PH_FATAL("Failed to initialize mesh loader");
+			return false;	
+		}
+
+
+		if(this->backend->text_loader.init() == false){
+			PH_FATAL("Failed to initialize text loader");
 			return false;	
 		}
 
@@ -232,8 +240,10 @@ namespace ph{
 
 
 	auto EngineInterface::shutdown() noexcept -> void {
+		this->backend->text_loader.shutdown();
 		this->backend->mesh_loader.shutdown();
 		this->backend->image_loader.shutdown();
+
 		this->backend->physics.shutdown();
 		this->backend->renderer.shutdown();
 		this->backend->input_manager.shutdown();

@@ -1,5 +1,9 @@
 # Phoenix Engine Change Log
 
+### v0.2.0
+- Added foundation for font loading / generation
+- organized projects in premake build
+
 ### v0.1.9
 - added asset loaders
 	- images

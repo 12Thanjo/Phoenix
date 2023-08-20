@@ -142,18 +142,24 @@ target = {
 
 
 lib = {
-	libs      = (config.location),
+	libs           = (config.location),
 
-	Evo       = (config.location .. "/extern/Evo/"),
-	GLFW      = (config.location .. "/extern/GLFW/include"),
-	glm       = (config.location .. "/extern/glm"),
-	PhysX     = (config.location .. "/extern/PhysX/physx/include"),
-	stb_image = (config.location .. "/extern/stb_image"),
-	tinyobj   = (config.location .. "/extern/tinyobjloader"),
+	Evo            = (config.location .. "/extern/Evo/"),
+	GLFW           = (config.location .. "/extern/GLFW/include"),
+	glm            = (config.location .. "/extern/glm"),
+	PhysX          = (config.location .. "/extern/PhysX/physx/include"),
+	stb_image      = (config.location .. "/extern/stb_image"),
+	tinyobj        = (config.location .. "/extern/tinyobjloader"),
 
-	Vulkan    = (vulkan_sdk .. "/Include"),
+	lodepng        = (config.location .. "/extern/lodepng"),
+	freetype       = (config.location .. "/extern/freetype/include"),
+	tinyxml2       = (config.location .. "/extern/tinyxml2"),
+	msdfgen        = (config.location .. "/extern/msdf_atlas_gen/msdfgen"),
+	msdf_atlas_gen = (config.location .. "/extern/msdf_atlas_gen/msdf-atlas-gen"),
 
-	Phoenix   = (config.location .. "/Engine/include"),
+	Vulkan         = (vulkan_sdk .. "/Include"),
+
+	Phoenix        = (config.location .. "/Engine/include"),
 }
 
 
@@ -163,7 +169,15 @@ lib = {
 
 
 include "libs/GLFW/premake5_GLFW.lua"
+
+include "libs/lodepng/premake5_lodepng.lua"
+include "libs/tinyxml2/premake5_tinyxml2.lua"
+include "libs/freetype/premake5_freetype.lua"
+include "libs/msdfgen/premake5_msdfgen.lua"
+include "libs/msdf_atlas_gen/premake5_msdf_atlas_gen.lua"
+
 include "libs/Evo/premake5_Evo.lua"
+
 include "assets/shaders/premake5_shaders.lua"
 
 
@@ -275,3 +289,27 @@ filter {}
 
 include "Engine/premake5_engine.lua"
 include "Playground/premake5_playground.lua"
+
+
+
+------------------------------------------------------------------------------
+-- grouping
+
+project("Playground").group     = "Executables"
+
+project("lodepng").group        = "External Libs/Text"
+project("freetype").group       = "External Libs/Text"
+project("msdf_atlas_gen").group = "External Libs/Text"
+project("msdfgen").group        = "External Libs/Text"
+project("tinyxml2").group       = "External Libs/Text"
+
+project("Evo").group            = "External Libs"
+project("GLFW").group           = "External Libs"
+
+project("Shaders").group        = "Scripts"
+
+project("Engine").group         = ""
+
+
+
+
