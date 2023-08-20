@@ -26,7 +26,8 @@ layout(location = 0) out struct Transfer {
 
 void main(){
     transfer.tex_coord = a_tex_coord;
-    transfer.normal = normalize( (transpose( mat3(push_constant.model) )) * a_normal);
+    transfer.normal = inverse(transpose( mat3(push_constant.model) )) * a_normal;
+
 
     gl_Position = global_ubo.proj * global_ubo.view * push_constant.model * vec4(a_position, 1.0);
 }

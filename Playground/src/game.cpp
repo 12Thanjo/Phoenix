@@ -106,7 +106,7 @@ namespace Game{
 
 
 
-		// const ph::MeshID tank = engine.assets.loadMesh("./assets/models/tank.obj").value();
+		// const ph::Mesh3D tank = engine.assets.loadMesh("./assets/models/tank.obj").value();
 
 		setup_materials(engine);
 

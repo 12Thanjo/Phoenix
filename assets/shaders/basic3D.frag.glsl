@@ -30,7 +30,7 @@ vec3 calcluate_lighting(DirectionalLight light, vec3 ambient, vec3 normal){
 
     // diffuse
     vec3 light_dir = normalize(light.direction);
-    float light_normal_dir = dot(normal, light_dir);
+    float light_normal_dir = dot(normalize(normal), light_dir);
     float diffuse_strength = max(light_normal_dir, 0.0);
     vec3 diffuse = light.diffuse * diffuse_strength;
 

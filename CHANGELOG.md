@@ -1,5 +1,8 @@
 # Phoenix Engine Change Log
 
+### v0.1.8
+- fixed basic 3D lighting not dealing with model orientation properly
+
 ### v0.1.7
 - changed type conversion of basic types from `static_cast` (for example, `static_cast<int>(num)` to `int(num)`)
 
