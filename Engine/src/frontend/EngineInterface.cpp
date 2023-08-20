@@ -3,13 +3,6 @@
 
 #include <libs/glm/glm.h>
 
-// TODO: proper lib
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
-// TODO: proper lib
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
 
 
 #include "vulkan/Renderer.h"
@@ -17,11 +10,12 @@
 #include "inputs/InputManager.h"
 #include "physics/PhysicsEngine.h"
 
+#include "asset_loaders/ImageLoader.h"
+#include "asset_loaders/MeshLoader.h"
+
 #include "Logging.h"
 
 #include <format>
-
-
 
 
 namespace ph{
@@ -37,6 +31,9 @@ namespace ph{
 		vulkan::Renderer renderer{};
 		InputManager input_manager{};
 		PhysicsEngine physics{};
+
+		assets::ImageLoader image_loader{};
+		assets::MeshLoader mesh_loader{};
 
 		bool suspended = false;
 
@@ -97,6 +94,19 @@ namespace ph{
 
 		if(this->backend->physics.init() == false){
 			PH_FATAL("Failed to initialize physics");
+			return false;	
+		}
+
+
+
+		if(this->backend->image_loader.init(&this->backend->renderer) == false){
+			PH_FATAL("Failed to initialize image loader");
+			return false;	
+		}
+
+
+		if(this->backend->mesh_loader.init() == false){
+			PH_FATAL("Failed to initialize mesh loader");
 			return false;	
 		}
 
@@ -222,8 +232,12 @@ namespace ph{
 
 
 	auto EngineInterface::shutdown() noexcept -> void {
+		this->backend->mesh_loader.shutdown();
+		this->backend->image_loader.shutdown();
+		this->backend->physics.shutdown();
 		this->backend->renderer.shutdown();
 		this->backend->input_manager.shutdown();
+
 		this->backend->window.destroy();
 
 		GLFW::shutdown();
@@ -391,67 +405,27 @@ namespace ph{
 	//////////////////////////////////////////////////////////////////////
 	// asset manager
 
-	// TODO: remove and replace with Assimp
 	auto EngineInterface::load_mesh(const char* filepath, Mesh3D* out_id) noexcept -> bool {
-		// https://vulkan-tutorial.com/Loading_models
-		tinyobj::attrib_t attrib;
-		std::vector<tinyobj::shape_t> shapes;
-		std::vector<tinyobj::material_t> materials;
-		std::string warn;
-		std::string err;
 
-		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath)){
-			PH_ERROR(warn + err);
-			PH_FATAL("Failed to load model");
+		const auto load_mesh_result = this->backend->mesh_loader.load_mesh(filepath);
+
+		if(load_mesh_result.has_value() == false){
+			PH_ERROR("Failed to load mesh");
 			return false;
 		}
 
-		auto unique_vertices = std::unordered_map<vulkan::Vertex3D, uint32_t>{};
+		const auto& vertices = load_mesh_result->first;
+		const auto& indices = load_mesh_result->second;
 
-		auto vertices = std::vector<vulkan::Vertex3D>{};
-		auto indices = std::vector<uint32_t>{};
+		auto renderer_create_mesh_result = this->backend->renderer.create_mesh(vertices, indices);
 
-
-		for (const auto& shape : shapes) {
-			for (const auto& index : shape.mesh.indices) {
-				auto vertex = vulkan::Vertex3D{};
-
-				vertex.position = {
-					attrib.vertices[3 * index.vertex_index + 0],
-					attrib.vertices[3 * index.vertex_index + 1],
-					attrib.vertices[3 * index.vertex_index + 2]
-				};
-
-				vertex.tex_coord = {
-					attrib.texcoords[2 * index.texcoord_index + 0],
-					1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-				};
-
-				vertex.normal = {
-					attrib.normals[3 * index.normal_index + 0],
-					attrib.normals[3 * index.normal_index + 1],
-					attrib.normals[3 * index.normal_index + 2]
-				};
-
-
-				if(unique_vertices.count(vertex) == 0){
-					unique_vertices[vertex] = uint32_t(vertices.size());
-					vertices.push_back(vertex);
-				}
-
-				indices.push_back(unique_vertices[vertex]);
-			}
-		}
-
-		auto mesh_result = this->backend->renderer.create_mesh(vertices, indices);
-
-		if(mesh_result.has_value() == false){
+		if(renderer_create_mesh_result.has_value() == false){
 			PH_ERROR("Failed to create mesh");
 			return false;
 		}
 
 
-		this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
+		this->backend->mesh_infos_3D.emplace_back(renderer_create_mesh_result->first, renderer_create_mesh_result->second, uint32_t(indices.size()));
 
 
 		*out_id = Mesh3D{ uint32_t(this->backend->mesh_infos_3D.size() - 1) };
@@ -462,21 +436,11 @@ namespace ph{
 
 
 	auto EngineInterface::load_texture(const char* filepath, TextureID* out_id) noexcept -> bool {
-		stbi_set_flip_vertically_on_load(true);
-		
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load(filepath, &texWidth, &texHeight, &texChannels, 4);
-		
-		auto texture_result = this->backend->renderer.create_texture({pixels, size_t(texWidth * texHeight * 4)}, texWidth, texHeight, true);
+		auto image_result = this->backend->image_loader.load_image(filepath);
 
-		stbi_image_free(pixels);
+		if(image_result.has_value() == false){ return false; }
 
-
-		if(texture_result.has_value() == false){
-			return false;
-		}
-
-		*out_id = TextureID{ uint32_t(*texture_result) };
+		*out_id = *image_result;
 		return true;
 	};
 

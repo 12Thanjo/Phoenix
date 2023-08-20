@@ -1,5 +1,11 @@
 # Phoenix Engine Change Log
 
+### v0.1.9
+- added asset loaders
+	- images
+	- meshes
+- fixed PhysX error when shutting down
+
 ### v0.1.8
 - fixed basic 3D lighting not dealing with model orientation properly
 

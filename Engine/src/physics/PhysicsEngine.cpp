@@ -137,6 +137,9 @@ namespace ph{
 
 
 
+		if(this->backend->controller_manager != nullptr){
+			this->backend->controller_manager->release();
+		}		
 
 		if(this->backend->scene != nullptr){
 			this->backend->scene->release();
