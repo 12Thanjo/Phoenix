@@ -15,6 +15,7 @@ namespace Game{
 	constexpr ph::Material3D player_material = {2};
 
 	constexpr ph::Material2D crosshair_material = {0};
+	constexpr ph::Material2D test_font_material = {1};
 
 
 
@@ -44,6 +45,9 @@ namespace Game{
 
 		engine.assets.setMaterialColor2D(crosshair_material, {1.0f, 1.0f, 1.0f, 1.0f});
 		engine.assets.setMaterialTexture2D(crosshair_material, engine.assets.getDefaultTexture());
+
+		engine.assets.setMaterialColor2D(test_font_material, {1.0f, 1.0f, 1.0f, 1.0f});
+		engine.assets.setMaterialTexture2D(test_font_material, {1});
 	};
 
 
@@ -229,6 +233,10 @@ namespace Game{
 
 			engine.renderer.bindMaterial2D(crosshair_material);
 			engine.renderer.renderQuad2D(ph::Transform2D{.width = 5.0f, .height = 5.0f}.calculate());
+
+
+			engine.renderer.bindMaterial2D(test_font_material);
+			engine.renderer.renderQuad2D(ph::Transform2D{.width = 1000.0f, .height = 1000.0f}.calculate());
 		});
 
 

@@ -12,7 +12,7 @@
 
 #include "asset_loaders/ImageLoader.h"
 #include "asset_loaders/MeshLoader.h"
-#include "asset_loaders/TextLoader.h"
+#include "asset_loaders/FontLoader.h"
 
 #include "Logging.h"
 
@@ -35,7 +35,7 @@ namespace ph{
 
 		assets::ImageLoader image_loader{};
 		assets::MeshLoader mesh_loader{};
-		assets::TextLoader text_loader{};
+		assets::FontLoader font_loader{};
 
 		bool suspended = false;
 
@@ -113,8 +113,8 @@ namespace ph{
 		}
 
 
-		if(this->backend->text_loader.init() == false){
-			PH_FATAL("Failed to initialize text loader");
+		if(this->backend->font_loader.init() == false){
+			PH_FATAL("Failed to initialize font loader");
 			return false;	
 		}
 
@@ -231,6 +231,19 @@ namespace ph{
 		}
 
 
+		//////////////////////////////////////////////////////////////////////
+		// temp:
+
+		{
+			assets::FontLoader::FontData pixels = this->backend->font_loader.load_text("C:\\Windows\\Fonts\\trebuc.ttf").value();
+
+			this->backend->renderer.create_texture(pixels.data, pixels.width, pixels.height, false);
+		}
+
+		// temp:
+		//////////////////////////////////////////////////////////////////////
+
+
 
 		PH_INFO("Initialzed: Phoenix Engine");
 		return true;
@@ -240,7 +253,7 @@ namespace ph{
 
 
 	auto EngineInterface::shutdown() noexcept -> void {
-		this->backend->text_loader.shutdown();
+		this->backend->font_loader.shutdown();
 		this->backend->mesh_loader.shutdown();
 		this->backend->image_loader.shutdown();
 

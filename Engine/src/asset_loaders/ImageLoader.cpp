@@ -11,7 +11,7 @@ namespace stb{
 }
 
 #if defined(EVO_COMPILER_MSVC)
-	#pragma warning(default : 4251)
+	#pragma warning(default : 4244)
 #endif
 
 

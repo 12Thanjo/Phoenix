@@ -26,6 +26,11 @@ namespace ph{
 		template<> EVO_NODISCARD constexpr auto format<float, 3>() noexcept -> VkFormat { return VK_FORMAT_R32G32B32_SFLOAT; };
 		template<> EVO_NODISCARD constexpr auto format<float, 4>() noexcept -> VkFormat { return VK_FORMAT_R32G32B32A32_SFLOAT; };
 
+		template<> EVO_NODISCARD constexpr auto format<evo::byte, 1>() noexcept -> VkFormat { return VK_FORMAT_R8_UNORM; };
+		template<> EVO_NODISCARD constexpr auto format<evo::byte, 2>() noexcept -> VkFormat { return VK_FORMAT_R8G8_UNORM; };
+		template<> EVO_NODISCARD constexpr auto format<evo::byte, 3>() noexcept -> VkFormat { return VK_FORMAT_R8G8B8_UNORM; };
+		template<> EVO_NODISCARD constexpr auto format<evo::byte, 4>() noexcept -> VkFormat { return VK_FORMAT_R8G8B8A8_UNORM; };
+
 
 
 		EVO_NODISCARD constexpr auto format_size(VkFormat format) noexcept -> uint32_t {
@@ -34,6 +39,11 @@ namespace ph{
 				case VK_FORMAT_R32G32_SFLOAT:       return (sizeof(float) * 2);
 				case VK_FORMAT_R32G32B32_SFLOAT:    return (sizeof(float) * 3);
 				case VK_FORMAT_R32G32B32A32_SFLOAT: return (sizeof(float) * 4);
+
+				case VK_FORMAT_R8_UNORM:            return (sizeof(evo::byte) * 1);
+				case VK_FORMAT_R8G8_UNORM:          return (sizeof(evo::byte) * 2);
+				case VK_FORMAT_R8G8B8_UNORM:        return (sizeof(evo::byte) * 3);
+				case VK_FORMAT_R8G8B8A8_UNORM:      return (sizeof(evo::byte) * 4);
 			};
 
 			PH_FATAL_BREAK("Unknown or unsupported format");

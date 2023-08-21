@@ -402,7 +402,7 @@ namespace ph{
 			///////////////////////////////////
 			// image
 
-			constexpr VkFormat image_format = VK_FORMAT_R8G8B8A8_UNORM;
+			constexpr VkFormat image_format = vulkan::format<evo::byte, 4>();
 
 
 			PH_ASSERT(data.size() == (width * height * 4), "image data does not match image size");

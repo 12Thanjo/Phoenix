@@ -1,5 +1,8 @@
 # Phoenix Engine Change Log
 
+### v0.2.1
+- Added generating of font atlas
+
 ### v0.2.0
 - Added foundation for font loading / generation
 - organized projects in premake build
