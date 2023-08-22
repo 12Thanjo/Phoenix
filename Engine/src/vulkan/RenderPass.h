@@ -4,6 +4,8 @@
 #include <libs/glm/glm.h>
 #include <libs/evo/evo.h>
 
+#include "vulkan/Pipeline.h"
+#include "vulkan/utils.h"
 
 namespace ph{
 	namespace vulkan{
@@ -86,6 +88,98 @@ namespace ph{
 
 			private:
 				evo::StaticVector<VkClearValue, 4> clear_values{};
+		};
+
+
+
+		//////////////////////////////////////////////////////////////////////
+		// render pass manager
+
+		class RenderPassManager{
+			public:
+				RenderPassManager() = default;
+				~RenderPassManager() = default;
+
+				///////////////////////////////////
+				// these functions must be called before RenderPassManager::create()
+
+				struct DescriptorSetLayoutID{ uint32_t id; };
+				EVO_NODISCARD auto add_descriptor_set_layout(
+					const class Device& device, const evo::ArrayProxy<VkDescriptorSetLayoutBinding> bindings
+				) noexcept -> std::optional<DescriptorSetLayoutID>;
+
+
+
+				// these functions must be called before RenderPassManager::create()
+				///////////////////////////////////
+
+
+
+				EVO_NODISCARD auto create(
+					const class Device& device,
+					VkSampleCountFlagBits msaa_samples,
+					bool has_prev,
+					bool has_next,
+					const evo::ArrayProxy<Attachment> attachment_list,
+					const evo::ArrayProxy<VkPushConstantRange> push_constant_ranges
+				) noexcept -> bool;
+
+				auto destroy(const class Device& device) noexcept -> void;
+
+
+
+				struct PipelineID{ uint32_t id; };
+				EVO_NODISCARD auto create_pipeline(
+					const class Device& device, const PipelineConfig& config, const VkPipelineCache& pipeline_cache = VK_NULL_HANDLE
+				) noexcept -> std::optional<PipelineID>;
+
+
+				struct DescriptorSetID{ uint32_t id; };
+				EVO_NODISCARD auto allocate_descriptor_set(
+					const class Device& device, DescriptorSetLayoutID layout_id
+				) noexcept -> std::optional<DescriptorSetID>;
+
+
+
+				auto write_descriptor_set_ubo(
+					const class Device& device, DescriptorSetLayoutID layout_id, DescriptorSetID set_id, uint32_t binding, const class Buffer& buffer
+				) noexcept -> void;
+
+				auto write_descriptor_set_texture(
+					const class Device& device, DescriptorSetLayoutID layout_id, DescriptorSetID set_id, uint32_t binding, const class Texture& texture
+				) noexcept -> void;
+
+
+				auto bind_descriptor_set(
+					const class CommandBuffer& command_buffer, DescriptorSetLayoutID layout_id, DescriptorSetID set_id
+				) noexcept -> void;
+
+
+
+			private:
+				EVO_NODISCARD auto allocate_descriptor_pool(const class Device& device, DescriptorSetLayoutID layout_id) noexcept -> bool;
+			
+			// TOOD: private
+			public:
+				RenderPass render_pass{};
+				VkPipelineLayout pipeline_layout{VK_NULL_HANDLE};
+
+				std::vector<Pipeline> pipelines{};
+
+
+				std::vector<VkDescriptorSetLayout> descriptor_set_layouts{};
+
+
+			public:
+				// TODO: clean up DescriptorSetLayoutInfo's
+				struct DescriptorSetLayoutInfo{
+					std::vector<VkDescriptorPool> descriptor_pools{};
+					std::vector<VkDescriptorSetLayoutBinding> bindings{};
+					std::vector<VkDescriptorSet> descriptor_sets{};
+				};
+
+				// there should be one std::vector<DescriptorSetLayoutInfo> for every descriptor set layout
+				std::vector<DescriptorSetLayoutInfo> descriptor_set_layout_infos{};
 		};
 
 

@@ -6,17 +6,16 @@
 #include "vulkan/context.h"
 #include "vulkan/Framebuffer.h"
 #include "vulkan/commands.h"
+#include "vulkan/Buffer.h"
+#include "vulkan/images.h"
+
 
 namespace ph{
 	namespace vulkan{
 
 
 		auto RenderPass::create(
-			const class Device& device,
-			VkSampleCountFlagBits msaa_samples,
-			bool has_prev,
-			bool has_next,
-			const evo::ArrayProxy<Attachment> attachment_list
+			const Device& device, VkSampleCountFlagBits msaa_samples, bool has_prev, bool has_next, const evo::ArrayProxy<Attachment> attachment_list
 		) noexcept -> bool {
 
 			///////////////////////////////////
@@ -246,6 +245,228 @@ namespace ph{
 		};
 
 
+
+
+		//////////////////////////////////////////////////////////////////////
+		// render pass manager
+
+
+		auto RenderPassManager::create(
+			const Device& device,
+			VkSampleCountFlagBits msaa_samples,
+			bool has_prev,
+			bool has_next,
+			const evo::ArrayProxy<Attachment> attachment_list,
+			const evo::ArrayProxy<VkPushConstantRange> push_constant_ranges
+		) noexcept -> bool {
+
+			if(this->render_pass.create(device, msaa_samples, has_prev, has_next, attachment_list) == false){
+				PH_ERROR("Render pass manager failed to create vulkan render pass");
+				return false;
+			}
+
+
+			const auto pipeline_layout_result = vulkan::create_pipeline_layout(device, this->descriptor_set_layouts, push_constant_ranges);
+			if(pipeline_layout_result.has_value() == false){
+				PH_ERROR("Render pass manager failed to create pipeline layout");
+				return false;
+			}
+
+			this->pipeline_layout = std::move(*pipeline_layout_result);
+
+
+
+			PH_DEBUG("Created: Vulkan render pass manager");
+			return true;
+		};
+
+
+
+
+		auto RenderPassManager::destroy(const Device& device) noexcept -> void {
+
+			for(auto& descriptor_set_layout : this->descriptor_set_layouts){
+				vulkan::destroy_descriptor_set_layout(device, descriptor_set_layout);
+			}
+			this->descriptor_set_layouts.clear();
+			this->descriptor_set_layouts.shrink_to_fit();
+
+
+			for(auto& pipeline : this->pipelines){
+				pipeline.destroy(device);
+			}
+			this->pipelines.clear();
+			this->pipelines.shrink_to_fit();
+
+
+			vulkan::destroy_pipeline_layout(device, this->pipeline_layout);
+
+			this->render_pass.destroy(device);
+
+
+			PH_DEBUG("Destroyed: Vulkan render pass manager");
+		};
+
+
+		auto RenderPassManager::add_descriptor_set_layout(
+			const Device& device, const evo::ArrayProxy<VkDescriptorSetLayoutBinding> bindings
+		) noexcept -> std::optional<DescriptorSetLayoutID> {
+			
+			const auto result = vulkan::create_descriptor_set_layout(device, bindings);
+			if(result.has_value() == false) return std::nullopt;
+
+			this->descriptor_set_layouts.emplace_back(*result);
+			this->descriptor_set_layout_infos.push_back({ .bindings = std::vector(bindings.front(), bindings.back()) }); 
+
+			const auto layout_id = DescriptorSetLayoutID{ uint32_t(this->descriptor_set_layouts.size() - 1) };
+			this->allocate_descriptor_pool(device, layout_id);
+
+			return layout_id;
+		};
+
+
+
+		auto RenderPassManager::create_pipeline(
+			const class Device& device, const PipelineConfig& config, const VkPipelineCache& pipeline_cache
+		) noexcept -> std::optional<PipelineID> {
+
+			auto new_pipeline = Pipeline{};
+
+			if(new_pipeline.create(device, this->render_pass, this->pipeline_layout, config, pipeline_cache) == false){
+				PH_ERROR("Failed to create Vulkan pipeline");
+				return std::nullopt;
+			}
+
+
+			this->pipelines.emplace_back(std::move(new_pipeline));
+
+			return PipelineID{ uint32_t(this->pipelines.size()) };
+		};
+
+
+
+		// TODO: allocate new pool if necessary
+		auto RenderPassManager::allocate_descriptor_set(
+			const Device& device, DescriptorSetLayoutID layout_id
+		) noexcept -> std::optional<DescriptorSetID> {
+			PH_WARNING(std::format("TODO: allocate new pool if necessary ({})", __FUNCTION__));
+
+			auto& layout_info = this->descriptor_set_layout_infos[layout_id.id];
+
+			auto result = vulkan::allocate_descriptor_sets(device, layout_info.descriptor_pools.back(), this->descriptor_set_layouts[layout_id.id]);
+
+			if(result.has_value() == false){
+				PH_FATAL("Failed to allocate descriptor set");
+				return std::nullopt;
+			}
+
+			layout_info.descriptor_sets.emplace_back(result->operator[](0));
+
+
+			PH_TRACE("Allocated a Vulkan descriptor set");
+			return DescriptorSetID{ uint32_t(layout_info.descriptor_sets.size() - 1) };
+		};
+
+
+
+		auto RenderPassManager::write_descriptor_set_ubo(
+			const Device& device, DescriptorSetLayoutID layout_id, DescriptorSetID set_id, uint32_t binding, const Buffer& buffer
+		) noexcept -> void {
+
+			const auto buffer_info = VkDescriptorBufferInfo{
+				.buffer = buffer.handle,
+				.offset = 0,
+				.range  = buffer.size(),
+			};
+
+			
+			const auto descriptor_writes = std::array<VkWriteDescriptorSet, 1>{
+				VkWriteDescriptorSet{ .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+					.dstSet          = this->descriptor_set_layout_infos[layout_id.id].descriptor_sets[set_id.id],
+					.dstBinding      = binding,
+					.dstArrayElement = 0,
+
+					.descriptorCount = 1,
+					.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+					.pBufferInfo     = &buffer_info,
+				},
+			};
+
+
+			vkUpdateDescriptorSets(
+				device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+			);
+		};
+
+
+
+
+		auto RenderPassManager::write_descriptor_set_texture(
+			const Device& device, DescriptorSetLayoutID layout_id, DescriptorSetID set_id, uint32_t binding, const Texture& texture
+		) noexcept -> void {
+
+			const auto image_info = VkDescriptorImageInfo{
+				.sampler     = texture.get_sampler(),
+				.imageView   = texture.get_image_view(),
+				.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			};
+
+			
+			const auto descriptor_writes = std::array<VkWriteDescriptorSet, 1>{
+				VkWriteDescriptorSet{ .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+					.dstSet          = this->descriptor_set_layout_infos[layout_id.id].descriptor_sets[set_id.id],
+					.dstBinding      = binding,
+					.dstArrayElement = 0,
+
+					.descriptorCount = 1,
+					.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
+					.pImageInfo      = &image_info,
+				},
+			};
+
+
+			vkUpdateDescriptorSets(
+				device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+			);
+
+		};
+
+
+
+
+		auto RenderPassManager::bind_descriptor_set(
+			const CommandBuffer& command_buffer, DescriptorSetLayoutID layout_id, DescriptorSetID set_id
+		) noexcept -> void {
+			command_buffer.bind_descriptor_set(
+				this->pipeline_layout, layout_id.id, this->descriptor_set_layout_infos[layout_id.id].descriptor_sets[set_id.id], VK_PIPELINE_BIND_POINT_GRAPHICS
+			);
+		};
+
+
+
+
+
+		auto RenderPassManager::allocate_descriptor_pool(const Device& device, DescriptorSetLayoutID layout_id) noexcept -> bool {
+			DescriptorSetLayoutInfo& info = this->descriptor_set_layout_infos[layout_id.id];
+
+			auto pool_sizes = std::vector<VkDescriptorPoolSize>{};
+
+			for(const auto& binding : info.bindings){
+				pool_sizes.emplace_back(binding.descriptorType, MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS);
+			}
+
+
+			const auto descriptor_pool_result = vulkan::create_descriptor_pool(device, (MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS), pool_sizes);
+
+			if(descriptor_pool_result.has_value() == false){
+				PH_FATAL("Failed to create descriptor pool");
+				return false;
+			}
+
+			info.descriptor_pools.emplace_back(std::move(*descriptor_pool_result));
+
+			return true;
+		};
 
 
 

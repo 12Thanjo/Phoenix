@@ -27,7 +27,7 @@ namespace ph{
 		uint32_t index_count;
 	};
 
-	struct EngineBackend{
+	struct EngineData{
 		GLFW::Window window{};
 		vulkan::Renderer renderer{};
 		InputManager input_manager{};
@@ -57,11 +57,11 @@ namespace ph{
 
 
 	EngineInterface::EngineInterface() noexcept {
-		this->backend = new EngineBackend();
+		this->data = new EngineData();
 	}
 	
 	EngineInterface::~EngineInterface() noexcept {
-		delete this->backend;	
+		delete this->data;	
 	}
 
 
@@ -71,49 +71,49 @@ namespace ph{
 	auto EngineInterface::init() noexcept -> bool {
 		if(GLFW::init() == false) return false;
 
-		if(this->backend->window.create(1280, 720, "Phoenix Engine | Playground") == false){
+		if(this->data->window.create(1280, 720, "Phoenix Engine | Playground") == false){
 			PH_FATAL("Failed to create Window");
 			return false;
 		}
 
 		#if defined(PH_PLATFORM_WINDOWS)
-			this->backend->window.use_darkmode();
+			this->data->window.use_darkmode();
 		#endif
 
 
-		if(this->backend->input_manager.init(this->backend->window) == false){
+		if(this->data->input_manager.init(this->data->window) == false){
 			PH_FATAL("Failed to initialize input manager");
 			return false;
 		}
 
 
-		if(this->backend->renderer.init(&this->backend->window) == false){
+		if(this->data->renderer.init(&this->data->window) == false){
 			PH_FATAL("Failed to initialize renderer");
 			return false;
 		}
 
 
 
-		if(this->backend->physics.init() == false){
+		if(this->data->physics.init() == false){
 			PH_FATAL("Failed to initialize physics");
 			return false;	
 		}
 
 
 
-		if(this->backend->image_loader.init(&this->backend->renderer) == false){
+		if(this->data->image_loader.init(&this->data->renderer) == false){
 			PH_FATAL("Failed to initialize image loader");
 			return false;	
 		}
 
 
-		if(this->backend->mesh_loader.init() == false){
+		if(this->data->mesh_loader.init() == false){
 			PH_FATAL("Failed to initialize mesh loader");
 			return false;	
 		}
 
 
-		if(this->backend->font_loader.init() == false){
+		if(this->data->font_loader.init() == false){
 			PH_FATAL("Failed to initialize font loader");
 			return false;	
 		}
@@ -171,16 +171,16 @@ namespace ph{
 			});
 
 
-			auto mesh_result = this->backend->renderer.create_mesh(vertices, indices);
+			auto mesh_result = this->data->renderer.create_mesh_3D(vertices, indices);
 
 			if(mesh_result.has_value() == false){
 				PH_ERROR("Failed to create mesh");
 				return false;
 			}
 
-			this->backend->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
+			this->data->mesh_infos_3D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
 
-			this->backend->default_mesh_3D = Mesh3D{ uint32_t(this->backend->mesh_infos_3D.size() - 1) };
+			this->data->default_mesh_3D = Mesh3D{ uint32_t(this->data->mesh_infos_3D.size() - 1) };
 		}
 
 
@@ -203,16 +203,16 @@ namespace ph{
 			});
 
 
-			auto mesh_result = this->backend->renderer.create_mesh_2D(vertices, indices);
+			auto mesh_result = this->data->renderer.create_mesh_2D(vertices, indices);
 
 			if(mesh_result.has_value() == false){
 				PH_ERROR("Failed to create mesh");
 				return false;
 			}
 
-			this->backend->mesh_infos_2D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
+			this->data->mesh_infos_2D.emplace_back(mesh_result->first, mesh_result->second, uint32_t(indices.size()));
 
-			this->backend->default_mesh_2D = Mesh2D{ uint32_t(this->backend->mesh_infos_2D.size() - 1) };
+			this->data->default_mesh_2D = Mesh2D{ uint32_t(this->data->mesh_infos_2D.size() - 1) };
 		}
 
 
@@ -221,13 +221,13 @@ namespace ph{
 
 		{
 			const auto pixels = std::array<byte, 4>{255, 255, 255, 255};
-			auto texture_result = this->backend->renderer.create_texture(pixels, 1, 1, false);
+			auto texture_result = this->data->renderer.create_texture(pixels, 1, 1, false);
 			if(texture_result.has_value() == false){
 				PH_ERROR("Failed to create default texture");
 				return false;
 			}
 
-			this->backend->default_texture = TextureID{ uint32_t(*texture_result) };
+			this->data->default_texture = TextureID{ uint32_t(*texture_result) };
 		}
 
 
@@ -235,9 +235,9 @@ namespace ph{
 		// temp:
 
 		{
-			assets::FontLoader::FontData pixels = this->backend->font_loader.load_text("C:\\Windows\\Fonts\\trebuc.ttf").value();
+			assets::FontLoader::FontData pixels = this->data->font_loader.load_text("C:\\Windows\\Fonts\\trebuc.ttf").value();
 
-			this->backend->renderer.create_texture(pixels.data, pixels.width, pixels.height, false);
+			this->data->renderer.create_texture(pixels.data, pixels.width, pixels.height, false);
 		}
 
 		// temp:
@@ -253,15 +253,15 @@ namespace ph{
 
 
 	auto EngineInterface::shutdown() noexcept -> void {
-		this->backend->font_loader.shutdown();
-		this->backend->mesh_loader.shutdown();
-		this->backend->image_loader.shutdown();
+		this->data->font_loader.shutdown();
+		this->data->mesh_loader.shutdown();
+		this->data->image_loader.shutdown();
 
-		this->backend->physics.shutdown();
-		this->backend->renderer.shutdown();
-		this->backend->input_manager.shutdown();
+		this->data->physics.shutdown();
+		this->data->renderer.shutdown();
+		this->data->input_manager.shutdown();
 
-		this->backend->window.destroy();
+		this->data->window.destroy();
 
 		GLFW::shutdown();
 
@@ -272,7 +272,7 @@ namespace ph{
 
 	auto EngineInterface::execute() noexcept -> bool {
 
-	    this->backend->window.set_resize_callback([&](int width, int height){
+	    this->data->window.set_resize_callback([&](int width, int height){
 	    	bool resize_result = this->resize(uint32_t(width), uint32_t(height));
 
 	    	if(resize_result == false){
@@ -281,23 +281,23 @@ namespace ph{
 	    	}
 	    });
 
-	    this->backend->frame_start_time = evo::time::now();
+	    this->data->frame_start_time = evo::time::now();
 
 	    // TODO: better check for if window should close
-	    while(this->backend->window.should_close() == false){
+	    while(this->data->window.should_close() == false){
 	    	this->calculate_timings();
 
-	    	this->backend->input_manager.update();
+	    	this->data->input_manager.update();
 	    	GLFW::poll_events();
 
-	    	if(this->backend->suspended == false){
+	    	if(this->data->suspended == false){
 	    		if(this->draw_frame() == false){
 	    			PH_FATAL("Renderer failed to draw frame");
 	    			return false;
 	    		}
 	    	}
 
-	    	this->backend->window.set_title( std::format("Phoenix Engine | FPS: {:.0f}", 1.0f / this->backend->frame_time) );
+	    	this->data->window.set_title( std::format("Phoenix Engine | FPS: {:.0f}", 1.0f / this->data->frame_time) );
 	    };
 
 	    return true;
@@ -306,119 +306,119 @@ namespace ph{
 
 
 
-	auto EngineInterface::set_update_callback(Callback callback) noexcept -> void { this->backend->update_callback = callback; };
+	auto EngineInterface::set_update_callback(Callback callback) noexcept -> void { this->data->update_callback = callback; };
 
 
-	auto EngineInterface::get_frame_time() const noexcept -> float { return this->backend->frame_time; };
+	auto EngineInterface::get_frame_time() const noexcept -> float { return this->data->frame_time; };
 
 
 	//////////////////////////////////////////////////////////////////////
 	// inputs
 
 	auto EngineInterface::is_mouse_down(int button) const noexcept -> bool {
-		return this->backend->input_manager.is_mouse_down(static_cast<InputCodes::Mouse>(button));
+		return this->data->input_manager.is_mouse_down(static_cast<InputCodes::Mouse>(button));
 	};
 
 	auto EngineInterface::is_mouse_up(int button) const noexcept -> bool {
-		return this->backend->input_manager.is_mouse_up(static_cast<InputCodes::Mouse>(button));
+		return this->data->input_manager.is_mouse_up(static_cast<InputCodes::Mouse>(button));
 	};
 
 	auto EngineInterface::was_mouse_down(int button) const noexcept -> bool {
-		return this->backend->input_manager.was_mouse_down(static_cast<InputCodes::Mouse>(button));
+		return this->data->input_manager.was_mouse_down(static_cast<InputCodes::Mouse>(button));
 	};
 
 	auto EngineInterface::was_mouse_up(int button) const noexcept -> bool {
-		return this->backend->input_manager.was_mouse_up(static_cast<InputCodes::Mouse>(button));
+		return this->data->input_manager.was_mouse_up(static_cast<InputCodes::Mouse>(button));
 	};
 
 
 
 
 	auto EngineInterface::is_key_down(int key) const noexcept -> bool {
-		return this->backend->input_manager.is_key_down(static_cast<InputCodes::Key>(key));
+		return this->data->input_manager.is_key_down(static_cast<InputCodes::Key>(key));
 	};
 
 	auto EngineInterface::is_key_up(int key) const noexcept -> bool {
-		return this->backend->input_manager.is_key_up(static_cast<InputCodes::Key>(key));
+		return this->data->input_manager.is_key_up(static_cast<InputCodes::Key>(key));
 	};
 
 
 	auto EngineInterface::was_key_down(int key) const noexcept -> bool {
-		return this->backend->input_manager.was_key_down(static_cast<InputCodes::Key>(key));
+		return this->data->input_manager.was_key_down(static_cast<InputCodes::Key>(key));
 	};
 
 	auto EngineInterface::was_key_up(int key) const noexcept -> bool {
-		return this->backend->input_manager.was_key_up(static_cast<InputCodes::Key>(key));
+		return this->data->input_manager.was_key_up(static_cast<InputCodes::Key>(key));
 	};
 
 
 
-	auto EngineInterface::mouse_x() const noexcept -> int32_t { return this->backend->input_manager.get_mouse_x(); };
-	auto EngineInterface::mouse_y() const noexcept -> int32_t { return this->backend->input_manager.get_mouse_y(); };
-	auto EngineInterface::mouse_dx() const noexcept -> int32_t { return this->backend->input_manager.get_mouse_dx(); };
-	auto EngineInterface::mouse_dy() const noexcept -> int32_t { return this->backend->input_manager.get_mouse_dy(); };
+	auto EngineInterface::mouse_x() const noexcept -> int32_t { return this->data->input_manager.get_mouse_x(); };
+	auto EngineInterface::mouse_y() const noexcept -> int32_t { return this->data->input_manager.get_mouse_y(); };
+	auto EngineInterface::mouse_dx() const noexcept -> int32_t { return this->data->input_manager.get_mouse_dx(); };
+	auto EngineInterface::mouse_dy() const noexcept -> int32_t { return this->data->input_manager.get_mouse_dy(); };
 
 
 
 	//////////////////////////////////////////////////////////////////////
 	// renderer
 
-	auto EngineInterface::set_render_callback_3D(Callback callback) noexcept -> void { this->backend->render_callback_3D = callback; };
-	auto EngineInterface::set_render_callback_2D(Callback callback) noexcept -> void { this->backend->render_callback_2D = callback; };
+	auto EngineInterface::set_render_callback_3D(Callback callback) noexcept -> void { this->data->render_callback_3D = callback; };
+	auto EngineInterface::set_render_callback_2D(Callback callback) noexcept -> void { this->data->render_callback_2D = callback; };
 
 
 	auto EngineInterface::bind_material(Material3D material) noexcept -> void {
-		this->backend->renderer.bind_descriptor_set_3D(material.id);
+		this->data->renderer.bind_descriptor_set_3D(material.id);
 	};
 
 	auto EngineInterface::bind_material_2D(Material2D material) noexcept -> void {
-		this->backend->renderer.bind_descriptor_set_2D(material.id);
+		this->data->renderer.bind_descriptor_set_2D(material.id);
 	};
 
 
 	auto EngineInterface::render_mesh(const glm::mat4& model, Mesh3D mesh) noexcept -> void {
-		PH_ASSERT(mesh.id < this->backend->mesh_infos_3D.size(), "Invalid mesh id");
+		PH_ASSERT(mesh.id < this->data->mesh_infos_3D.size(), "Invalid mesh id");
 
-		this->backend->renderer.set_model_push_constant_3D(model);
+		this->data->renderer.set_model_push_constant_3D(model);
 
-		const auto& mesh_info = this->backend->mesh_infos_3D[mesh.id];
-		this->backend->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
+		const auto& mesh_info = this->data->mesh_infos_3D[mesh.id];
+		this->data->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
 	};
 
 
 	auto EngineInterface::render_mesh_2D(const glm::mat4& model) noexcept -> void {
-		this->backend->renderer.set_model_push_constant_2D(model);
+		this->data->renderer.set_model_push_constant_2D(model);
 
-		const auto& mesh_info = this->backend->mesh_infos_2D[this->backend->default_mesh_2D.id];
-		this->backend->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
+		const auto& mesh_info = this->data->mesh_infos_2D[this->data->default_mesh_2D.id];
+		this->data->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
 	};
 
 
 
 	auto EngineInterface::set_camera(const glm::mat4& transform) noexcept -> void {
-		const auto [width, height] = this->backend->window.size();
+		const auto [width, height] = this->data->window.size();
 
-		auto ubo = GlobalUBO3D{
+		auto ubo = vulkan::GlobalUBO3D{
 			.view = transform,
 			.proj = glm::perspective(glm::radians(45.0f), float(width) / float(height), 0.1f, 1000.0f),
 		};
 		ubo.proj[1][1] *= -1;
 
-		this->backend->renderer.set_global_ubo_3D(&ubo);
+		this->data->renderer.set_global_ubo_3D(&ubo);
 	};
 
 
 	auto EngineInterface::set_camera_2D(const glm::mat4& transform) noexcept -> void {
-		const auto [width, height] = this->backend->window.size();
+		const auto [width, height] = this->data->window.size();
 		float window_half_width = float(width);
 		float window_half_height = float(height);
 
-		auto ubo = GlobalUBO3D{
+		auto ubo = vulkan::GlobalUBO2D{
 			.view = transform,
 			.proj = glm::ortho(-window_half_width, window_half_width, window_half_height, -window_half_height, -1.0f, 1.0f),
 		};
 
-		this->backend->renderer.set_global_ubo_2D(&ubo);
+		this->data->renderer.set_global_ubo_2D(&ubo);
 	};
 
 
@@ -430,7 +430,7 @@ namespace ph{
 
 	auto EngineInterface::load_mesh(const char* filepath, Mesh3D* out_id) noexcept -> bool {
 
-		const auto load_mesh_result = this->backend->mesh_loader.load_mesh(filepath);
+		const auto load_mesh_result = this->data->mesh_loader.load_mesh(filepath);
 
 		if(load_mesh_result.has_value() == false){
 			PH_ERROR("Failed to load mesh");
@@ -440,7 +440,7 @@ namespace ph{
 		const auto& vertices = load_mesh_result->first;
 		const auto& indices = load_mesh_result->second;
 
-		auto renderer_create_mesh_result = this->backend->renderer.create_mesh(vertices, indices);
+		auto renderer_create_mesh_result = this->data->renderer.create_mesh_3D(vertices, indices);
 
 		if(renderer_create_mesh_result.has_value() == false){
 			PH_ERROR("Failed to create mesh");
@@ -448,10 +448,10 @@ namespace ph{
 		}
 
 
-		this->backend->mesh_infos_3D.emplace_back(renderer_create_mesh_result->first, renderer_create_mesh_result->second, uint32_t(indices.size()));
+		this->data->mesh_infos_3D.emplace_back(renderer_create_mesh_result->first, renderer_create_mesh_result->second, uint32_t(indices.size()));
 
 
-		*out_id = Mesh3D{ uint32_t(this->backend->mesh_infos_3D.size() - 1) };
+		*out_id = Mesh3D{ uint32_t(this->data->mesh_infos_3D.size() - 1) };
 		return true;
 	};
 
@@ -459,7 +459,7 @@ namespace ph{
 
 
 	auto EngineInterface::load_texture(const char* filepath, TextureID* out_id) noexcept -> bool {
-		auto image_result = this->backend->image_loader.load_image(filepath);
+		auto image_result = this->data->image_loader.load_image(filepath);
 
 		if(image_result.has_value() == false){ return false; }
 
@@ -470,26 +470,26 @@ namespace ph{
 
 
 	auto EngineInterface::set_material_color(Material3D material, glm::vec4 color) noexcept -> void {
-		this->backend->renderer.set_instance_ubo_3D(material.id, &color);
+		this->data->renderer.set_instance_ubo_3D(material.id, &color);
 	};
 
 	auto EngineInterface::set_material_texture(Material3D material, TextureID texture) noexcept -> void {
-		this->backend->renderer.set_instance_texture_3D(material.id, texture.id);
+		this->data->renderer.set_instance_texture_3D(material.id, texture.id);
 	};
 
 
 
 	auto EngineInterface::set_material_color_2D(Material2D material, glm::vec4 color) noexcept -> void {
-		this->backend->renderer.set_instance_ubo_2D(material.id, &color);
+		this->data->renderer.set_instance_ubo_2D(material.id, &color);
 	};
 
 	auto EngineInterface::set_material_texture_2D(Material2D material, TextureID texture) noexcept -> void {
-		this->backend->renderer.set_instance_texture_2D(material.id, texture.id);
+		this->data->renderer.set_instance_texture_2D(material.id, texture.id);
 	};
 
 
-	auto EngineInterface::get_cube_mesh() const noexcept -> Mesh3D { return this->backend->default_mesh_3D;	};
-	auto EngineInterface::get_default_texture() const noexcept -> TextureID { return this->backend->default_texture; };
+	auto EngineInterface::get_cube_mesh() const noexcept -> Mesh3D { return this->data->default_mesh_3D;	};
+	auto EngineInterface::get_default_texture() const noexcept -> TextureID { return this->data->default_texture; };
 
 
 
@@ -497,12 +497,12 @@ namespace ph{
 	// window
 
 	auto EngineInterface::get_window_size(int* width, int* height) const noexcept -> void {
-		std::tie(*width, *height) = this->backend->window.size();
+		std::tie(*width, *height) = this->data->window.size();
 	};
 
 
-	auto EngineInterface::capture_mouse() noexcept -> void { this->backend->window.capture_mouse();	};
-	auto EngineInterface::release_mouse() noexcept -> void { this->backend->window.release_mouse();	};
+	auto EngineInterface::capture_mouse() noexcept -> void { this->data->window.capture_mouse();	};
+	auto EngineInterface::release_mouse() noexcept -> void { this->data->window.release_mouse();	};
 
 
 
@@ -516,7 +516,7 @@ namespace ph{
 		glm::vec3 position, glm::vec3 scale, float static_friction, float dynamic_friction, float restitution
 	) noexcept -> StaticCollider {
 
-		return this->backend->physics.create_static_cube(position, scale, PhysicsMaterial{static_friction, dynamic_friction, restitution});
+		return this->data->physics.create_static_cube(position, scale, PhysicsMaterial{static_friction, dynamic_friction, restitution});
 	};
 
 
@@ -528,22 +528,22 @@ namespace ph{
 		glm::vec3 position, glm::vec3 scale, float static_friction, float dynamic_friction, float restitution
 	) noexcept -> DynamicCollider {
 
-		return this->backend->physics.create_dynamic_cube(position, scale, PhysicsMaterial{static_friction, dynamic_friction, restitution});
+		return this->data->physics.create_dynamic_cube(position, scale, PhysicsMaterial{static_friction, dynamic_friction, restitution});
 	};
 
 
 
 	auto EngineInterface::set_dynamic_collider_density(DynamicCollider collider, float density) noexcept -> void {
-		this->backend->physics.set_dynamic_collider_density(collider, density);
+		this->data->physics.set_dynamic_collider_density(collider, density);
 	};
 
 	auto EngineInterface::set_dynamic_collider_mass(DynamicCollider collider, float mass) noexcept -> void {
-		this->backend->physics.set_dynamic_collider_mass(collider, mass);
+		this->data->physics.set_dynamic_collider_mass(collider, mass);
 	};
 
 
 	auto EngineInterface::get_dynamic_collider_transform(DynamicCollider collider) const noexcept -> glm::mat4 {
-		return this->backend->physics.get_dynamic_collider_transform(collider);
+		return this->data->physics.get_dynamic_collider_transform(collider);
 	};
 
 
@@ -552,20 +552,20 @@ namespace ph{
 	// character controller
 
 	auto EngineInterface::create_character_controller(glm::vec3 position, float height, float radius) noexcept -> CharacterController {
-		return this->backend->physics.create_character_controller(position, height, radius);
+		return this->data->physics.create_character_controller(position, height, radius);
 	};
 
 	auto EngineInterface::get_character_controller_position(CharacterController controller) const noexcept -> glm::vec3 {
-		return this->backend->physics.get_character_controller_position(controller);
+		return this->data->physics.get_character_controller_position(controller);
 	};
 
 	auto EngineInterface::character_controller_move(CharacterController controller, glm::vec3 direction, float dt) noexcept -> void {
-		this->backend->physics.character_controller_move(controller, direction, dt);
+		this->data->physics.character_controller_move(controller, direction, dt);
 	};
 
 
 	auto EngineInterface::is_character_controller_grounded(CharacterController controller) const noexcept -> bool {
-		return this->backend->physics.get_character_controller_grounded(controller);
+		return this->data->physics.get_character_controller_grounded(controller);
 	};
 
 
@@ -574,7 +574,7 @@ namespace ph{
 
 
 	auto EngineInterface::resize() noexcept -> bool {
-		const auto [width, height] = this->backend->window.size();
+		const auto [width, height] = this->data->window.size();
 		return this->resize(uint32_t(width), uint32_t(height));
 	};
 
@@ -582,17 +582,17 @@ namespace ph{
 	auto EngineInterface::resize(uint32_t width, uint32_t height) noexcept -> bool {
 		if(width == 0 || height == 0){
     		PH_INFO("Window was minimized or resized to 0 - suspending rendering");
-    		this->backend->suspended = true;
+    		this->data->suspended = true;
     		return true;
     	}
 
 
-		if(this->backend->suspended){
+		if(this->data->suspended){
 			PH_INFO("Window was unminimized or resized - resuming rendering");
-			this->backend->suspended = false;
+			this->data->suspended = false;
 		}
 
-    	if(this->backend->renderer.resize(width, height) == false){
+    	if(this->data->renderer.resize(width, height) == false){
     		PH_ERROR("Failed to resize renderer");
     		return false;
     	}
@@ -610,14 +610,14 @@ namespace ph{
 
 
 	auto EngineInterface::draw_frame() noexcept -> bool {
-		vulkan::Renderer::FrameResult begin_result = this->backend->renderer.begin_frame();
+		vulkan::Renderer::FrameResult begin_result = this->data->renderer.begin_frame();
 
 		while(begin_result == vulkan::Renderer::FrameResult::NeedResize){
 			if(this->resize() == false){
 				PH_ERROR("Vulkan requested a resize when beginning frame, and resize failed");
 				return false;
 			}
-			begin_result = this->backend->renderer.begin_frame();
+			begin_result = this->data->renderer.begin_frame();
 		};
 
 		if(begin_result == vulkan::Renderer::FrameResult::Error){
@@ -629,37 +629,37 @@ namespace ph{
 		///////////////////////////////////
 		// update
 
-		this->backend->update_callback();
+		this->data->update_callback();
 
-		this->backend->physics.simulate(this->backend->frame_time);
-		// this->backend->physics.simulate(1.0f / 1000.0f);
+		this->data->physics.simulate(this->data->frame_time);
+		// this->data->physics.simulate(1.0f / 1000.0f);
 
 
 		///////////////////////////////////
 		// render
 
-		this->backend->renderer.begin_render_pass_3D();
-			this->backend->renderer.bind_vertex_buffer_3D();
-			this->backend->renderer.bind_index_buffer_3D();
+		this->data->renderer.begin_render_pass_3D();
+			this->data->renderer.bind_vertex_buffer_3D();
+			this->data->renderer.bind_index_buffer_3D();
 
-			this->backend->render_callback_3D();
+			this->data->render_callback_3D();
 
-		this->backend->renderer.end_render_pass_3D();
+		this->data->renderer.end_render_pass_3D();
 
 
-		this->backend->renderer.begin_render_pass_2D();
-			this->backend->renderer.bind_vertex_buffer_2D();
-			this->backend->renderer.bind_index_buffer_2D();
+		this->data->renderer.begin_render_pass_2D();
+			this->data->renderer.bind_vertex_buffer_2D();
+			this->data->renderer.bind_index_buffer_2D();
 
-			this->backend->render_callback_2D();
+			this->data->render_callback_2D();
 
-		this->backend->renderer.end_render_pass_2D();
+		this->data->renderer.end_render_pass_2D();
 
 
 		///////////////////////////////////
 		// end frame
 
-		vulkan::Renderer::FrameResult end_result = this->backend->renderer.end_frame();
+		vulkan::Renderer::FrameResult end_result = this->data->renderer.end_frame();
 
 		if(end_result == vulkan::Renderer::FrameResult::Error){
 			PH_ERROR("Failed to end frame");
@@ -679,12 +679,12 @@ namespace ph{
 
 	auto EngineInterface::calculate_timings() noexcept -> void {
 		const evo::time::Nanoseconds now = evo::time::now();
-		const evo::time::Nanoseconds time_diff = now - this->backend->frame_start_time;
+		const evo::time::Nanoseconds time_diff = now - this->data->frame_start_time;
 
 
-		this->backend->frame_time = float(time_diff) / float( static_cast<evo::time::Nanoseconds>(evo::time::Seconds{1}) );
+		this->data->frame_time = float(time_diff) / float( static_cast<evo::time::Nanoseconds>(evo::time::Seconds{1}) );
 
-		this->backend->frame_start_time = now;
+		this->data->frame_start_time = now;
 
 
 		evo::time::Nanoseconds foo = 12;

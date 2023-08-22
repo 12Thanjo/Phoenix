@@ -22,31 +22,6 @@
 
 
 
-// TODO: change this value
-constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 1;
-constexpr uint32_t MAX_DESCRIPTOR_SETS = 100; // this was just arbitrarily chosen
-
-
-struct GlobalUBO3D{
-	alignas(16) glm::mat4 view;
-	alignas(16) glm::mat4 proj;
-};
-
-struct GlobalUBO2D{
-	alignas(16) glm::mat4 view;
-	alignas(16) glm::mat4 proj;
-};
-
-
-struct InstanceUBO3D{
-	glm::vec4 color;
-};
-
-struct InstanceUBO2D{
-	glm::vec4 color;
-};
-
-
 
 namespace ph{
 	namespace vulkan{
@@ -74,7 +49,7 @@ namespace ph{
 				) noexcept -> std::optional<uint64_t>; // texture ID
 
 
-				EVO_NODISCARD auto create_mesh(
+				EVO_NODISCARD auto create_mesh_3D(
 					const evo::ArrayProxy<vulkan::Vertex3D> vbo, const evo::ArrayProxy<uint32_t> ibo
 				) noexcept -> std::optional< std::pair<uint32_t, uint32_t> >; // vertex offset / index offset
 
@@ -117,11 +92,17 @@ namespace ph{
 
 
 			private:
-				EVO_NODISCARD auto load_shader_code(const std::string& filepath) noexcept -> std::optional< std::vector<byte> >;
-
 
 				EVO_NODISCARD auto create_render_targets() noexcept -> bool;
 				auto destroy_render_targets() noexcept -> void;
+
+
+				template<typename T>
+				EVO_NODISCARD auto create_mesh_impl(
+					const evo::ArrayProxy<T> vbo, const evo::ArrayProxy<uint32_t> ibo,
+					vulkan::Buffer& vertex_buffer, uint32_t& vertex_buffer_index,
+					vulkan::Buffer& index_buffer, uint32_t& index_buffer_index
+				) noexcept -> std::optional< std::pair<uint32_t, uint32_t> >; // vertex offset / index offset
 
 
 
@@ -168,18 +149,23 @@ namespace ph{
 				uint32_t index_buffer_3D_index = 0;
 
 
-				vulkan::RenderPass render_pass_3D{};
-				VkDescriptorSetLayout global_descriptor_set_layout_3D{VK_NULL_HANDLE};
-				VkDescriptorSetLayout instance_descriptor_set_layout_3D{VK_NULL_HANDLE};
-				VkPipelineLayout pipeline_layout_3D{VK_NULL_HANDLE};
-				vulkan::Pipeline pipeline_3D{};
+				vulkan::RenderPassManager render_pass_3D{};
+				// VkDescriptorSetLayout global_descriptor_set_layout_3D{VK_NULL_HANDLE};
+				// VkDescriptorSetLayout instance_descriptor_set_layout_3D{VK_NULL_HANDLE};
+				// VkPipelineLayout pipeline_layout_3D{VK_NULL_HANDLE};
+				// vulkan::Pipeline pipeline_3D{};
+
+				RenderPassManager::DescriptorSetLayoutID global_descriptor_set_layout_3D;
+				RenderPassManager::DescriptorSetLayoutID instance_descriptor_set_layout_3D;
+
+
 
 
 				std::array<vulkan::Buffer, MAX_FRAMES_IN_FLIGHT> global_uniform_buffers_3D{};
-				std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> global_descriptor_sets_3D{};
+				std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT> global_descriptor_sets_3D{};
 
 				std::array<std::array<vulkan::Buffer, MAX_FRAMES_IN_FLIGHT>, MAX_DESCRIPTOR_SETS> instance_uniform_buffers_3D{};
-				std::array<std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT>, MAX_DESCRIPTOR_SETS> instance_descriptor_sets_3D{};
+				std::array<std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT>, MAX_DESCRIPTOR_SETS> instance_descriptor_sets_3D{};
 
 
 				///////////////////////////////////

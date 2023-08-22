@@ -93,11 +93,45 @@ namespace ph{
 			// TODO: rewrite this system (including error checking)
 
 			{
-				const bool render_pass_3D_result = this->render_pass_3D.create(this->device, this->msaa_samples, false, true, {
-					{ vulkan::AttachmentType::Color,        this->swapchain.get_image_format(),                     {0.0f, 0.1f, 0.2f, 1.0f} },
-					{ vulkan::AttachmentType::DepthStencil, vulkan::find_depth_format(this->device.get_physical()), 1.0f, 0                  },
-					{ vulkan::AttachmentType::Resolve,      this->swapchain.get_image_format() 					    /* none */			     },
+				const auto result = this->render_pass_3D.add_descriptor_set_layout(this->device, {
+					{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT},
 				});
+
+				if(result.has_value() == false){ return false; }
+
+				this->global_descriptor_set_layout_3D = *result;
+			}
+
+
+			{
+				const auto result = this->render_pass_3D.add_descriptor_set_layout(this->device, {
+					{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+					{1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
+				});
+
+				if(result.has_value() == false){ return false; }
+
+				this->instance_descriptor_set_layout_3D = *result;
+			}
+
+			
+
+
+			{
+				const bool render_pass_3D_result = this->render_pass_3D.create(
+					this->device,
+					this->msaa_samples,
+					false,
+					true,
+					std::initializer_list<Attachment>{
+						{ vulkan::AttachmentType::Color,        this->swapchain.get_image_format(),                     {0.0f, 0.1f, 0.2f, 1.0f} },
+						{ vulkan::AttachmentType::DepthStencil, vulkan::find_depth_format(this->device.get_physical()), 1.0f, 0                  },
+						{ vulkan::AttachmentType::Resolve,      this->swapchain.get_image_format() 					    /* none */			     },
+					},
+					std::initializer_list<VkPushConstantRange>{
+						{VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glm::mat4)},
+					}
+				);
 
 				if(render_pass_3D_result == false){
 					PH_FATAL("Failed to create 3D render pass");
@@ -105,36 +139,18 @@ namespace ph{
 				}
 			}
 
-			this->global_descriptor_set_layout_3D = *vulkan::create_descriptor_set_layout(this->device, {
-				{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT},
-			});
-
-			this->instance_descriptor_set_layout_3D = *vulkan::create_descriptor_set_layout(this->device, {
-				{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
-				{1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
-			});
+			
 
 			{
-				this->pipeline_layout_3D = vulkan::create_pipeline_layout(
-					this->device,
-					{
-						this->global_descriptor_set_layout_3D,
-						this->instance_descriptor_set_layout_3D,
-					},
-					{
-						{VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glm::mat4)},
-					}
-				).value();
 
-
-				const auto vert_shader_bytecode = this->load_shader_code("assets/shaders/basic3D.vert.spv");
+				const auto vert_shader_bytecode = vulkan::load_shader_code("assets/shaders/basic3D.vert.spv");
 				if(vert_shader_bytecode.has_value() == false){
 					PH_FATAL("Failed to load 3D vertex shader");
 					return false;
 				}
 
 
-				const auto frag_shader_bytecode = this->load_shader_code("assets/shaders/basic3D.frag.spv");
+				const auto frag_shader_bytecode = vulkan::load_shader_code("assets/shaders/basic3D.frag.spv");
 				if(frag_shader_bytecode.has_value() == false){
 					PH_FATAL("Failed to load 3D fragment shader");
 					return false;
@@ -156,13 +172,7 @@ namespace ph{
 				pipeline_config.add_vertex_attribute(vulkan::format<float, 3>());
 
 
-				if(this->pipeline_3D.create(
-					this->device,
-					this->render_pass_3D,
-					this->pipeline_layout_3D,
-					pipeline_config,
-					VK_NULL_HANDLE
-				) == false){
+				if(this->render_pass_3D.create_pipeline(this->device, pipeline_config, VK_NULL_HANDLE).has_value() == false){
 					PH_ERROR("Failed to create 3D render pipeline");
 					return false;
 				}
@@ -209,14 +219,14 @@ namespace ph{
 				).value();
 
 
-				const auto vert_shader_bytecode = this->load_shader_code("assets/shaders/basic2D.vert.spv");
+				const auto vert_shader_bytecode = vulkan::load_shader_code("assets/shaders/basic2D.vert.spv");
 				if(vert_shader_bytecode.has_value() == false){
 					PH_FATAL("Failed to load 2D vertex shader");
 					return false;
 				}
 
 
-				const auto frag_shader_bytecode = this->load_shader_code("assets/shaders/basic2D.frag.spv");
+				const auto frag_shader_bytecode = vulkan::load_shader_code("assets/shaders/basic2D.frag.spv");
 				if(frag_shader_bytecode.has_value() == false){
 					PH_FATAL("Failed to load 2D fragment shader");
 					return false;
@@ -241,7 +251,7 @@ namespace ph{
 				if(this->pipeline_2D.create(
 					this->device,
 					this->render_pass_2D,
-					this->pipeline_layout_3D,
+					this->render_pass_3D.pipeline_layout,
 					pipeline_config,
 					VK_NULL_HANDLE
 				) == false){
@@ -370,16 +380,16 @@ namespace ph{
 			{
 				const auto descriptor_pool_result = vulkan::create_descriptor_pool(
 					this->device,
-					((MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS) + MAX_FRAMES_IN_FLIGHT) * 2,
+					((MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS) + MAX_FRAMES_IN_FLIGHT),
 					{
 						VkDescriptorPoolSize{
 							VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-							((MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS) + MAX_FRAMES_IN_FLIGHT) * 2,
+							((MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS) + MAX_FRAMES_IN_FLIGHT),
 						},
 
 						VkDescriptorPoolSize{
 							VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-							(MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS) * 2,
+							(MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS),
 						},
 					}
 				);
@@ -424,52 +434,18 @@ namespace ph{
 			///////////////////////////////////
 			// global descriptor sets 3D
 
-			{
-				auto layouts = evo::StaticVector<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT>();
+			for(int i = 0; i < MAX_FRAMES_IN_FLIGHT; i+=1){
+				const auto result = this->render_pass_3D.allocate_descriptor_set(this->device, this->global_descriptor_set_layout_3D);
+				if(result.has_value() == false) return false;
+
+				this->global_descriptor_sets_3D[i] = *result;
+			}
 
 
-				for(int i = 0; i < layouts.capacity(); i+=1){
-					layouts.push_back(this->global_descriptor_set_layout_3D);
-				}
-
-
-				auto allocated_descriptor_sets = vulkan::allocate_descriptor_sets(this->device, this->descriptor_pool, layouts);
-
-				if(allocated_descriptor_sets.has_value() == false){
-					PH_FATAL("Failed to allocate descriptor sets");
-					return false;
-				}
-
-				for(int i = 0; i < MAX_FRAMES_IN_FLIGHT; i+=1){
-					this->global_descriptor_sets_3D[i] = (*allocated_descriptor_sets)[i];
-				}
-
-
-				for(size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++){
-					const auto buffer_info = VkDescriptorBufferInfo{
-						.buffer = this->global_uniform_buffers_3D[i].handle,
-						.offset = 0,
-						.range  = sizeof(GlobalUBO3D),
-					};
-
-					
-					const auto descriptor_writes = std::array<VkWriteDescriptorSet, 1>{
-						VkWriteDescriptorSet{ .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-							.dstSet          = this->global_descriptor_sets_3D[i],
-							.dstBinding      = 0,
-							.dstArrayElement = 0,
-
-							.descriptorCount = 1,
-							.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-							.pBufferInfo     = &buffer_info,
-						},
-					};
-
-
-					vkUpdateDescriptorSets(
-						this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
-					);
-				}
+			for(size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++){
+				this->render_pass_3D.write_descriptor_set_ubo(
+					this->device, this->global_descriptor_set_layout_3D, this->global_descriptor_sets_3D[i], 0, this->global_uniform_buffers_3D[i]
+				);
 			}
 
 
@@ -477,60 +453,24 @@ namespace ph{
 			///////////////////////////////////
 			// instance descriptor sets 3D
 
-			{
-				auto layouts = evo::StaticVector<VkDescriptorSetLayout, MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS>();
 
+			for(int i = 0; i < MAX_DESCRIPTOR_SETS; i+=1){
+				for(size_t j = 0; j < MAX_FRAMES_IN_FLIGHT; j++){
+					const auto result = this->render_pass_3D.allocate_descriptor_set(this->device, this->instance_descriptor_set_layout_3D);
+					if(result.has_value() == false) return false;
 
-
-				for(int i = 0; i < layouts.capacity(); i+=1){
-					layouts.push_back(this->instance_descriptor_set_layout_3D);
-				}
-
-
-				auto allocated_descriptor_sets = vulkan::allocate_descriptor_sets(this->device, this->descriptor_pool, layouts);
-
-				if(allocated_descriptor_sets.has_value() == false){
-					PH_FATAL("Failed to allocate descriptor sets");
-					return false;
-				}
-
-				for(int i = 0; i < MAX_DESCRIPTOR_SETS; i+=1){
-					for(int j = 0; j < MAX_FRAMES_IN_FLIGHT; j+=1){
-						this->instance_descriptor_sets_3D[i][j] = (*allocated_descriptor_sets)[(i * MAX_FRAMES_IN_FLIGHT) + j];
-					}
-				}
-
-
-				for(size_t i = 0; i < 5; i+=1){
-					for(size_t j = 0; j < MAX_FRAMES_IN_FLIGHT; j++){
-						const auto buffer_info = VkDescriptorBufferInfo{
-							.buffer = this->instance_uniform_buffers_3D[i][j].handle,
-							.offset = 0,
-							.range  = sizeof(InstanceUBO3D),
-						};
-
-
-						const auto descriptor_writes = std::array<VkWriteDescriptorSet, 1>{
-							VkWriteDescriptorSet{ .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-								.dstSet          = this->instance_descriptor_sets_3D[i][j],
-								.dstBinding      = 0,
-								.dstArrayElement = 0,
-
-								.descriptorCount = 1,
-								.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-								.pBufferInfo     = &buffer_info,
-							},
-						};
-
-
-						vkUpdateDescriptorSets(
-							this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
-						);
-					}
+					this->instance_descriptor_sets_3D[i][j] = *result;
 				}
 			}
 
 
+			for(int i = 0; i < MAX_DESCRIPTOR_SETS; i+=1){
+				for(size_t j = 0; j < MAX_FRAMES_IN_FLIGHT; j++){
+					this->render_pass_3D.write_descriptor_set_ubo(
+						this->device, this->instance_descriptor_set_layout_3D, this->instance_descriptor_sets_3D[i][j], 0, this->instance_uniform_buffers_3D[i][j]
+					);
+				}
+			}
 
 
 			///////////////////////////////////
@@ -746,13 +686,6 @@ namespace ph{
 			this->destroy_render_targets();
 			this->swapchain.destroy(this->device);
 
-			this->pipeline_3D.destroy(this->device);
-			vulkan::destroy_pipeline_layout(this->device, this->pipeline_layout_3D);
-			this->render_pass_3D.destroy(this->device);
-
-			this->pipeline_2D.destroy(this->device);
-			vulkan::destroy_pipeline_layout(this->device, this->pipeline_layout_2D);
-			this->render_pass_2D.destroy(this->device);
 
 
 			for(auto& uniform_buffer : this->global_uniform_buffers_3D){
@@ -781,14 +714,20 @@ namespace ph{
 
 			vulkan::destroy_descriptor_set_layout(this->device, this->instance_descriptor_set_layout_2D);
 			vulkan::destroy_descriptor_set_layout(this->device, this->global_descriptor_set_layout_2D);
-			vulkan::destroy_descriptor_set_layout(this->device, this->instance_descriptor_set_layout_3D);
-			vulkan::destroy_descriptor_set_layout(this->device, this->global_descriptor_set_layout_3D);
+
 
 			this->index_buffer_2D.destroy(this->device);
 			this->vertex_buffer_2D.destroy(this->device);
 
 			this->index_buffer_3D.destroy(this->device);
 			this->vertex_buffer_3D.destroy(this->device);
+
+
+			this->render_pass_3D.destroy(this->device);
+
+			this->pipeline_2D.destroy(this->device);
+			vulkan::destroy_pipeline_layout(this->device, this->pipeline_layout_2D);
+			this->render_pass_2D.destroy(this->device);
 
 
 
@@ -954,36 +893,6 @@ namespace ph{
 
 
 
-
-		auto Renderer::load_shader_code(const std::string& filepath) noexcept -> std::optional< std::vector<byte> > {
-			auto file = evo::fs::BinaryFile{};
-
-			if(file.open(filepath, evo::fs::FileMode::Read) == false){
-				PH_ERROR(std::format("Error opening shader file: '{}'", filepath));
-				std::nullopt;
-			}
-
-			if((file.size() % 4) != 0){
-				PH_ERROR("Shader byte code is invalid");
-				file.close();
-				return std::nullopt;
-			}
-
-
-			auto code = file.read();
-
-			if(code.has_value() == false){
-				PH_ERROR(std::format("Error reading shader file: '{}'", filepath));
-				return std::nullopt;
-			}
-
-			file.close();
-
-			return *code;
-		};
-
-
-
 		auto Renderer::create_texture(
 			const evo::ArrayProxy<byte> data, uint32_t width, uint32_t height, bool create_mipmaps
 		) noexcept -> std::optional<uint64_t> {
@@ -1004,14 +913,17 @@ namespace ph{
 
 
 
-		auto Renderer::create_mesh(
-			const evo::ArrayProxy<vulkan::Vertex3D> vbo, const evo::ArrayProxy<uint32_t> ibo
-		) noexcept -> std::optional< std::pair<uint32_t, uint32_t> > {
+		template<typename T>
+		auto Renderer::create_mesh_impl(
+			const evo::ArrayProxy<T> vbo, const evo::ArrayProxy<uint32_t> ibo,
+			vulkan::Buffer& vertex_buffer, uint32_t& vertex_buffer_index,
+			vulkan::Buffer& index_buffer, uint32_t& index_buffer_index
+		) noexcept -> std::optional< std::pair<uint32_t, uint32_t> > { // vertex offset / index offset
 
-			const auto output = std::pair<uint32_t, uint32_t>{this->vertex_buffer_3D_index, this->index_buffer_3D_index};
+			const auto output = std::pair<uint32_t, uint32_t>{vertex_buffer_index, index_buffer_index};
 
 
-			const uint32_t vbo_size = uint32_t(sizeof(vulkan::Vertex3D) * vbo.size());
+			const uint32_t vbo_size = uint32_t(sizeof(T) * vbo.size());
 			const uint32_t ibo_size = uint32_t(sizeof(uint32_t) * ibo.size());
 			const uint32_t staging_buffer_size = std::max(vbo_size, ibo_size);
 
@@ -1032,8 +944,8 @@ namespace ph{
 
 
 			staging_buffer.set_data(vbo.data(), 0, vbo_size);
-			result = this->vertex_buffer_3D.copy_from(
-				this->device, this->command_pool, this->device.get_transfer_queue(), staging_buffer, vbo_size, 0, sizeof(vulkan::Vertex3D) * this->vertex_buffer_3D_index
+			result = vertex_buffer.copy_from(
+				this->device, this->command_pool, this->device.get_transfer_queue(), staging_buffer, vbo_size, 0, sizeof(T) * vertex_buffer_index
 			);
 			if(result == false){
 				PH_ERROR("Failed to upload mesh vertex buffer");
@@ -1042,8 +954,8 @@ namespace ph{
 
 
 			staging_buffer.set_data(ibo.data(), 0, ibo_size);
-			result = this->index_buffer_3D.copy_from(
-				this->device, this->command_pool, this->device.get_transfer_queue(), staging_buffer, ibo_size, 0, sizeof(uint32_t) * this->index_buffer_3D_index
+			result = index_buffer.copy_from(
+				this->device, this->command_pool, this->device.get_transfer_queue(), staging_buffer, ibo_size, 0, sizeof(uint32_t) * index_buffer_index
 			);
 			if(result == false){
 				PH_ERROR("Failed to upload mesh index buffer");
@@ -1052,11 +964,33 @@ namespace ph{
 
 			staging_buffer.destroy(this->device);
 
-			this->vertex_buffer_3D_index += uint32_t(vbo.size());
-			this->index_buffer_3D_index += uint32_t(ibo.size());
+			vertex_buffer_index += uint32_t(vbo.size());
+			index_buffer_index += uint32_t(ibo.size());
+
+			// PH_TRACE("Created mesh 3D");
+			return output;
+		};
+
+
+
+
+		auto Renderer::create_mesh_3D(
+			const evo::ArrayProxy<vulkan::Vertex3D> vbo, const evo::ArrayProxy<uint32_t> ibo
+		) noexcept -> std::optional< std::pair<uint32_t, uint32_t> > {
+
+			auto output = this->create_mesh_impl(
+				vbo, ibo,
+				this->vertex_buffer_3D, this->vertex_buffer_3D_index,
+				this->index_buffer_3D, this->index_buffer_3D_index
+			);
+
+			if(output.has_value() == false){
+				return std::nullopt;
+			}
+
 
 			PH_TRACE("Created mesh 3D");
-			return output;
+			return *output;
 		};
 
 
@@ -1065,56 +999,24 @@ namespace ph{
 			const evo::ArrayProxy<vulkan::Vertex2D> vbo, const evo::ArrayProxy<uint32_t> ibo
 		) noexcept -> std::optional< std::pair<uint32_t, uint32_t> > {
 
-			const auto output = std::pair<uint32_t, uint32_t>{this->vertex_buffer_2D_index, this->index_buffer_2D_index};
-
-
-			const uint32_t vbo_size = uint32_t(sizeof(vulkan::Vertex2D) * vbo.size());
-			const uint32_t ibo_size = uint32_t(sizeof(uint32_t) * ibo.size());
-			const uint32_t staging_buffer_size = std::max(vbo_size, ibo_size);
-
-
-			auto staging_buffer = vulkan::Buffer{};
-
-			bool result = staging_buffer.create(
-				this->device,
-				staging_buffer_size,
-				VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-				true
+			auto output = this->create_mesh_impl<vulkan::Vertex2D>(
+				vbo, ibo,
+				this->vertex_buffer_2D, this->vertex_buffer_2D_index,
+				this->index_buffer_2D, this->index_buffer_2D_index
 			);
-			if(result == false){
-				PH_ERROR("Failed to create staging buffer for creating mesh");
+
+			if(output.has_value() == false){
 				return std::nullopt;
 			}
 
-
-			staging_buffer.set_data(vbo.data(), 0, vbo_size);
-			result = this->vertex_buffer_2D.copy_from(
-				this->device, this->command_pool, this->device.get_transfer_queue(), staging_buffer, vbo_size, 0, sizeof(vulkan::Vertex2D) * this->vertex_buffer_2D_index
-			);
-			if(result == false){
-				PH_ERROR("Failed to upload mesh vertex buffer");
-				return std::nullopt;
-			}
-
-
-			staging_buffer.set_data(ibo.data(), 0, ibo_size);
-			result = this->index_buffer_2D.copy_from(
-				this->device, this->command_pool, this->device.get_transfer_queue(), staging_buffer, ibo_size, 0, sizeof(uint32_t) * this->index_buffer_2D_index
-			);
-			if(result == false){
-				PH_ERROR("Failed to upload mesh index buffer");
-				return std::nullopt;
-			}
-
-			staging_buffer.destroy(this->device);
-
-			this->vertex_buffer_2D_index += uint32_t(vbo.size());
-			this->index_buffer_2D_index += uint32_t(ibo.size());
 
 			PH_TRACE("Created mesh 2D");
-			return output;
+			return *output;
 		};
+
+
+
+
 
 
 
@@ -1174,7 +1076,7 @@ namespace ph{
 				};
 
 				result = this->framebuffers_3D[i].create(
-					this->device, this->render_pass_3D, this->swapchain.get_width(), this->swapchain.get_height(), attachments
+					this->device, this->render_pass_3D.render_pass, this->swapchain.get_width(), this->swapchain.get_height(), attachments
 				);
 
 				if(result == false){
@@ -1273,26 +1175,12 @@ namespace ph{
 
 
 		auto Renderer::set_instance_texture_3D(uint32_t descriptor_index, uint32_t texture_index) noexcept -> void {
-			const auto image_info = VkDescriptorImageInfo{
-				.sampler     = this->textures[texture_index].get_sampler(),
-				.imageView   = this->textures[texture_index].get_image_view(),
-				.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-			};
-
-			const auto descriptor_writes = std::array<VkWriteDescriptorSet, 1>{
-				VkWriteDescriptorSet{ .sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-					.dstSet          = this->instance_descriptor_sets_3D[descriptor_index][this->current_frame],
-					.dstBinding      = 1,
-					.dstArrayElement = 0,
-
-					.descriptorCount = 1,
-					.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-					.pImageInfo      = &image_info,
-				},
-			};
-
-			vkUpdateDescriptorSets(
-				this->device.get_handle(), uint32_t(descriptor_writes.size()), descriptor_writes.data(), 0, nullptr
+			this->render_pass_3D.write_descriptor_set_texture(
+				this->device,
+				this->instance_descriptor_set_layout_3D,
+				this->instance_descriptor_sets_3D[descriptor_index][this->current_frame],
+				1,
+				this->textures[texture_index]
 			);
 		};
 
@@ -1327,23 +1215,24 @@ namespace ph{
 		auto Renderer::begin_render_pass_3D() noexcept -> void {
 			const vulkan::CommandBuffer& command_buffer = this->command_buffers[this->current_frame];
 
-			this->render_pass_3D.begin(
+			this->render_pass_3D.render_pass.begin(
 				command_buffer,
 				this->framebuffers_3D[this->swapchain.get_image_index()],
 				this->swapchain.get_width(),
 				this->swapchain.get_height()
 			);
 
-			command_buffer.bind_pipeline(this->pipeline_3D.handle, VK_PIPELINE_BIND_POINT_GRAPHICS);
+			command_buffer.bind_pipeline(this->render_pass_3D.pipelines[0].handle, VK_PIPELINE_BIND_POINT_GRAPHICS);
 
-			command_buffer.bind_descriptor_set(
-				this->pipeline_layout_3D, 0, this->global_descriptor_sets_3D[this->current_frame], VK_PIPELINE_BIND_POINT_GRAPHICS
+
+			this->render_pass_3D.bind_descriptor_set(
+				command_buffer, this->global_descriptor_set_layout_3D, this->global_descriptor_sets_3D[this->current_frame]
 			);
 		};
 
 
 		auto Renderer::end_render_pass_3D() noexcept -> void {
-			this->render_pass_3D.end(this->command_buffers[this->current_frame]);
+			this->render_pass_3D.render_pass.end(this->command_buffers[this->current_frame]);
 		};
 
 
@@ -1372,9 +1261,7 @@ namespace ph{
 
 
 		auto Renderer::bind_descriptor_set_3D(uint32_t index) noexcept -> void {
-			this->command_buffers[this->current_frame].bind_descriptor_set(
-				this->pipeline_layout_3D, 1, this->instance_descriptor_sets_3D[index][this->current_frame], VK_PIPELINE_BIND_POINT_GRAPHICS
-			);
+			this->render_pass_3D.bind_descriptor_set(this->command_buffers[this->current_frame], this->instance_descriptor_set_layout_3D, this->instance_descriptor_sets_3D[index][this->current_frame]);
 		};
 
 		auto Renderer::bind_descriptor_set_2D(uint32_t index) noexcept -> void {
@@ -1387,7 +1274,7 @@ namespace ph{
 
 		auto Renderer::set_model_push_constant_3D(const glm::mat4& model) noexcept -> void {
 			this->command_buffers[this->current_frame].push_constant(
-				this->pipeline_layout_3D, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glm::mat4), &model
+				this->render_pass_3D.pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glm::mat4), &model
 			);
 		};
 

@@ -1,5 +1,10 @@
 # Phoenix Engine Change Log
 
+### v0.2.2
+- Removed "ouput.png"
+- font atlas now generates msdf
+- Began render pass manager
+
 ### v0.2.1
 - Added generating of font atlas
 

@@ -69,6 +69,8 @@ namespace ph{
 		auto FontLoader::load_text(const char* filepath) noexcept -> std::optional<FontData> {
 			PH_ASSERT(this->data != nullptr, "Font Loader is not initialized");
 
+			constexpr int thread_count = 2;
+
 			
 			msdfgen::FontHandle* font = msdfgen::loadFont(this->data->freetype_handle, filepath);
 			if(font == nullptr){
@@ -116,6 +118,38 @@ namespace ph{
 			em_size = atlas_packer.getScale();
 
 
+			PH_WARNING(std::format("fix me: {}() [line: {}]", __FUNCTION__, __LINE__));
+
+			{
+
+				#define LCG_MULTIPLIER 6364136223846793005ull
+				#define LCG_INCREMENT 1442695040888963407ull
+				#define DEFAULT_ANGLE_THRESHOLD 3.0
+
+				constexpr bool expensiveColoring = false;
+				constexpr uint64_t coloringSeed = 0;
+				const auto edgeColoring = msdfgen::edgeColoringInkTrap;
+
+				if (expensiveColoring) {
+				    msdf_atlas::Workload([&](int i, int threadNo) -> bool {
+				        unsigned long long glyphSeed = (LCG_MULTIPLIER*(coloringSeed^i)+LCG_INCREMENT)*!!coloringSeed;
+				        this->data->glyphs[i].edgeColoring(edgeColoring, DEFAULT_ANGLE_THRESHOLD, glyphSeed);
+				        return true;
+				    }, this->data->glyphs.size()).finish(thread_count);
+				} else {
+				    unsigned long long glyphSeed = coloringSeed;
+				    for (msdf_atlas::GlyphGeometry &glyph : this->data->glyphs) {
+				        glyphSeed *= LCG_MULTIPLIER;
+				        glyph.edgeColoring(edgeColoring, DEFAULT_ANGLE_THRESHOLD, glyphSeed);
+				    }
+				}
+
+			}
+
+
+
+
+
 
 
 			auto generator_attributes = msdf_atlas::GeneratorAttributes{};
@@ -126,7 +160,7 @@ namespace ph{
 				width, height
 			};
 			generator.setAttributes(generator_attributes);
-			generator.setThreadCount(2);
+			generator.setThreadCount(thread_count);
 			generator.generate(this->data->glyphs.data(), int(this->data->glyphs.size()));
 
 			const auto bitmap = static_cast<msdfgen::BitmapConstRef<evo::byte, 3>>(generator.atlasStorage());

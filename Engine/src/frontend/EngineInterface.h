@@ -135,7 +135,7 @@ namespace ph{
 			auto calculate_timings() noexcept -> void;
 	
 		private:
-			struct EngineBackend* backend = nullptr;
+			struct EngineData* data = nullptr;
 	};
 
 };

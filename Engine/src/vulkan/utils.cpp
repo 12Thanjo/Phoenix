@@ -593,5 +593,34 @@ namespace ph{
 		};
 
 
+
+		auto load_shader_code(const std::string& filepath) noexcept -> std::optional< std::vector<evo::byte> > {
+			auto file = evo::fs::BinaryFile{};
+
+			if(file.open(filepath, evo::fs::FileMode::Read) == false){
+				PH_ERROR(std::format("Error opening shader file: '{}'", filepath));
+				std::nullopt;
+			}
+
+			if((file.size() % 4) != 0){
+				PH_ERROR("Shader byte code is invalid");
+				file.close();
+				return std::nullopt;
+			}
+
+
+			auto code = file.read();
+
+			if(code.has_value() == false){
+				PH_ERROR(std::format("Error reading shader file: '{}'", filepath));
+				return std::nullopt;
+			}
+
+			file.close();
+
+			return *code;
+		};
+
+
 	};
 };

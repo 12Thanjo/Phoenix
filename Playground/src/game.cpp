@@ -62,19 +62,19 @@ namespace Game{
 			.scale = {50.0f, 1.0f, 50.0f},
 		};
 
-		engine.renderer.bindMaterial(ground_material);
-		engine.renderer.drawMesh(ground_transform.calculate(), engine.assets.getCubeMesh());
+		engine.renderer3D.bindMaterial(ground_material);
+		engine.renderer3D.drawMesh(ground_transform.calculate(), engine.assets.getCubeMesh());
 
 
-		engine.renderer.bindMaterial(wall_material);
+		engine.renderer3D.bindMaterial(wall_material);
 
-		engine.renderer.drawMesh(
+		engine.renderer3D.drawMesh(
 			ph::Transform{.position = {10.0f, 5.0f, -10.0f}, .scale = {1.0f, 10.0f, 1.0f}}.calculate(),
 			engine.assets.getCubeMesh()
 		);
 
 
-		engine.renderer.drawMesh(
+		engine.renderer3D.drawMesh(
 			ph::Transform{.position = {-10.0f, 5.0f, -10.0f}, .scale = {1.0f, 10.0f, 1.0f}}.calculate(),
 			engine.assets.getCubeMesh()
 		);
@@ -196,30 +196,30 @@ namespace Game{
 
 
 		
-		engine.renderer.setCallback3D([&](){
+		engine.renderer3D.setCallback3D([&](){
 			camera.position.z = 3.2f - glm::sin(player.transform.rotation.x);
-			engine.renderer.setCamera(camera.calculate() * ph::Camera{player.transform.position, player.transform.rotation}.calculate());
-			// engine.renderer.setCamera(player.transform.calculate() * camera.calculate());
+			engine.renderer3D.setCamera(camera.calculate() * ph::Camera{player.transform.position, player.transform.rotation}.calculate());
+			// engine.renderer3D.setCamera(player.transform.calculate() * camera.calculate());
 
 			if(player.is_grounded){
-				engine.renderer.bindMaterial(player_material);
+				engine.renderer3D.bindMaterial(player_material);
 			}else{
-				engine.renderer.bindMaterial(wall_material);
+				engine.renderer3D.bindMaterial(wall_material);
 			}
 
 
 			const float player_rot_x = player.transform.rotation.x;
 			player.transform.rotation.x = 0;
-			engine.renderer.drawMesh(player.transform.calculate(), engine.assets.getCubeMesh());
+			engine.renderer3D.drawMesh(player.transform.calculate(), engine.assets.getCubeMesh());
 			player.transform.rotation.x = player_rot_x;
 
 
-			engine.renderer.bindMaterial(player_material);
+			engine.renderer3D.bindMaterial(player_material);
 
 
-			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider1), engine.assets.getCubeMesh());
-			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider2), engine.assets.getCubeMesh());
-			engine.renderer.drawMesh(engine.physics.getDynamicColliderTransform(box_collider3), engine.assets.getCubeMesh());
+			engine.renderer3D.drawMesh(engine.physics.getDynamicColliderTransform(box_collider1), engine.assets.getCubeMesh());
+			engine.renderer3D.drawMesh(engine.physics.getDynamicColliderTransform(box_collider2), engine.assets.getCubeMesh());
+			engine.renderer3D.drawMesh(engine.physics.getDynamicColliderTransform(box_collider3), engine.assets.getCubeMesh());
 
 
 			render_map(engine);
@@ -228,15 +228,15 @@ namespace Game{
 
 
 
-		engine.renderer.setCallback2D([&](){
-			engine.renderer.setCamera2D(glm::mat4{1.0f});
+		engine.renderer2D.setCallback([&](){
+			engine.renderer2D.setCamera(glm::mat4{1.0f});
 
-			engine.renderer.bindMaterial2D(crosshair_material);
-			engine.renderer.renderQuad2D(ph::Transform2D{.width = 5.0f, .height = 5.0f}.calculate());
+			engine.renderer2D.bindMaterial(crosshair_material);
+			engine.renderer2D.drawQuad(ph::Transform2D{.width = 5.0f, .height = 5.0f}.calculate());
 
 
-			engine.renderer.bindMaterial2D(test_font_material);
-			engine.renderer.renderQuad2D(ph::Transform2D{.width = 1000.0f, .height = 1000.0f}.calculate());
+			engine.renderer2D.bindMaterial(test_font_material);
+			engine.renderer2D.drawQuad(ph::Transform2D{.width = 1000.0f, .height = 1000.0f}.calculate());
 		});
 
 

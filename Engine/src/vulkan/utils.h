@@ -6,11 +6,39 @@
 
 #include <optional>
 
+
+
+
 // TODO: change this? (Needed for format_size())
 #include "Logging.h"
 
 namespace ph{
 	namespace vulkan{
+
+		
+		// TODO: change this value
+		constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 1;
+		constexpr uint32_t MAX_DESCRIPTOR_SETS = 100; // this was just arbitrarily chosen
+
+
+		struct GlobalUBO3D{
+			alignas(16) glm::mat4 view;
+			alignas(16) glm::mat4 proj;
+		};
+
+		struct GlobalUBO2D{
+			alignas(16) glm::mat4 view;
+			alignas(16) glm::mat4 proj;
+		};
+
+
+		struct InstanceUBO3D{
+			glm::vec4 color;
+		};
+
+		struct InstanceUBO2D{
+			glm::vec4 color;
+		};
 
 
 		//////////////////////////////////////////////////////////////////////
@@ -94,6 +122,10 @@ namespace ph{
 
 
 		EVO_NODISCARD auto get_max_msaa_samples(const VkPhysicalDevice& physical_device) noexcept -> VkSampleCountFlagBits;
+
+
+
+		EVO_NODISCARD auto load_shader_code(const std::string& filepath) noexcept -> std::optional< std::vector<evo::byte> >;
 
 
 
