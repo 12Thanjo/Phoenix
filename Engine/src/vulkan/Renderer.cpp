@@ -93,7 +93,7 @@ namespace ph{
 			// TODO: rewrite this system (including error checking)
 
 			{
-				const auto result = this->render_pass_3D.add_descriptor_set_layout(this->device, {
+				const auto result = this->render_pass_3D.add_descriptor_set_layout(this->device, 1 * MAX_FRAMES_IN_FLIGHT, {
 					{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT},
 				});
 
@@ -104,7 +104,7 @@ namespace ph{
 
 
 			{
-				const auto result = this->render_pass_3D.add_descriptor_set_layout(this->device, {
+				const auto result = this->render_pass_3D.add_descriptor_set_layout(this->device, 32 * MAX_FRAMES_IN_FLIGHT, {
 					{0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
 					{1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT},
 				});
@@ -172,10 +172,13 @@ namespace ph{
 				pipeline_config.add_vertex_attribute(vulkan::format<float, 3>());
 
 
-				if(this->render_pass_3D.create_pipeline(this->device, pipeline_config, VK_NULL_HANDLE).has_value() == false){
+				const auto pipeline_result = this->render_pass_3D.create_pipeline(this->device, pipeline_config, VK_NULL_HANDLE);
+				if(pipeline_result.has_value() == false){
 					PH_ERROR("Failed to create 3D render pipeline");
 					return false;
 				}
+
+				this->pipeline_3D = *pipeline_result;
 
 				vulkan::destroy_shader_module(this->device, frag_shader_module);
 				vulkan::destroy_shader_module(this->device, vert_shader_module);
@@ -251,7 +254,7 @@ namespace ph{
 				if(this->pipeline_2D.create(
 					this->device,
 					this->render_pass_2D,
-					this->render_pass_3D.pipeline_layout,
+					this->pipeline_layout_2D,
 					pipeline_config,
 					VK_NULL_HANDLE
 				) == false){
@@ -581,9 +584,6 @@ namespace ph{
 					}
 				}
 			}
-
-
-
 
 
 
@@ -1076,7 +1076,7 @@ namespace ph{
 				};
 
 				result = this->framebuffers_3D[i].create(
-					this->device, this->render_pass_3D.render_pass, this->swapchain.get_width(), this->swapchain.get_height(), attachments
+					this->device, this->render_pass_3D.get_render_pass(), this->swapchain.get_width(), this->swapchain.get_height(), attachments
 				);
 
 				if(result == false){
@@ -1215,14 +1215,15 @@ namespace ph{
 		auto Renderer::begin_render_pass_3D() noexcept -> void {
 			const vulkan::CommandBuffer& command_buffer = this->command_buffers[this->current_frame];
 
-			this->render_pass_3D.render_pass.begin(
+			this->render_pass_3D.begin(
 				command_buffer,
 				this->framebuffers_3D[this->swapchain.get_image_index()],
 				this->swapchain.get_width(),
 				this->swapchain.get_height()
 			);
 
-			command_buffer.bind_pipeline(this->render_pass_3D.pipelines[0].handle, VK_PIPELINE_BIND_POINT_GRAPHICS);
+
+			this->render_pass_3D.bind_graphics_pipeline(command_buffer, this->pipeline_3D);
 
 
 			this->render_pass_3D.bind_descriptor_set(
@@ -1232,7 +1233,7 @@ namespace ph{
 
 
 		auto Renderer::end_render_pass_3D() noexcept -> void {
-			this->render_pass_3D.render_pass.end(this->command_buffers[this->current_frame]);
+			this->render_pass_3D.end(this->command_buffers[this->current_frame]);
 		};
 
 
@@ -1273,9 +1274,7 @@ namespace ph{
 
 
 		auto Renderer::set_model_push_constant_3D(const glm::mat4& model) noexcept -> void {
-			this->command_buffers[this->current_frame].push_constant(
-				this->render_pass_3D.pipeline_layout, VK_SHADER_STAGE_VERTEX_BIT, sizeof(glm::mat4), &model
-			);
+			this->render_pass_3D.set_push_constant(this->command_buffers[this->current_frame], VK_SHADER_STAGE_VERTEX_BIT, sizeof(glm::mat4), &model);
 		};
 
 		auto Renderer::set_model_push_constant_2D(const glm::mat4& model) noexcept -> void {

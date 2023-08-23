@@ -284,39 +284,59 @@ namespace ph{
 
 
 		auto RenderPassManager::destroy(const Device& device) noexcept -> void {
+			for(auto& layout_info : this->descriptor_set_layout_infos){
+				for(auto& descriptor_pool : layout_info.descriptor_pools){
+					vulkan::destroy_descriptor_pool(device, descriptor_pool);
+				}
+			}
+			evo::vector_dealloc(this->descriptor_set_layout_infos);
+
 
 			for(auto& descriptor_set_layout : this->descriptor_set_layouts){
 				vulkan::destroy_descriptor_set_layout(device, descriptor_set_layout);
 			}
-			this->descriptor_set_layouts.clear();
-			this->descriptor_set_layouts.shrink_to_fit();
+			evo::vector_dealloc(this->descriptor_set_layouts);
 
 
 			for(auto& pipeline : this->pipelines){
 				pipeline.destroy(device);
 			}
-			this->pipelines.clear();
-			this->pipelines.shrink_to_fit();
+			evo::vector_dealloc(this->pipelines);
 
 
 			vulkan::destroy_pipeline_layout(device, this->pipeline_layout);
 
 			this->render_pass.destroy(device);
 
-
 			PH_DEBUG("Destroyed: Vulkan render pass manager");
 		};
 
 
+		auto RenderPassManager::begin(
+			const CommandBuffer& command_buffer, const Framebuffer& framebuffer, uint32_t width, uint32_t height
+		) noexcept -> void {
+			this->render_pass.begin(command_buffer, framebuffer, width, height);
+		};
+
+		auto RenderPassManager::end(const CommandBuffer& command_buffer) noexcept -> void {
+			this->render_pass.end(command_buffer);
+		};
+
+
+
+
 		auto RenderPassManager::add_descriptor_set_layout(
-			const Device& device, const evo::ArrayProxy<VkDescriptorSetLayoutBinding> bindings
+			const Device& device, uint32_t pool_allocation_size, const evo::ArrayProxy<VkDescriptorSetLayoutBinding> bindings
 		) noexcept -> std::optional<DescriptorSetLayoutID> {
 			
 			const auto result = vulkan::create_descriptor_set_layout(device, bindings);
 			if(result.has_value() == false) return std::nullopt;
 
 			this->descriptor_set_layouts.emplace_back(*result);
-			this->descriptor_set_layout_infos.push_back({ .bindings = std::vector(bindings.front(), bindings.back()) }); 
+			this->descriptor_set_layout_infos.emplace_back() = DescriptorSetLayoutInfo{
+				.bindings = std::vector(bindings.front(), bindings.back()),
+				.pool_allocation_size = pool_allocation_size
+			};
 
 			const auto layout_id = DescriptorSetLayoutID{ uint32_t(this->descriptor_set_layouts.size() - 1) };
 			this->allocate_descriptor_pool(device, layout_id);
@@ -340,7 +360,7 @@ namespace ph{
 
 			this->pipelines.emplace_back(std::move(new_pipeline));
 
-			return PipelineID{ uint32_t(this->pipelines.size()) };
+			return PipelineID{ uint32_t(this->pipelines.size() - 1) };
 		};
 
 
@@ -349,9 +369,13 @@ namespace ph{
 		auto RenderPassManager::allocate_descriptor_set(
 			const Device& device, DescriptorSetLayoutID layout_id
 		) noexcept -> std::optional<DescriptorSetID> {
-			PH_WARNING(std::format("TODO: allocate new pool if necessary ({})", __FUNCTION__));
-
 			auto& layout_info = this->descriptor_set_layout_infos[layout_id.id];
+
+			// allocate another pool if necessary
+			if(layout_info.descriptor_sets.size() >= layout_info.descriptor_pools.size() * layout_info.pool_allocation_size){
+				this->allocate_descriptor_pool(device, layout_id);
+			}
+
 
 			auto result = vulkan::allocate_descriptor_sets(device, layout_info.descriptor_pools.back(), this->descriptor_set_layouts[layout_id.id]);
 
@@ -362,8 +386,6 @@ namespace ph{
 
 			layout_info.descriptor_sets.emplace_back(result->operator[](0));
 
-
-			PH_TRACE("Allocated a Vulkan descriptor set");
 			return DescriptorSetID{ uint32_t(layout_info.descriptor_sets.size() - 1) };
 		};
 
@@ -443,6 +465,18 @@ namespace ph{
 		};
 
 
+		auto RenderPassManager::bind_graphics_pipeline(const CommandBuffer& command_buffer, PipelineID id) noexcept -> void {
+			command_buffer.bind_pipeline(this->pipelines[id.id].handle, VK_PIPELINE_BIND_POINT_GRAPHICS);
+		};
+
+
+		auto RenderPassManager::set_push_constant(
+			const CommandBuffer& command_buffer, VkShaderStageFlags stage_flags, uint32_t size, const void* data
+		) noexcept -> void {
+			command_buffer.push_constant(this->pipeline_layout, stage_flags, size, data);
+		};
+
+
 
 
 
@@ -452,11 +486,11 @@ namespace ph{
 			auto pool_sizes = std::vector<VkDescriptorPoolSize>{};
 
 			for(const auto& binding : info.bindings){
-				pool_sizes.emplace_back(binding.descriptorType, MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS);
+				pool_sizes.emplace_back(binding.descriptorType, binding.descriptorCount * info.pool_allocation_size);
 			}
 
 
-			const auto descriptor_pool_result = vulkan::create_descriptor_pool(device, (MAX_FRAMES_IN_FLIGHT * MAX_DESCRIPTOR_SETS), pool_sizes);
+			const auto descriptor_pool_result = vulkan::create_descriptor_pool(device, info.pool_allocation_size, pool_sizes);
 
 			if(descriptor_pool_result.has_value() == false){
 				PH_FATAL("Failed to create descriptor pool");

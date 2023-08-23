@@ -104,8 +104,10 @@ namespace ph{
 				// these functions must be called before RenderPassManager::create()
 
 				struct DescriptorSetLayoutID{ uint32_t id; };
+
+				// `pool_allocation_size` is the number of descriptor sets per pool created (will create more pools if needed)
 				EVO_NODISCARD auto add_descriptor_set_layout(
-					const class Device& device, const evo::ArrayProxy<VkDescriptorSetLayoutBinding> bindings
+					const class Device& device, uint32_t pool_allocation_size, const evo::ArrayProxy<VkDescriptorSetLayoutBinding> bindings
 				) noexcept -> std::optional<DescriptorSetLayoutID>;
 
 
@@ -126,6 +128,13 @@ namespace ph{
 
 				auto destroy(const class Device& device) noexcept -> void;
 
+
+				auto begin(
+					const class CommandBuffer& command_buffer, const class Framebuffer& framebuffer, uint32_t width, uint32_t height
+				) noexcept -> void;
+
+				auto end(const class CommandBuffer& command_buffer) noexcept -> void;
+				
 
 
 				struct PipelineID{ uint32_t id; };
@@ -156,30 +165,39 @@ namespace ph{
 
 
 
+				auto bind_graphics_pipeline(const class CommandBuffer& command_buffer, PipelineID id) noexcept -> void;
+
+
+				auto set_push_constant(
+					const class CommandBuffer& command_buffer, VkShaderStageFlags stage_flags, uint32_t size, const void* data
+				) noexcept -> void;
+
+
+				inline auto get_render_pass() const noexcept -> const RenderPass& { return this->render_pass; };
+				
+
 			private:
 				EVO_NODISCARD auto allocate_descriptor_pool(const class Device& device, DescriptorSetLayoutID layout_id) noexcept -> bool;
 			
-			// TOOD: private
-			public:
+
+			private:
 				RenderPass render_pass{};
 				VkPipelineLayout pipeline_layout{VK_NULL_HANDLE};
-
 				std::vector<Pipeline> pipelines{};
 
 
-				std::vector<VkDescriptorSetLayout> descriptor_set_layouts{};
 
-
-			public:
-				// TODO: clean up DescriptorSetLayoutInfo's
 				struct DescriptorSetLayoutInfo{
 					std::vector<VkDescriptorPool> descriptor_pools{};
 					std::vector<VkDescriptorSetLayoutBinding> bindings{};
 					std::vector<VkDescriptorSet> descriptor_sets{};
+					uint32_t pool_allocation_size;
 				};
 
 				// there should be one std::vector<DescriptorSetLayoutInfo> for every descriptor set layout
 				std::vector<DescriptorSetLayoutInfo> descriptor_set_layout_infos{};
+
+				std::vector<VkDescriptorSetLayout> descriptor_set_layouts{};
 		};
 
 

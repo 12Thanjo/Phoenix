@@ -1,7 +1,10 @@
 # Phoenix Engine Change Log
 
+### v0.2.3
+- Added dynamic descriptor pool allocation in render pass manager
+
 ### v0.2.2
-- Removed "ouput.png"
+- Removed "ouput.png" (test image for msdfgen)
 - font atlas now generates msdf
 - Began render pass manager
 

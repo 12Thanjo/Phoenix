@@ -155,8 +155,10 @@ namespace ph{
 				// VkPipelineLayout pipeline_layout_3D{VK_NULL_HANDLE};
 				// vulkan::Pipeline pipeline_3D{};
 
-				RenderPassManager::DescriptorSetLayoutID global_descriptor_set_layout_3D;
-				RenderPassManager::DescriptorSetLayoutID instance_descriptor_set_layout_3D;
+				vulkan::RenderPassManager::DescriptorSetLayoutID global_descriptor_set_layout_3D;
+				vulkan::RenderPassManager::DescriptorSetLayoutID instance_descriptor_set_layout_3D;
+
+				vulkan::RenderPassManager::PipelineID pipeline_3D;
 
 
 

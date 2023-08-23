@@ -12,7 +12,7 @@
 // 	}
 
 // #else
-	auto main([[maybe_unused]] int argc, [[maybe_unused]] const char* args[])-> int {
+	auto main([[maybe_unused]] int argc, [[maybe_unused]] const char* args[]) noexcept -> int {
 		
 		Game::run();
 
