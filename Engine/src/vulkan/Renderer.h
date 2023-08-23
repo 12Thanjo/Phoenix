@@ -77,6 +77,11 @@ namespace ph{
 				auto begin_render_pass_2D() noexcept -> void;
 				auto end_render_pass_2D() noexcept -> void;
 
+				auto allocate_descriptor_set_3D() noexcept -> std::optional<uint32_t>;
+				auto allocate_descriptor_set_2D() noexcept -> std::optional<uint32_t>;
+
+
+
 				// this is for instance level, global is done automatically
 				auto bind_descriptor_set_3D(uint32_t index) noexcept -> void;
 				auto bind_descriptor_set_2D(uint32_t index) noexcept -> void;
@@ -137,8 +142,6 @@ namespace ph{
 				std::vector<vulkan::Texture> textures{};
 
 
-				VkDescriptorPool descriptor_pool{VK_NULL_HANDLE};
-
 
 				///////////////////////////////////
 				// 3D
@@ -150,24 +153,18 @@ namespace ph{
 
 
 				vulkan::RenderPassManager render_pass_3D{};
-				// VkDescriptorSetLayout global_descriptor_set_layout_3D{VK_NULL_HANDLE};
-				// VkDescriptorSetLayout instance_descriptor_set_layout_3D{VK_NULL_HANDLE};
-				// VkPipelineLayout pipeline_layout_3D{VK_NULL_HANDLE};
-				// vulkan::Pipeline pipeline_3D{};
+				vulkan::RenderPassManager::PipelineID pipeline_3D;
 
 				vulkan::RenderPassManager::DescriptorSetLayoutID global_descriptor_set_layout_3D;
 				vulkan::RenderPassManager::DescriptorSetLayoutID instance_descriptor_set_layout_3D;
-
-				vulkan::RenderPassManager::PipelineID pipeline_3D;
-
 
 
 
 				std::array<vulkan::Buffer, MAX_FRAMES_IN_FLIGHT> global_uniform_buffers_3D{};
 				std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT> global_descriptor_sets_3D{};
 
-				std::array<std::array<vulkan::Buffer, MAX_FRAMES_IN_FLIGHT>, MAX_DESCRIPTOR_SETS> instance_uniform_buffers_3D{};
-				std::array<std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT>, MAX_DESCRIPTOR_SETS> instance_descriptor_sets_3D{};
+				std::vector< std::array<vulkan::Buffer                    , MAX_FRAMES_IN_FLIGHT> > instance_uniform_buffers_3D{};
+				std::vector< std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT> > instance_descriptor_sets_3D{};
 
 
 				///////////////////////////////////
@@ -180,18 +177,19 @@ namespace ph{
 				uint32_t index_buffer_2D_index = 0;
 
 
-				vulkan::RenderPass render_pass_2D{};
-				VkDescriptorSetLayout global_descriptor_set_layout_2D{VK_NULL_HANDLE};
-				VkDescriptorSetLayout instance_descriptor_set_layout_2D{VK_NULL_HANDLE};
-				VkPipelineLayout pipeline_layout_2D{VK_NULL_HANDLE};
-				vulkan::Pipeline pipeline_2D{};
+
+				vulkan::RenderPassManager render_pass_2D{};
+				vulkan::RenderPassManager::PipelineID pipeline_2D;
+
+				vulkan::RenderPassManager::DescriptorSetLayoutID global_descriptor_set_layout_2D;
+				vulkan::RenderPassManager::DescriptorSetLayoutID instance_descriptor_set_layout_2D;
 
 
 				std::array<vulkan::Buffer, MAX_FRAMES_IN_FLIGHT> global_uniform_buffers_2D{};
-				std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT> global_descriptor_sets_2D{};
+				std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT> global_descriptor_sets_2D{};
 
-				std::array<std::array<vulkan::Buffer, MAX_FRAMES_IN_FLIGHT>, MAX_DESCRIPTOR_SETS> instance_uniform_buffers_2D{};
-				std::array<std::array<VkDescriptorSet, MAX_FRAMES_IN_FLIGHT>, MAX_DESCRIPTOR_SETS> instance_descriptor_sets_2D{};
+				std::vector< std::array<vulkan::Buffer                    , MAX_FRAMES_IN_FLIGHT> > instance_uniform_buffers_2D{};
+				std::vector< std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT> > instance_descriptor_sets_2D{};
 		};
 
 

@@ -1,5 +1,8 @@
 # Phoenix Engine Change Log
 
+### v0.2.4
+- Added dynamic allocation of render materials
+
 ### v0.2.3
 - Added dynamic descriptor pool allocation in render pass manager
 

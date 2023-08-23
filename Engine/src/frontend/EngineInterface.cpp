@@ -367,6 +367,32 @@ namespace ph{
 	auto EngineInterface::set_render_callback_2D(Callback callback) noexcept -> void { this->data->render_callback_2D = callback; };
 
 
+	auto EngineInterface::create_material_3D(Material3D* out_mat) noexcept -> bool {
+		auto material = this->data->renderer.allocate_descriptor_set_3D();
+
+		if(material.has_value() == false){
+			PH_ERROR("Failed to create 3D material");
+			return false;
+		}
+
+		*out_mat = Material3D{ *material };
+		return true;
+	};
+
+	auto EngineInterface::create_material_2D(Material2D* out_mat) noexcept -> bool {
+		auto material = this->data->renderer.allocate_descriptor_set_2D();
+
+		if(material.has_value() == false){
+			PH_ERROR("Failed to create 2D material");
+			return false;
+		}
+
+		*out_mat = Material2D{ *material };
+		return true;
+	};
+
+
+
 	auto EngineInterface::bind_material(Material3D material) noexcept -> void {
 		this->data->renderer.bind_descriptor_set_3D(material.id);
 	};

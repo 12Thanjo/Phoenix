@@ -15,13 +15,13 @@ namespace ph{
 	//////////////////////////////////////////////////////////////////////
 	// 3D
 	
-	class Renderer{
+	class Renderer3D{
 		public:
-			Renderer(EngineInterface* interface_ptr) : interface(interface_ptr) {};
-			~Renderer() = default;
+			Renderer3D(EngineInterface* interface_ptr) : interface(interface_ptr) {};
+			~Renderer3D() = default;
 
 
-			inline auto setCallback3D(const std::function<void()> callback) noexcept -> void {
+			inline auto setCallback(const std::function<void()> callback) noexcept -> void {
 				const static auto callback_func = callback;
 
 				this->interface->set_render_callback_3D([](){
@@ -29,6 +29,13 @@ namespace ph{
 				});
 			};
 
+			inline auto createMaterial() noexcept -> std::optional<Material3D> {
+				Material3D output;
+
+				if(this->interface->create_material_3D(&output) == false){ return std::nullopt; }
+
+				return output;
+			};
 
 			inline auto bindMaterial(Material3D material) noexcept -> void { this->interface->bind_material(material); };
 			inline auto drawMesh(const glm::mat4& model, Mesh3D id) noexcept -> void { this->interface->render_mesh(model, id); };
@@ -63,6 +70,14 @@ namespace ph{
 			};
 
 
+
+			inline auto createMaterial() noexcept -> std::optional<Material2D> {
+				Material2D output;
+
+				if(this->interface->create_material_2D(&output) == false){ return std::nullopt; }
+
+				return output;
+			};
 
 			inline auto bindMaterial(Material2D material) noexcept -> void { this->interface->bind_material_2D(material); };
 			inline auto drawQuad(const glm::mat4& model) noexcept -> void { this->interface->render_mesh_2D(model); };

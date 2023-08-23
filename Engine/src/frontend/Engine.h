@@ -38,7 +38,7 @@ namespace ph{
 		public:
 			Inputs inputs{&this->interface};
 			AssetManager assets{&this->interface};
-			Renderer renderer3D{&this->interface};
+			Renderer3D renderer3D{&this->interface};
 			Renderer2D renderer2D{&this->interface};
 			Window window{&this->interface};
 			Physics physics{&this->interface};

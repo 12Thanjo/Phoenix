@@ -64,6 +64,10 @@ namespace ph{
 			auto set_render_callback_3D(Callback callback) noexcept -> void;
 			auto set_render_callback_2D(Callback callback) noexcept -> void;
 
+			auto create_material_3D(Material3D* out_material) noexcept -> bool;
+			auto create_material_2D(Material2D* out_material) noexcept -> bool;
+
+
 			auto bind_material(Material3D material) noexcept -> void;
 			auto bind_material_2D(Material2D material) noexcept -> void;
 			auto render_mesh(const glm::mat4& model, Mesh3D mesh) noexcept -> void;

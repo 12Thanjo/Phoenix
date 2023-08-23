@@ -7,19 +7,14 @@
 #include <optional>
 
 
-
-
-// TODO: change this? (Needed for format_size())
 #include "Logging.h"
 
 namespace ph{
 	namespace vulkan{
-
 		
 		// TODO: change this value
 		constexpr uint32_t MAX_FRAMES_IN_FLIGHT = 1;
-		constexpr uint32_t MAX_DESCRIPTOR_SETS = 100; // this was just arbitrarily chosen
-
+		
 
 		struct GlobalUBO3D{
 			alignas(16) glm::mat4 view;
