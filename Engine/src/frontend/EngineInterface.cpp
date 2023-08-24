@@ -52,6 +52,10 @@ namespace ph{
 
 		evo::time::Nanoseconds frame_start_time;
 		float frame_time;
+
+
+		// TODO: temp testing
+		ph::Material2D test_font_material;
 	};
 
 
@@ -117,6 +121,7 @@ namespace ph{
 			PH_FATAL("Failed to initialize font loader");
 			return false;	
 		}
+
 
 
 
@@ -237,7 +242,11 @@ namespace ph{
 		{
 			assets::FontLoader::FontData pixels = this->data->font_loader.load_text("C:\\Windows\\Fonts\\trebuc.ttf").value();
 
-			this->data->renderer.create_texture(pixels.data, pixels.width, pixels.height, false);
+			uint64_t texture_result = this->data->renderer.create_texture(pixels.data, pixels.width, pixels.height, false).value();
+
+			this->create_material_2D(&this->data->test_font_material);
+			this->set_material_color_2D(this->data->test_font_material, {1.0f, 1.0f, 1.0f, 1.0f});
+			this->set_material_texture_2D(this->data->test_font_material, TextureID{uint32_t(texture_result)});
 		}
 
 		// temp:
@@ -412,11 +421,32 @@ namespace ph{
 	};
 
 
-	auto EngineInterface::render_mesh_2D(const glm::mat4& model) noexcept -> void {
-		this->data->renderer.set_model_push_constant_2D(model);
+	auto EngineInterface::render_mesh_2D(const glm::mat4& model, glm::vec2 min_tex_coords, glm::vec2 max_tex_coords) noexcept -> void {
+		this->data->renderer.set_model_push_constant_2D(model, min_tex_coords, max_tex_coords);
 
 		const auto& mesh_info = this->data->mesh_infos_2D[this->data->default_mesh_2D.id];
 		this->data->renderer.draw_indexed(mesh_info.index_count, mesh_info.index_offset, mesh_info.vertex_offset);
+	};
+
+
+	auto EngineInterface::draw_text_2D(const char* string, float font_size, glm::vec2 position) noexcept -> void {
+		this->bind_material_2D(this->data->test_font_material);
+
+		this->data->renderer.bind_text_2D_pipeline();
+
+		// TODO: error handling
+		auto char_bounds = this->data->font_loader.get_char_bounds(string).value();
+
+
+		for(auto& bounds : char_bounds){
+			glm::mat4 transform = glm::mat4{1.0f};
+			transform = glm::translate(transform, glm::vec3{bounds.x, bounds.y, 0.0f} * font_size);
+			transform = glm::translate(transform, glm::vec3{position.x, position.y, 0.0f});
+			transform = glm::scale(transform, glm::vec3{bounds.width, bounds.height, 0.0f} * font_size);
+
+			this->render_mesh_2D(transform, bounds.min, bounds.max);
+		}
+
 	};
 
 

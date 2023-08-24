@@ -71,7 +71,9 @@ namespace ph{
 			auto bind_material(Material3D material) noexcept -> void;
 			auto bind_material_2D(Material2D material) noexcept -> void;
 			auto render_mesh(const glm::mat4& model, Mesh3D mesh) noexcept -> void;
-			auto render_mesh_2D(const glm::mat4& model) noexcept -> void;
+			auto render_mesh_2D(const glm::mat4& model, glm::vec2 min_tex_coords, glm::vec2 max_tex_coords) noexcept -> void;
+			// auto draw_text_3D(const char* string) noexcept -> void;
+			auto draw_text_2D(const char* string, float font_size, glm::vec2 position) noexcept -> void;
 
 			auto set_camera(const glm::mat4& transform) noexcept -> void;
 			auto set_camera_2D(const glm::mat4& transform) noexcept -> void;

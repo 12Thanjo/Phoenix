@@ -1,6 +1,6 @@
 
 
-function build_shader_compile_command(shader_module, shader_type, out_dir)
+local function build_shader_compile_command(shader_module, shader_type, out_dir)
 	-- TODO: Add Linux compiler
 	return (
 		config.VulkanSDK .. "/bin/glslc.exe"
@@ -14,6 +14,24 @@ end
 
 
 
+local function compile_shaders(location, shader_modules)
+
+	for i, module in ipairs(shader_modules) do
+		buildcommands{
+			( build_shader_compile_command(module, "vert", location) ),
+			( build_shader_compile_command(module, "frag", location) ),
+		}
+
+		rebuildcommands{
+			( build_shader_compile_command(module, "vert", location) ),
+			( build_shader_compile_command(module, "frag", location) ),
+		}
+	end
+
+end
+
+
+
 project "Shaders"
 	kind "Makefile"
 
@@ -22,26 +40,21 @@ project "Shaders"
 
 
 	buildcommands {
-		( build_shader_compile_command("basic2D", "vert", config.location) ),
-		( build_shader_compile_command("basic2D", "frag", config.location) ),
-
-
-		( build_shader_compile_command("basic3D", "vert", config.location) ),
-		( build_shader_compile_command("basic3D", "frag", config.location) ),
-
-		( "{ECHO} Compiled Shaders" ),
+		( "{ECHO} === Compiled Shaders === " ),
 	}
 
 
 	rebuildcommands {
-		( build_shader_compile_command("basic2D", "vert", config.location) ),
-		( build_shader_compile_command("basic2D", "frag", config.location) ),
-
-
-		( build_shader_compile_command("basic3D", "vert", config.location) ),
-		( build_shader_compile_command("basic3D", "frag", config.location) ),
-
-		( "{ECHO} Compiled Shaders" ),
+		( "{ECHO} === Compiled Shaders === " )
 	}
+
+
+	compile_shaders(config.location, {
+		"basic3D",
+
+		"basic2D",
+		"text2D",
+	})
+
 
 project "*"

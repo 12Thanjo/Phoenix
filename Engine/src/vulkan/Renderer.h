@@ -75,6 +75,7 @@ namespace ph{
 				auto end_render_pass_3D() noexcept -> void;
 
 				auto begin_render_pass_2D() noexcept -> void;
+				auto bind_text_2D_pipeline() noexcept -> void;
 				auto end_render_pass_2D() noexcept -> void;
 
 				auto allocate_descriptor_set_3D() noexcept -> std::optional<uint32_t>;
@@ -87,7 +88,7 @@ namespace ph{
 				auto bind_descriptor_set_2D(uint32_t index) noexcept -> void;
 
 				auto set_model_push_constant_3D(const glm::mat4& model) noexcept -> void;
-				auto set_model_push_constant_2D(const glm::mat4& model) noexcept -> void;
+				auto set_model_push_constant_2D(const glm::mat4& model, glm::vec2 min_tex_coords, glm::vec2 max_tex_coords) noexcept -> void;
 
 				auto bind_vertex_buffer_3D() noexcept -> void;
 				auto bind_index_buffer_3D() noexcept -> void;
@@ -180,6 +181,7 @@ namespace ph{
 
 				vulkan::RenderPassManager render_pass_2D{};
 				vulkan::RenderPassManager::PipelineID pipeline_2D;
+				vulkan::RenderPassManager::PipelineID pipeline_text_2D;
 
 				vulkan::RenderPassManager::DescriptorSetLayoutID global_descriptor_set_layout_2D;
 				vulkan::RenderPassManager::DescriptorSetLayoutID instance_descriptor_set_layout_2D;
@@ -190,6 +192,15 @@ namespace ph{
 
 				std::vector< std::array<vulkan::Buffer                    , MAX_FRAMES_IN_FLIGHT> > instance_uniform_buffers_2D{};
 				std::vector< std::array<RenderPassManager::DescriptorSetID, MAX_FRAMES_IN_FLIGHT> > instance_descriptor_sets_2D{};
+
+
+
+
+				struct PushConstantDataBlock2D{
+					glm::mat4 model;
+					glm::vec2 min_tex_coords;
+					glm::vec2 max_tex_coords;
+				};
 		};
 
 

@@ -1,5 +1,9 @@
 # Phoenix Engine Change Log
 
+### v0.3.0
+- Added the option to choose texture coordinates when rendering a 2D quad
+- Added 2D text rendering
+
 ### v0.2.4
 - Added dynamic allocation of render materials
 

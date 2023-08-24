@@ -224,7 +224,7 @@ namespace ph{
 							{ vulkan::AttachmentType::Resolve, this->swapchain.get_image_format() },
 						},
 						std::initializer_list<VkPushConstantRange>{
-							{VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glm::mat4)},
+							{VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstantDataBlock2D)},
 						}
 					);
 
@@ -272,6 +272,50 @@ namespace ph{
 					}
 
 					this->pipeline_2D = *pipeline_result;
+
+					vulkan::destroy_shader_module(this->device, frag_shader_module);
+					vulkan::destroy_shader_module(this->device, vert_shader_module);
+				}
+
+
+
+				{
+
+					const auto vert_shader_bytecode = vulkan::load_shader_code("assets/shaders/text2D.vert.spv");
+					if(vert_shader_bytecode.has_value() == false){
+						PH_FATAL("Failed to load 2D vertex shader");
+						return false;
+					}
+
+
+					const auto frag_shader_bytecode = vulkan::load_shader_code("assets/shaders/text2D.frag.spv");
+					if(frag_shader_bytecode.has_value() == false){
+						PH_FATAL("Failed to load 2D fragment shader");
+						return false;
+					}
+
+					VkShaderModule vert_shader_module = vulkan::create_shader_module(this->device, *vert_shader_bytecode).value();
+					VkShaderModule frag_shader_module = vulkan::create_shader_module(this->device, *frag_shader_bytecode).value();
+
+
+					auto pipeline_config = PipelineConfig{
+						.msaa_samples       = this->msaa_samples,
+						.use_sample_shading = this->use_sample_shading,
+					};
+					pipeline_config.add_vertex_shader(vert_shader_module);
+					pipeline_config.add_fragment_shader(frag_shader_module);
+					pipeline_config.add_vertex_binding(sizeof(vulkan::Vertex2D), VK_VERTEX_INPUT_RATE_VERTEX);
+					pipeline_config.add_vertex_attribute(vulkan::format<float, 2>());
+					pipeline_config.add_vertex_attribute(vulkan::format<float, 2>());
+
+
+					const auto pipeline_result = this->render_pass_2D.create_pipeline(this->device, pipeline_config, VK_NULL_HANDLE);
+					if(pipeline_result.has_value() == false){
+						PH_ERROR("Failed to create 2D render pipeline");
+						return false;
+					}
+
+					this->pipeline_text_2D = *pipeline_result;
 
 					vulkan::destroy_shader_module(this->device, frag_shader_module);
 					vulkan::destroy_shader_module(this->device, vert_shader_module);
@@ -1055,6 +1099,11 @@ namespace ph{
 		};
 
 
+		auto Renderer::bind_text_2D_pipeline() noexcept -> void {
+			this->render_pass_2D.bind_graphics_pipeline(this->command_buffers[this->current_frame], this->pipeline_text_2D);
+		};
+
+
 		auto Renderer::end_render_pass_2D() noexcept -> void {
 			this->render_pass_2D.end(this->command_buffers[this->current_frame]);
 		};
@@ -1199,9 +1248,11 @@ namespace ph{
 			);
 		};
 
-		auto Renderer::set_model_push_constant_2D(const glm::mat4& model) noexcept -> void {
+		auto Renderer::set_model_push_constant_2D(const glm::mat4& model, glm::vec2 min_tex_coords, glm::vec2 max_tex_coords) noexcept -> void {
+			auto data_block = PushConstantDataBlock2D{model, min_tex_coords, max_tex_coords};
+
 			this->render_pass_2D.set_push_constant(
-				this->command_buffers[this->current_frame], VK_SHADER_STAGE_VERTEX_BIT, sizeof(glm::mat4), &model
+				this->command_buffers[this->current_frame], VK_SHADER_STAGE_VERTEX_BIT, sizeof(PushConstantDataBlock2D), &data_block
 			);
 		};
 

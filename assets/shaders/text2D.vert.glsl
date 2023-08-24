@@ -27,5 +27,5 @@ layout(location = 0) out struct Transfer {
 void main(){
     transfer.tex_coord = a_tex_coord * (push_constant.max_tex_coords - push_constant.min_tex_coords) + push_constant.min_tex_coords;
 
-	gl_Position = global_ubo.proj * global_ubo.view * push_constant.model * vec4(a_position, 0.0, 1.0);
+	gl_Position = global_ubo.proj * global_ubo.view * push_constant.model * vec4((a_position + 0.5), 0.0, 1.0);
 }

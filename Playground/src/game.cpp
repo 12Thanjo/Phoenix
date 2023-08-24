@@ -116,9 +116,9 @@ namespace Game{
 				this->engine.assets.setMaterialColor2D(this->crosshair_material, {1.0f, 1.0f, 1.0f, 1.0f});
 				this->engine.assets.setMaterialTexture2D(this->crosshair_material, this->engine.assets.getDefaultTexture());
 
-				this->test_font_material = this->engine.renderer2D.createMaterial().value();
-				this->engine.assets.setMaterialColor2D(this->test_font_material, {1.0f, 1.0f, 1.0f, 1.0f});
-				this->engine.assets.setMaterialTexture2D(this->test_font_material, {1});
+				// this->test_font_material = this->engine.renderer2D.createMaterial().value();
+				// this->engine.assets.setMaterialColor2D(this->test_font_material, {1.0f, 1.0f, 1.0f, 1.0f});
+				// this->engine.assets.setMaterialTexture2D(this->test_font_material, {1});
 			};
 
 
@@ -256,12 +256,18 @@ namespace Game{
 			auto render_2D() noexcept -> void {
 				this->engine.renderer2D.setCamera(glm::mat4{1.0f});
 
+				this->engine.renderer2D.bindMaterial({0});
+				this->engine.renderer2D.drawQuad(ph::Transform2D{.width = 50.0f, .height = 50.0f}.calculate());
+				
 				this->engine.renderer2D.bindMaterial(this->crosshair_material);
 				this->engine.renderer2D.drawQuad(ph::Transform2D{.width = 5.0f, .height = 5.0f}.calculate());
 
 
-				this->engine.renderer2D.bindMaterial(this->test_font_material);
-				this->engine.renderer2D.drawQuad(ph::Transform2D{ .x = 750.0f, .width = 1000.0f, .height = 1000.0f}.calculate());
+				// this->engine.renderer2D.bindMaterial(this->test_font_material);
+				// this->engine.renderer2D.drawQuad(ph::Transform2D{ .x = 750.0f, .width = 1000.0f, .height = 1000.0f}.calculate());
+				this->engine.renderer2D.drawText("Some Text", 120.0f, {200.0f, 100.0f});
+
+
 			};
 
 
@@ -284,7 +290,7 @@ namespace Game{
 			ph::Material3D player_material;
 
 			ph::Material2D crosshair_material;
-			ph::Material2D test_font_material;
+			// ph::Material2D test_font_material;
 	};
 
 

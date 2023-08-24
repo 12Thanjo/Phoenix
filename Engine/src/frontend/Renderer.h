@@ -80,7 +80,19 @@ namespace ph{
 			};
 
 			inline auto bindMaterial(Material2D material) noexcept -> void { this->interface->bind_material_2D(material); };
-			inline auto drawQuad(const glm::mat4& model) noexcept -> void { this->interface->render_mesh_2D(model); };
+
+			inline auto drawQuad(
+				const glm::mat4& model,
+				glm::vec2 min_tex_coords = {0.0f, 0.0f},
+				glm::vec2 max_tex_coords = {1.0f, 1.0f}
+			) noexcept -> void {
+				this->interface->render_mesh_2D(model, min_tex_coords, max_tex_coords);
+			};
+
+
+			inline auto drawText(const std::string& string, float font_size, glm::vec2 position) noexcept -> void {
+				this->interface->draw_text_2D(string.c_str(), font_size, position);
+			};
 
 			inline auto setCamera(const glm::mat4& transform) noexcept -> void {
 				this->interface->set_camera_2D(transform);
